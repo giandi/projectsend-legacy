@@ -167,6 +167,8 @@ $work_folder = UPLOADED_FILES_FOLDER;
 
 
 	<form action="upload-process-form.php" name="upload_by_ftp" id="upload_by_ftp" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
+
 		<?php		
 			/**
 			 * Generate the list of files if there is at least 1

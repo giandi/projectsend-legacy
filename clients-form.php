@@ -121,6 +121,8 @@ switch ($clients_form_type) {
 ?>
 
 <form action="<?php echo $form_action; ?>" name="addclient" method="post" class="form-horizontal">
+    <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
+
 	<div class="form-group">
 		<label for="add_client_form_name" class="col-sm-4 control-label"><?php _e('Name','cftp_admin'); ?></label>
 		<div class="col-sm-8">

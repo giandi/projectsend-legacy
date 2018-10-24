@@ -267,6 +267,8 @@ include('header.php');
 		</div>
 
 		<form action="<?php echo $this_page; ?>" name="clients_list" method="post" class="form-inline">
+            <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
+
 			<?php form_add_existing_parameters(); ?>
 			<div class="form_actions_right">
 				<div class="form_actions">

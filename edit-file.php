@@ -317,6 +317,8 @@ $current_level = get_current_user_level();
 			/** Validations OK, show the editor */
 	?>
 			<form action="edit-file.php?file_id=<?php echo filter_var($this_file_id,FILTER_VALIDATE_INT); ?>" method="post" name="edit_file" id="edit_file">
+                <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
+
 				<div class="container-fluid">
 					<?php
 						/** Reconstruct the current assignments arrays */

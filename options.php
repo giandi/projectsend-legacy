@@ -95,7 +95,7 @@ include('header.php');
 $logo_file_info = generate_logo_url();
 
 /** Form sent */
-if ($_POST && validateCsrfToken()) {
+if ($_POST) {
 	/**
 	 * Escape all the posted values on a single function.
 	 * Defined on functions.php

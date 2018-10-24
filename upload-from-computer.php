@@ -155,7 +155,9 @@ $current_level = get_current_user_level();
 		</script>
 		
 		<form action="upload-process-form.php" name="upload_by_client" id="upload_by_client" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
 			<input type="hidden" name="uploaded_files" id="uploaded_files" value="" />
+            
 			<div id="uploader">
 				<div class="message message_error">
 					<p><?php _e("Your browser doesn't support HTML5, Flash or Silverlight. Please update your browser or install Adobe Flash or Silverlight to continue.",'cftp_admin'); ?></p>

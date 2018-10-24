@@ -431,6 +431,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 </div>
 <div class="col-xs-12 col-sm-12 col-md-4">
 	<form action="categories.php" class="form-horizontal" name="process_category" id="process_category" method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
 		<input type="hidden" name="processing" id="processing" value="1">
 		<?php
 			if ( !empty( $action ) && $action == 'edit' ) {

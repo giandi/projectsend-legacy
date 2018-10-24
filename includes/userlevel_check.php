@@ -160,53 +160,64 @@ function can_see_content($allowed_levels) {
 		*/
 	}
 	if (!$permission) {
-		ob_end_clean();
-		$page_title = __('Access denied','cftp_admin');
-	?>
-			<!doctype html>
-			<html lang="<?php echo SITE_LANG; ?>">
-				<head>
-					<meta charset="utf-8">
-					<meta http-equiv="X-UA-Compatible" content="IE=edge">
-					<meta name="viewport" content="width=device-width, initial-scale=1">
-				
-					<title><?php echo html_output( $page_title . ' &raquo; ' . THIS_INSTALL_SET_TITLE ); ?></title>
-					<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-					<?php meta_favicon(); ?>
-					<script type="text/javascript" src="<?php echo BASE_URI; ?>includes/js/jquery.1.12.4.min.js"></script>
-				
-					<!--[if lt IE 9]>
-						<script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>
-						<script src="<?php echo BASE_URI; ?>includes/js/respond.min.js"></script>
-					<![endif]-->
-					
-					<?php
-						require_once( 'assets.php' );
-				
-						load_css_files();
-					?>
-				</head>
-				<body class="backend forbidden">
-					<div class="container">
-						<div class="row">
-							<div class="col-xs-12">
-								<h2><?php echo $page_title; ?></h2>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12">
-								<div class="whiteform whitebox">
-									<?php
-										$msg = __("Your account type doesn't allow you to view this page. Please contact a system administrator if you need to access this function.",'cftp_admin');
-										echo $msg;
-									?>
-								</div>
-							</div>
-						</div>
-					</div>
-				</body>
-			</html>
-	<?php
-		die();
-	}
+        permission_denied_page('role');
+    }
+}
+
+function permission_denied_page($error_type) {
+    ob_end_clean();
+    $page_title = __('Access denied','cftp_admin');
+?>
+        <!doctype html>
+        <html lang="<?php echo SITE_LANG; ?>">
+            <head>
+                <meta charset="utf-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            
+                <title><?php echo html_output( $page_title . ' &raquo; ' . THIS_INSTALL_SET_TITLE ); ?></title>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                <?php meta_favicon(); ?>
+                <script type="text/javascript" src="<?php echo BASE_URI; ?>includes/js/jquery.1.12.4.min.js"></script>
+            
+                <!--[if lt IE 9]>
+                    <script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>
+                    <script src="<?php echo BASE_URI; ?>includes/js/respond.min.js"></script>
+                <![endif]-->
+                
+                <?php
+                    require_once( 'assets.php' );
+            
+                    load_css_files();
+                ?>
+            </head>
+            <body class="backend forbidden">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h2><?php echo $page_title; ?></h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="whiteform whitebox">
+                                <?php
+                                    switch ($error_type) {
+                                        case 'role':
+                                            $msg = __("Your account type doesn't allow you to view this page. Please contact a system administrator if you need to access this function.",'cftp_admin');
+                                        break;
+                                        case 'csrf':
+                                            $msg = __("The security token could not be validated.",'cftp_admin');
+                                            break;
+                                    }
+                                    echo $msg;
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </body>
+        </html>
+<?php
+    die();
 }

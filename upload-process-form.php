@@ -415,6 +415,8 @@ while( $row = $statement->fetch() ) {
 		</script>
 
 		<form action="upload-process-form.php" name="save_files" id="save_files" method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
+
 			<?php
 				foreach($uploaded_files as $add_uploaded_field) {
 			?>
