@@ -243,7 +243,7 @@ if (defined('TRY_INSTALL')) {
 								('logo_thumbnails_folder', '/img/custom/thumbs'),
 								('timezone', 'America/Argentina/Buenos_Aires'),
 								('timeformat', 'd/m/Y'),
-								('allowed_file_types', '7z,ace,ai,avi,bin,bmp,cdr,doc,docm,docx,eps,fla,flv,gif,gz,gzip,htm,html,iso,jpeg,jpg,mp3,mp4,mpg,odt,oog,ppt,pptx,pptm,pps,ppsx,pdf,png,psd,rar,rtf,tar,tif,tiff,txt,wav,xls,xlsm,xlsx,zip'),
+								('allowed_file_types', '7z,ace,ai,avi,bin,bmp,bz2,cdr,doc,docm,docx,eps,fla,flv,gif,gz,gzip,htm,html,iso,jpeg,jpg,mp3,mp4,mpg,odt,oog,ppt,pptx,pptm,pps,ppsx,pdf,png,psd,rar,rtf,tar,tif,tiff,tgz,txt,wav,xls,xlsm,xlsx,xz,zip'),
 								('logo_filename', 'logo.png'),
 								('admin_email_address', :email),
 								('clients_can_register', '0'),
