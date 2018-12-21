@@ -44,7 +44,7 @@ class Validate_Form
 	/** Check if the field value is a valid e-mail address */
 	private function is_email($field, $err)
 	{
-		if(!preg_match("/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/", $field)) {
+		if (!filter_var($field, FILTER_VALIDATE_EMAIL)) {
 			$this->error_msg .= '<li>'.$err.'</li>';
 			$this->return_val = false;
 		}
