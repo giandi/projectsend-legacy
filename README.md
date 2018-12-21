@@ -30,18 +30,18 @@ Your server needs to be configured with at least:
 * MySQL 5.0 or newer
 * apache 2.2
 * The following php extensions enabled on php.ini
-    * php_pdo.dll
-    * php_pdo_mysql.dll
-    * php_xmlrpc.dll
+  * php_pdo.dll
+  * php_pdo_mysql.dll
+  * php_xmlrpc.dll
 
 If possible, make sure to have php configured with:
 
 * memory_limit set to 128M or more
 * The following php extensions enabled:
-    * php_gd2.dll
-    * php_gettext.dll
-    * php_mbstring.dll
-    * php_fileinfo.dll
+  * php_gd2.dll
+  * php_gettext.dll
+  * php_mbstring.dll
+  * php_fileinfo.dll
 
 ## How to install on your server
 
