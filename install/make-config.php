@@ -82,7 +82,7 @@ if (!$pdo_mysql_available && $pdo_mssql_available) {
 if ($pdo_driver_available) {
 	$dsn = $post_vars['dbdriver'] . ':host=' . $post_vars['dbhost'] . ';dbname=' . $post_vars['dbname'];
 	try{
-		$db = new PDO($dsn, $post_vars['dbuser'], $post_vars['dbpassword'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+		$pdo = new PDO($dsn, $post_vars['dbuser'], $post_vars['dbpassword'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 		$pdo_connected = true;
 	}
 	catch(PDOException $ex){
