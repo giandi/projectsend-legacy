@@ -161,7 +161,7 @@ class CategoriesActions
 		$this->check_level = array(9,8,7);
 		if (isset($cat_id)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('DELETE FROM ' . TABLE_CATEGORIES . ' WHERE id=:id');
 				$this->sql->bindParam(':id', $cat_id, PDO::PARAM_INT);
 				$this->sql->execute();

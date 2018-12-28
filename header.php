@@ -51,7 +51,7 @@ require_once(ROOT_DIR.'/includes/core.update.silent.php');
  * but only if logged in as a system user.
  */
 $core_update_allowed = array(9,8,7);
-if (in_session_or_cookies($core_update_allowed)) {
+if (current_role_in($core_update_allowed)) {
 	require_once(ROOT_DIR.'/includes/core.update.php');
 }
 ?>
@@ -64,7 +64,7 @@ if (in_session_or_cookies($core_update_allowed)) {
 
 	<title><?php echo html_output( $page_title . ' &raquo; ' . htmlspecialchars(SITE_NAME, ENT_QUOTES, CHARSET) ); ?></title>
 	<?php meta_favicon(); ?>
-	<script type="text/javascript" src="<?php echo BASE_URI; ?>assets/js/jquery.1.12.4.min.js"></script>
+	<script type="text/javascript" src="<?php echo ASSETS_JS_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
 
 	<!--[if lt IE 9]>
 		<script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>

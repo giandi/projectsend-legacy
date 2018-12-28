@@ -10,7 +10,7 @@ $items = array();
 /**
  * Items for system users
  */
-if ( in_session_or_cookies( array( 9,8,7 ) ) )
+if ( current_role_in( array( 9,8,7 ) ) )
 {
 
 	/** Count inactive CLIENTS */
@@ -350,7 +350,7 @@ foreach ( $items as $item )
 		continue;
 	}
 
-	if ( in_session_or_cookies( $item['level'] ) )
+	if ( current_role_in( $item['level'] ) )
 	{
 		$current	= ( !empty( $active_nav ) && $active_nav == $item['nav'] ) ? 'current_nav' : '';
 		$badge		= ( !empty( $item['main']['badge'] ) ) ? ' <span class="badge">' . $item['main']['badge'] . '</span>' : '';

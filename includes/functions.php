@@ -642,20 +642,15 @@ function system_message( $type, $message, $div_id = '' )
  * account has permission to do something.
  *
  */
-function in_session_or_cookies($levels)
+function current_role_in($levels)
 {
+    if (!is_array($levels)) {
+        $levels = array($levels);
+    }
+    
 	if (isset($_SESSION['userlevel']) && (in_array($_SESSION['userlevel'],$levels))) {
 		return true;
 	}
-	/**
-	 * Cookies are no longer used this way.
-	 * userlevel_check.php has the answer.
-	 */
-	/*
-	else if (isset($_COOKIE['userlevel']) && (in_array($_COOKIE['userlevel'],$levels))) {
-		return true;
-	}
-	*/
 	else {
 		return false;
 	}
@@ -674,12 +669,8 @@ function get_current_user_level()
 	if (isset($_SESSION['userlevel'])) {
 		$level = $_SESSION['userlevel'];
 	}
-	/*
-	elseif (isset($_COOKIE['userlevel'])) {
-		$level = $_COOKIE['userlevel'];
-	}
-	*/
-	return $level;
+
+    return $level;
 }
 
 
@@ -692,13 +683,8 @@ function get_current_user_level()
 function get_current_user_username()
 {
 	$user = '';
-	/*
-	if (isset($_COOKIE['loggedin'])) {
-		$user = $_COOKIE['loggedin'];
-	}
-	*/
-	/*else*/
-	if (isset($_SESSION['loggedin'])) {
+
+    if (isset($_SESSION['loggedin'])) {
 		$user = $_SESSION['loggedin'];
 	}
 	return $user;

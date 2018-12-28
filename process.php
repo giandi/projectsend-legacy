@@ -78,17 +78,6 @@ class process {
 					$_SESSION['userlevel']	= $this->user_level;
 					$_SESSION['lang']		= $this->selected_form_lang;
 
-					/**
-					 * Language cookie
-					 * TODO: Implement.
-					 * Must decide how to refresh language in the form when the user
-					 * changes the language <select> field.
-					 * By using a cookie and not refreshing here, the user is
-					 * stuck in a language and must use it to recover password or
-					 * create account, since the lang cookie is only at login now.
-					 */
-					//setcookie('projectsend_language', $selected_form_lang, time() + (86400 * 30), '/');
-
 					if ($this->user_level != '0') {
 						$this->access_string	= 'admin';
 						$_SESSION['access']		= $this->access_string;
@@ -98,16 +87,6 @@ class process {
 						$_SESSION['access']		= $this->sysuser_username;
 					}
 
-					/** If "remember me" checkbox is on, set the cookie */
-					if (!empty($_POST['login_form_remember'])) {
-						/*
-						setcookie("loggedin",$sysuser_username,time()+COOKIE_EXP_TIME);
-						setcookie("password",$sysuser_password,time()+COOKIE_EXP_TIME);
-						setcookie("access",$access_string,time()+COOKIE_EXP_TIME);
-						setcookie("userlevel",$user_level,time()+COOKIE_EXP_TIME);
-						*/
-						setcookie("rememberwho",$sysuser_username,time()+COOKIE_EXP_TIME);
-					}
 					/** Record the action log */
 					$this->new_log_action = new LogActions();
 					$this->log_action_args = array(
@@ -212,19 +191,6 @@ class process {
 		unset($_SESSION['last_call']);
 		session_destroy();
 
-		/** If there is a cookie, unset it */
-		setcookie("loggedin","",time()-COOKIE_EXP_TIME);
-		setcookie("password","",time()-COOKIE_EXP_TIME);
-		setcookie("access","",time()-COOKIE_EXP_TIME);
-		setcookie("userlevel","",time()-COOKIE_EXP_TIME);
-
-		/*
-		$language_cookie = 'projectsend_language';
-		setcookie ($language_cookie, "", 1);
-		setcookie ($language_cookie, false);
-		unset($_COOKIE[$language_cookie]);
-		*/
-
 		/** Record the action log */
 		$new_log_action = new LogActions();
 		$log_action_args = array(
@@ -247,7 +213,7 @@ class process {
 		$this->check_level = array(9,8,7,0);
 		if (isset($_GET['id'])) {
 			/** Do a permissions check for logged in user */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				
 					/**
 					 * Get the file name
@@ -393,7 +359,7 @@ class process {
 		$this->check_level = array(9,8,7,0);
 		if (isset($_GET['files'])) {
 			// do a permissions check for logged in user
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$file_list = array();
 				$requested_files = $_GET['files'];
 				foreach($requested_files as $file_id) {

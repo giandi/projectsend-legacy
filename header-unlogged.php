@@ -53,7 +53,7 @@ else {
 	 */
 	if (!isset($dont_redirect_if_logged)) {
 		/** If logged as a system user, go directly to the back-end homepage */
-		if (in_session_or_cookies($allowed_levels)) {
+		if (current_role_in($allowed_levels)) {
 			header("Location:".BASE_URI."home.php");
 		}
 	
@@ -79,7 +79,7 @@ if ( !isset( $body_class ) ) { $body_class = ''; }
 
 	<title><?php echo html_output( $header_vars['title'] ); ?></title>
 	<?php meta_favicon(); ?>
-	<script src="<?php echo BASE_URI; ?>includes/js/jquery.1.12.4.min.js"></script>
+	<script type="text/javascript" src="<?php echo ASSETS_JS_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
 
 	<!--[if lt IE 9]>
 		<script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>

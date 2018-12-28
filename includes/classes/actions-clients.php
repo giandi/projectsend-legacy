@@ -297,7 +297,7 @@ class ClientActions
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('DELETE FROM ' . TABLE_USERS . ' WHERE id=:id');
 				$this->sql->bindValue(':id', $client_id, PDO::PARAM_INT);
 				$this->sql->execute();
@@ -313,7 +313,7 @@ class ClientActions
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('UPDATE ' . TABLE_USERS . ' SET active=:active_state WHERE id=:id');
 				$this->sql->bindValue(':active_state', $change_to, PDO::PARAM_INT);
 				$this->sql->bindValue(':id', $client_id, PDO::PARAM_INT);
@@ -335,7 +335,7 @@ class ClientActions
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('UPDATE ' . TABLE_USERS . ' SET active=:active, account_requested=:requested, account_denied=:denied WHERE id=:id');
 				$this->sql->bindValue(':active', 1, PDO::PARAM_INT);
 				$this->sql->bindValue(':requested', 0, PDO::PARAM_INT);
@@ -359,7 +359,7 @@ class ClientActions
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('UPDATE ' . TABLE_USERS . ' SET active=:active, account_requested=:account_requested, account_denied=:account_denied WHERE id=:id');
 				$this->sql->bindValue(':active', 0, PDO::PARAM_INT);
 				$this->sql->bindValue(':account_requested', 1, PDO::PARAM_INT);

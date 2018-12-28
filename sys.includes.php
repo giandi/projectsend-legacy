@@ -33,7 +33,7 @@ require_once(ROOT_DIR.'/includes/language.php');
 require_once(ROOT_DIR.'/includes/language-locales-names.php');
 
 /** Text strings used on various files */
-require_once(ROOT_DIR.'/includes/vars.php');
+require_once(ROOT_DIR.'/includes/text.strings.php');
 
 /** Basic functions to be accessed from anywhere */
 require_once(ROOT_DIR.'/includes/functions.php');

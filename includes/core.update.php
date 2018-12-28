@@ -12,7 +12,7 @@
  */
 
 $allowed_update = array(9,8,7);
-if (in_session_or_cookies($allowed_update)) {
+if (current_role_in($allowed_update)) {
 
 	/** Remove "r" from version */
 	$current_version = substr(CURRENT_VERSION, 1);

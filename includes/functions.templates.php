@@ -30,7 +30,7 @@ function look_for_templates() {
 				 * Get the template and author information from template.php
 				 * Based on the WordPress (LOVE IT!) function get_file_data()
 				 */
-				$read_file = $directory.'/template.php';
+				$read_file = $directory.DS.'template.php';
 				$fp = fopen( $read_file, 'r' );
 				$file_info = fread( $fp, 8192 );
 				fclose( $fp );

@@ -159,7 +159,7 @@ class GroupActions
 		$this->check_level = array(9,8);
 		if (isset($group)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('DELETE FROM ' . TABLE_GROUPS . ' WHERE id=:id');
 				$this->sql->bindParam(':id', $group, PDO::PARAM_INT);
 				$this->sql->execute();

@@ -8,59 +8,6 @@
  */
 
 /**
- * Used when checking if there is a client or user logged in via cookie.
- *
- * @see check_for_session
- */
-function check_valid_cookie()
-{
-	global $dbh;
-	if (isset($_COOKIE['password']) && isset($_COOKIE['loggedin']) && isset($_COOKIE['userlevel'])) {
-
-		$statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE user= :cookie_user AND password= :cookie_pass AND level= :cookie_level AND active = '1'");
-		$statement->execute(
-						array(
-							':cookie_user'	=> $_COOKIE['loggedin'],
-							':cookie_pass'	=> $_COOKIE['password'],
-							':cookie_level'	=> $_COOKIE['userlevel']
-						)
-					);
-		$count = $statement->rowCount();
-
-		/**
-		 * Compare the cookies to the database information. Level
-		 * and active are compared in case the cookie exists but
-		 * the client has been deactivated, or the user level has
-		 * changed.
-		 */
-		if ( $count > 0 ) {
-			if ( !isset( $_SESSION['loggedin'] ) ) {
-				/** Set SESSION values */
-				$_SESSION['loggedin']	= $_COOKIE['loggedin'];
-				$_SESSION['userlevel']	= $_COOKIE['userlevel'];
-				$_SESSION['access']		= $_COOKIE['access'];
-				
-				$statement->setFetchMode(PDO::FETCH_ASSOC);
-				while ( $row = $statement->fetch() ) {
-					$log_id		= $row['id'];
-					$log_name	= $row['name'];
-				}
-
-				/** Record the action log */
-				$new_log_action = new LogActions();
-				$log_action_args = array(
-										'action'		=> 24,
-										'owner_id'		=> $log_id,
-										'owner_user'	=> $log_name
-									);
-				$new_record_action = $new_log_action->log_action_save($log_action_args);
-			}
-			return true;
-		}
-	}
-}
-
-/**
  * Used on header.php to check if there is an active session or valid
  * cookie before generating the content.
  * If none is found, redirect to the log in form.
@@ -72,9 +19,6 @@ function check_for_session( $redirect = true )
 		$is_logged_now = true;
 	}
 	elseif (isset($_SESSION['access']) && $_SESSION['access'] == 'admin') {
-		$is_logged_now = true;
-	}
-	elseif (check_valid_cookie()) {
 		$is_logged_now = true;
 	}
 	if ( !$is_logged_now && $redirect == true ) {
@@ -98,10 +42,7 @@ function check_for_admin() {
 	if (isset($_SESSION['access']) && $_SESSION['access'] == 'admin') {
 		$is_logged_admin = true;
 	}
-	elseif (check_valid_cookie() && mysql_real_escape_string($_COOKIE['access']) == 'admin') {
-		$is_logged_admin = true;
-	}
-	if(!$is_logged_admin) {
+	if (!$is_logged_admin) {
 	    ob_clean();
 		header("location:" . BASE_URI . "index.php");
 	}
@@ -118,10 +59,6 @@ function check_for_client() {
 		header("location:my_files/");
 		exit;
 	}
-	if (isset($_COOKIE['userlevel']) && $_COOKIE['userlevel'] == '0') {
-		header("location:my_files/");
-		exit;
-	}
 }
 
 /**
@@ -132,15 +69,7 @@ function can_see_content($allowed_levels) {
 	$permission = false;
 	if(isset($allowed_levels)) {
 		/**
-		 * We are doing 2 checks.
-		 * First, we look for a cookie, and if it set, then we get the associated
-		 * userlevel to see if we are allowed to enter the current page.
-		*/
-		if (isset($_COOKIE['userlevel']) && in_array($_COOKIE['userlevel'],$allowed_levels)) {
-			$permission = true;
-		}
-		/**
-		 * The second second check looks for a session, and if found see if the user
+		 * Check for a session, and if found see if the user
 		 * level is among those defined by the page.
 		 *
 		 * $allowed_levels in defined on each page before the inclusion of header.php
@@ -173,7 +102,7 @@ function permission_denied_page($error_type) {
                 <title><?php echo html_output( $page_title . ' &raquo; ' . SITE_NAME ); ?></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <?php meta_favicon(); ?>
-                <script type="text/javascript" src="<?php echo BASE_URI; ?>includes/js/jquery.1.12.4.min.js"></script>
+                <script type="text/javascript" src="<?php echo ASSETS_JS_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
             
                 <!--[if lt IE 9]>
                     <script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>
@@ -214,5 +143,5 @@ function permission_denied_page($error_type) {
             </body>
         </html>
 <?php
-    die();
+    exit;
 }

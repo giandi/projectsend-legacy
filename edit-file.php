@@ -104,7 +104,7 @@ $current_level = get_current_user_level();
 				$edit_file_info['id'] = $row['id'];
 
 				$edit_file_allowed = array(7,0);
-				if (in_session_or_cookies($edit_file_allowed)) {
+				if (current_role_in($edit_file_allowed)) {
 					if ($row['uploader'] != $global_user) {
 						$no_results_error = 'not_uploader';
 					}

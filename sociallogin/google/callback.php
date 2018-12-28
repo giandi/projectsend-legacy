@@ -66,11 +66,6 @@ if (isset($_SESSION['id_token_token']) && isset($_SESSION['id_token_token']->id_
           $_SESSION['access'] = $sysuser_username;
         }
 
-        /** If "remember me" checkbox is on, set the cookie */
-        if (!empty($_POST['login_form_remember'])) {
-          setcookie("rememberwho", $sysuser_username, time() + COOKIE_EXP_TIME);
-        }
-
         /** Record the action log */
         $new_log_action = new LogActions();
         $log_action_args = array(

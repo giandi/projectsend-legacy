@@ -26,7 +26,7 @@ $log_allowed = array(9);
 $show_log = false;
 $sys_info = false;
 
-if (in_session_or_cookies($log_allowed)) {
+if (current_role_in($log_allowed)) {
 	$show_log = true;
 	$sys_info = true;
 }

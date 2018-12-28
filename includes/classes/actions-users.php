@@ -244,7 +244,7 @@ class UserActions
 		$this->check_level = array(9);
 		if (isset($user_id)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('DELETE FROM ' . TABLE_USERS . ' WHERE id=:id');
 				$this->sql->bindParam(':id', $user_id, PDO::PARAM_INT);
 				$this->sql->execute();
@@ -260,7 +260,7 @@ class UserActions
 		$this->check_level = array(9);
 		if (isset($user_id)) {
 			/** Do a permissions check */
-			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
+			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('UPDATE ' . TABLE_USERS . ' SET active=:active_state WHERE id=:id');
 				$this->sql->bindParam(':active_state', $change_to, PDO::PARAM_INT);
 				$this->sql->bindParam(':id', $user_id, PDO::PARAM_INT);
