@@ -88,7 +88,7 @@ class FilesActions
 			}
 		}
 
-		echo $this->query;
+		//echo $this->query;
 
 		$this->statement = $this->dbh->prepare($this->query);
 
@@ -127,7 +127,7 @@ class FilesActions
 			/** Do a permissions check */
 			if (isset($this->check_level) && in_session_or_cookies($this->check_level)) {
 				$this->file_id = $rel_id;
-				$this->sql = $this->dbh->prepare("SELECT url, uploader FROM " . TABLE_FILES . " WHERE id = :file_id");
+				$this->sql = $this->dbh->prepare("SELECT url, original_url, uploader FROM " . TABLE_FILES . " WHERE id = :file_id");
 				$this->sql->bindParam(':file_id', $this->file_id, PDO::PARAM_INT);
 				$this->sql->execute();
 				$this->sql->setFetchMode(PDO::FETCH_ASSOC);
@@ -146,7 +146,16 @@ class FilesActions
 						$this->can_delete	= true;
 					}
 
-					$this->file_url = $this->row['url'];
+                    $this->file_url = $this->row['url'];
+                    
+                    /**
+ 					 * Thumbnails should be deleted too.
+ 					 * Start by making a pattern with the file name, a shorter version of what's
+ 					 * used on make_thumbnail.
+ 					 */
+ 					$this->thumbnails_pattern = 'thumb_' . md5($this->row['url']);
+ 					$this->find_thumbnails = glob( THUMBNAILS_FILES_DIR . DS . $this->thumbnails_pattern . '*.*' );
+ 					//print_array($this->find_thumbnails);
 				}
 
 				/** Delete the reference to the file on the database */
@@ -159,7 +168,13 @@ class FilesActions
 					 *
 					 * @see delete_file_from_disk
 					 */
-					delete_file_from_disk(UPLOADED_FILES_FOLDER . $this->file_url);
+                    delete_file_from_disk(UPLOADED_FILES_DIR . DS . $this->file_url);
+                    
+                    /** Delete the thumbnails */
+ 					foreach ( $this->find_thumbnails as $this->thumbnail ) {
+                        delete_file_from_disk($this->thumbnail);
+                    }
+
 					$this->result = true;
 				}
 				else {

@@ -14,12 +14,12 @@ session_start();
  * Current version.
  * Updated only when releasing a new downloadable complete version.
  */
-define('CURRENT_VERSION', 'r1070');
+define('CURRENT_VERSION', 'r1071');
 
 /**
  * Required software versions
  */
-define('REQUIRED_VERSION_PHP', '5.2');
+define('REQUIRED_VERSION_PHP', '5.6');
 define('REQUIRED_VERSION_MYSQL', '5.0');
 
 /**
@@ -34,13 +34,13 @@ define('PROTOCOL', empty($_SERVER['HTTPS'])? 'http' : 'https');
  * - Changes the error_reporting php value
  * - Enables the PDOEX extension (on the database class) to count queries
  */
-define('DEBUG', false);
+define('DEBUG', true);
 
 /**
  * IS_DEV is set to true during development to show a sitewide remainder
  * of the app unreleased status.
  */
-define('IS_DEV', false);
+define('IS_DEV', true);
 
 /**
  * This constant holds the current default charset
@@ -205,39 +205,44 @@ define('SESSION_TIMEOUT_EXPIRE', true);
 $session_expire_time = 31*24*60*60; // 31 days * 24 hours * 60 minutes * 60 seconds
 define('SESSION_EXPIRE_TIME', $session_expire_time);
 
-/**
- * Define the folder where uploaded files will reside
- */
-define('UPLOADED_FILES_FOLDER', ROOT_DIR.'/upload/files/');
+/* Define the folder where uploaded files will reside */
+define('UPLOADED_FILES_ROOT', ROOT_DIR . DS . 'upload');
+define('UPLOADED_FILES_DIR', UPLOADED_FILES_ROOT . DS . 'files');
+define('THUMBNAILS_FILES_DIR', UPLOADED_FILES_ROOT . DS . 'thumbnails');
 define('UPLOADED_FILES_URL', 'upload/files/');
 
-/**
- * Define the folder where the uploaded files are stored before
- * being assigned to any client.
- *
- * Also, this is the folder where files are searched for when
- * using the Import from FTP feature.
- *
- * @ Deprecated
- */
-define('USER_UPLOADS_TEMP_FOLDER', ROOT_DIR.'/upload/temp');
-define('CLIENT_UPLOADS_TEMP_FOLDER', ROOT_DIR.'/upload/temp');
+/* Assets */
+define('ASSETS_DIR', ROOT_DIR . DS . 'assets');
+define('ASSETS_CSS_DIR', ASSETS_DIR . DS . 'css/');
+define('ASSETS_IMG_DIR', ASSETS_DIR . DS . 'img/');
+define('ASSETS_JS_DIR', ASSETS_DIR . DS . 'js/');
+define('ASSETS_LIB_DIR', ASSETS_DIR . DS . 'lib/');
+
+/* Branding */
+define('ADMIN_UPLOADS_DIR', UPLOADED_FILES_ROOT . DS . 'admin');
+define('LOGO_MAX_WIDTH', 300);
+define('LOGO_MAX_HEIGHT', 300);
+define('DEFAULT_LOGO_FILENAME', 'projectsend-logo.svg');
+
+/* Thumbnails */
+define('THUMBS_MAX_WIDTH', 300);
+define('THUMBS_MAX_HEIGHT', 300);
+define('THUMBS_QUALITY', 90);
+
+/* Widgets */
+define('WIDGETS_FOLDER',ROOT_DIR.'/includes/widgets/');
 
 /**
  * Define the system name, and the information that will be used
  * on the footer blocks.
  *
  */
+define('SYSTEM_NAME','ProjectSend');
 define('SYSTEM_URI','https://www.projectsend.org/');
 define('SYSTEM_URI_LABEL','ProjectSend on github');
 define('DONATIONS_URL','https://www.projectsend.org/donations/');
-/** Previously cFTP */
-define('SYSTEM_NAME','ProjectSend');
 
-define('LOGO_FOLDER',ROOT_DIR.'/img/custom/logo/');
-define('LOGO_THUMB_FOLDER',ROOT_DIR.'/img/custom/thumbs/');
-
-/** phpass */
+/** Passwords */
 define('HASH_COST_LOG2', 8);
 define('HASH_PORTABLE', false);
 

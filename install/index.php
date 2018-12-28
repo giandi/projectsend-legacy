@@ -78,7 +78,7 @@ if($_POST) {
 	$got_admin_name			= $_POST['install_user_fullname'];
 	$got_admin_username		= $_POST['install_user_username'];
 	$got_admin_email		= $_POST['install_user_mail'];
-	$got_admin_pass			= $hasher->HashPassword($_POST['install_user_pass']);
+    $got_admin_pass 		= password_hash($_POST['install_user_pass'], PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
 	//$got_admin_pass		= md5($_POST['install_user_pass']);
 	//$got_admin_pass2		= md5($_POST['install_user_repeat']);
 }
@@ -177,9 +177,10 @@ include_once('../header-unlogged.php');
 									 * errors later.
 									 */
 									$up_folders = array(
-															'main'	=> ROOT_DIR.'/upload',
-															'temp'	=> ROOT_DIR.'/upload/temp',
-															'files'	=> ROOT_DIR.'/upload/files'
+															'main' => ROOT_DIR.'/upload',
+															'temp' => ROOT_DIR.'/upload/temp',
+                                                            'files'	=> ROOT_DIR.'/upload/files',
+                                                            'thumbnails' => ROOT_DIR.'/upload/thumbnails',
 														);
 									foreach ($up_folders as $work_folder) {
 										if (!file_exists($work_folder)) {
@@ -190,7 +191,6 @@ include_once('../header-unlogged.php');
 										}
 									}
 
-									update_chmod_timthumb();
 									update_chmod_emails();
 									chmod_main_files();
 

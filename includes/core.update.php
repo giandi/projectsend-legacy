@@ -116,7 +116,7 @@ if (in_session_or_cookies($allowed_update)) {
 		 */
 		if ($last_update < 92) {
 			$new_database_values = array(
-											'logo_filename' => 'logo.png'
+											'logo_filename' => ''
 										);
 			
 			foreach ($new_database_values as $row => $value) {
@@ -132,17 +132,20 @@ if (in_session_or_cookies($allowed_update)) {
 		 * user that created it.
 		 * If the column doesn't exist, create it.
 		 */
-		 /** DEPRECATED
-		 	table tbl_clients doesn't exist anymore
-		if ($last_update < 94) {
-			$statement = $dbh->prepare("SELECT created_by FROM tbl_clients");
-			$statement->execute();
+         /*
+
+        DEPRECATED
+        table tbl_clients doesn't exist anymore
+
+             if ($last_update < 94) {
+			    $statement = $dbh->prepare("SELECT created_by FROM tbl_clients");
+			    $statement->execute();
 	
-			if( $statement->rowCount() == 0 ) {
-				$statement = $dbh->query("ALTER TABLE tbl_clients ADD created_by VARCHAR(".MAX_USER_CHARS.") NOT NULL");
-				$updates_made++;
-			}
-		}
+			    if( $statement->rowCount() == 0 ) {
+				    $statement = $dbh->query("ALTER TABLE tbl_clients ADD created_by VARCHAR(".MAX_USER_CHARS.") NOT NULL");
+				    $updates_made++;
+			    }
+		    }
 		*/
 
 		/**
@@ -192,8 +195,9 @@ if (in_session_or_cookies($allowed_update)) {
 		 * client as active (1).
 		 */
 		if ($last_update < 183) {
-		 /** DEPRECATED
-		 	table tbl_clients doesn't exist anymore
+         /*
+        DEPRECATED
+		table tbl_clients doesn't exist anymore
 
 			$q = $database->query("SELECT active FROM tbl_clients");
 			if (!$q) {
@@ -238,10 +242,10 @@ if (in_session_or_cookies($allowed_update)) {
 					}
 				}
 			}
-			$work_folder = UPLOADED_FILES_FOLDER;
+			$work_folder = UPLOADED_FILES_DIR;
 			if (!empty($mark_for_moving)) {
 				foreach ($mark_for_moving as $filename => $path) {
-					$new = UPLOADED_FILES_FOLDER.'/'.$filename;
+					$new = UPLOADED_FILES_DIR.DS.$filename;
 					$try_moving = rename($path, $new);
 					chmod($new, 0644);
 				}
@@ -453,7 +457,7 @@ if (in_session_or_cookies($allowed_update)) {
 											'mail_smtp_port' => '',
 											'mail_smtp_user' => '',
 											'mail_smtp_pass' => '',
-											'mail_from_name' => THIS_INSTALL_SET_TITLE
+											'mail_from_name' => SITE_NAME
 										);
 			
 			foreach($new_database_values as $row => $value) {
@@ -490,14 +494,6 @@ if (in_session_or_cookies($allowed_update)) {
 		}
 
 		/**
-		 * r346 updates
-		 * chmod the cache folder and main files of timthumb to 775
-		 */
-		if ($last_update < 346) {
-			update_chmod_timthumb();
-		}
-
-		/**
 		 * r348 updates
 		 * chmod the emails folder and files to 777
 		 */
@@ -511,24 +507,6 @@ if (in_session_or_cookies($allowed_update)) {
 		 */
 		if ($last_update < 352) {
 			chmod_main_files();
-		}
-
-		/**
-		 * r353 updates
-		 * Create a new option to let the user decide wheter to
-		 * use the relative or absolute file url when generating
-		 * thumbnails with timthumb.php
-		 */
-		if ($last_update < 353) {
-			$new_database_values = array(
-											'thumbnails_use_absolute' => '0'
-										);
-			
-			foreach($new_database_values as $row => $value) {
-				if ( add_option_if_not_exists($row, $value) ) {
-					$updates_made++;
-				}
-			}
 		}
 
 		/**
@@ -1362,7 +1340,24 @@ if (in_session_or_cookies($allowed_update)) {
 				$statement2->execute();
 				$updates_made++;
 			}
-		}
+        }
+        
+        /**
+ 		 * r1071 updates
+ 		 * Started replacing timthumb with SimpleImage
+ 		 */
+ 		if ($last_update < 1071) {
+            chmod(THUMBNAILS_FILES_DIR, 0755);
+            chmod(ADMIN_UPLOADS_DIR, 0755);
 
+            /* Move the logo into the new folder */
+            $old_logo_location = ROOT_DIR . DS . 'img' . DS . 'custom' . DS . 'logo' . DS . LOGO_FILENAME;
+            if (file_exists($old_logo_location)) {
+                $new_logo_location = ADMIN_UPLOADS_DIR . DS . LOGO_FILENAME;
+                rename($old_logo_location, $new_logo_location);
+            }
+
+            $updates_made++;
+        }
 	}
 }

@@ -68,11 +68,11 @@ class process {
 				$this->active_status	= $this->row['active'];
 				$this->logged_id		= $this->row['id'];
 				$this->global_name		= $this->row['name'];
-			}
-			$this->check_password = $hasher->CheckPassword($this->sysuser_password, $this->db_pass);
+            }
+            $this->check_password = password_verify($this->sysuser_password, $this->db_pass);
 			if ($this->check_password) {
-			//if ($db_pass == $sysuser_password) {
-				if ($this->active_status != '0') {
+
+                if ($this->active_status != '0') {
 					/** Set SESSION values */
 					$_SESSION['loggedin']	= $this->sysuser_username;
 					$_SESSION['userlevel']	= $this->user_level;
@@ -347,9 +347,10 @@ class process {
 												'get_file_real_name'	=> true
 											);
 						$new_record_action = $new_log_action->log_action_save($log_action_args);
-						$this->real_file = UPLOADED_FILES_FOLDER.$this->filename_find;
-						$this->save_file = UPLOADED_FILES_FOLDER.$this->filename_save;
-						if (file_exists($this->real_file)) {
+						$this->real_file = UPLOADED_FILES_DIR.DS.$this->filename_find;
+                        $this->save_file = UPLOADED_FILES_DIR.DS.$this->filename_save;
+
+                        if (file_exists($this->real_file)) {
 							session_write_close();
 							while (ob_get_level()) ob_end_clean();
 							header('Content-Type: application/octet-stream');

@@ -44,8 +44,6 @@ define('CAN_INCLUDE_FILES', true);
  */
 $current_level = get_current_user_level();
 
-$work_folder = UPLOADED_FILES_FOLDER;
-
 /** Coming from the web uploader */
 if(isset($_POST['finished_files'])) {
 	$uploaded_files = array_filter($_POST['finished_files']);
@@ -150,7 +148,7 @@ while( $row = $statement->fetch() ) {
 				if (!in_array($file['file'],$urls_db_files)) {
 					$file['file'] = $this_upload->safe_rename($file['file']);
 				}
-				$location = $work_folder.'/'.$file['file'];
+				$location = UPLOADED_FILES_DIR.DS.$file['file'];
 
 				if(file_exists($location)) {
 					$move_arguments = array(
@@ -433,7 +431,7 @@ while( $row = $statement->fetch() ) {
 						$this_upload = new PSend_Upload_File();
 						$file_original = $file;
 
-						$location = $work_folder.'/'.$file;
+						$location = UPLOADED_FILES_DIR.DS.$file;
 
 						/**
 						 * Check that the file is indeed present on the folder.

@@ -7,9 +7,10 @@
  */
 
 define('ROOT_DIR', dirname(__FILE__));
+define('DS', DIRECTORY_SEPARATOR);
 
-/** PhpPass */
-require_once(ROOT_DIR.'/includes/phpass/PasswordHash.php');
+/** Composer autoload */
+require_once ROOT_DIR . '/vendor/autoload.php';
 
 /** Security */
 require_once(ROOT_DIR . '/includes/security/xsrf.php');

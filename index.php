@@ -30,7 +30,7 @@ $login_button_text = __('Log in','cftp_admin');
 	 */
 	if ( GOOGLE_SIGNIN_ENABLED == '1' ) {
 		$googleClient = new Google_Client();
-		$googleClient->setApplicationName(THIS_INSTALL_SET_TITLE);
+		$googleClient->setApplicationName(SITE_NAME);
 		$googleClient->setClientSecret(GOOGLE_CLIENT_SECRET);
 		$googleClient->setClientId(GOOGLE_CLIENT_ID);
 		$googleClient->setAccessType('online');
@@ -159,7 +159,7 @@ $login_button_text = __('Log in','cftp_admin');
 
 					<div class="social-login">
 						<?php if(GOOGLE_SIGNIN_ENABLED == '1'): ?>
-							<a href="<?php echo $auth_url; ?>" name="Sign in with Google" class="google-login"><img src="<?php echo BASE_URI; ?>img/google/btn_google_signin_light_normal_web.png" alt="Google Signin" /></a>
+							<a href="<?php echo $auth_url; ?>" name="Sign in with Google" class="google-login"><img src="<?php echo BASE_URI; ?>assets/img/google/btn_google_signin_light_normal_web.png" alt="Google Signin" /></a>
 						<?php endif; ?>
 					</div>
 				</fieldset>

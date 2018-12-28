@@ -28,19 +28,13 @@ $load_scripts	= array(
 $body_class = array('template', 'default-template', 'hide_title');
 
 include_once(ROOT_DIR.'/header.php');
+
+define('TEMPLATE_THUMBNAILS_WIDTH', '50');
+define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 ?>
 
 <div class="col-xs-12">
 	<div id="wrapper">
-		<?php /*
-		<div id="left_column">
-			<?php if ($logo_file_info['exists'] === true) { ?>
-				<div id="current_logo">
-					<img src="<?php echo TIMTHUMB_URL; ?>?src=<?php echo $logo_file_info['url']; ?>&amp;w=250" alt="<?php echo THIS_INSTALL_SET_TITLE; ?>" />
-				</div>
-			<?php } ?>
-		</div> */ ?>
-	
 		<div id="right_column">
 	
 			<div class="form_actions_left">
@@ -211,9 +205,9 @@ include_once(ROOT_DIR.'/header.php');
 							
 							/** File size */
 							$file_size_cell = '-'; // default
-							$file_absolute_path = UPLOADED_FILES_FOLDER . $file['url'];
+							$file_absolute_path = UPLOADED_FILES_DIR . DS . $file['url'];
 							if ( file_exists( $file_absolute_path ) ) {
-								$this_file_size = get_real_size(UPLOADED_FILES_FOLDER.$file['url']);
+								$this_file_size = get_real_size(UPLOADED_FILES_DIR.DS.$file['url']);
 								$file_size_cell = format_file_size($this_file_size);
 							}
 							
@@ -236,17 +230,13 @@ include_once(ROOT_DIR.'/header.php');
 							
 							$expiration_cell = '<span class="label label-' . $class . ' label_big">' . $value . '</span>';
 
-							/** Preview */
+							/** Thumbnail */
 							$preview_cell = '';
-							if ($file['expired'] == false) {
-								$image_extensions = array('gif','jpg','pjpeg','jpeg','png');
-								if ( in_array( $extension, $image_extensions ) ) {
-									if ( file_exists( $file_absolute_path ) ) {
-										$this_thumbnail_url = UPLOADED_FILES_URL.$file['url'];
-										if (THUMBS_USE_ABSOLUTE == '1') {
-											$this_thumbnail_url = BASE_URI.$this_thumbnail_url;
-										}
-										$preview_cell = '<img src="' . TIMTHUMB_URL . '?src=' . $this_thumbnail_url . '&amp;w=' . THUMBS_MAX_WIDTH . '&amp;q=' . THUMBS_QUALITY . '" class="thumbnail" alt="' . htmlentities($file['name']) .'" />';
+							if ( $file['expired'] == false ) {
+								if ( file_is_image( $file_absolute_path ) ) {
+									$thumbnail = make_thumbnail( $file_absolute_path, null, TEMPLATE_THUMBNAILS_WIDTH, TEMPLATE_THUMBNAILS_HEIGHT );
+									if ( !empty( $thumbnail['thumbnail']['url'] ) ) {
+										$preview_cell = '<img src="' . $thumbnail['thumbnail']['url'] . '" class="thumbnail" alt="' . htmlentities($file['name']) .'" />';
 									}
 								}
 							}

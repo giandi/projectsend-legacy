@@ -146,7 +146,7 @@ include('header-unlogged.php');
 			
 					if ($valid_me->return_val) {
 	
-						$enc_password = $hasher->HashPassword($reset_password_new);
+                        $enc_password = password_hash($reset_password_new, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
 				
 						if (strlen($enc_password) >= 20) {
 				

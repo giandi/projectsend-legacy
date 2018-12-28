@@ -677,7 +677,7 @@ include('header.php');
 						/**
 						 * Get file size only if the file exists
 						 */
-						$this_file_absolute = UPLOADED_FILES_FOLDER . $row['url'];
+						$this_file_absolute = UPLOADED_FILES_DIR . $row['url'];
 						if ( file_exists( $this_file_absolute ) ) {
 							$this_file_size = get_real_size($this_file_absolute);
 							$formatted_size = html_output(format_file_size($this_file_size));

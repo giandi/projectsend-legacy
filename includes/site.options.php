@@ -41,21 +41,15 @@ if(!empty($options_values)) {
 	$allowed_file_types = $options_values['allowed_file_types'];
 	
 	define('BASE_URI',$options_values['base_uri']);
-	define('THUMBS_MAX_WIDTH',$options_values['max_thumbnail_width']);
-	define('THUMBS_MAX_HEIGHT',$options_values['max_thumbnail_height']);
-	define('THUMBS_FOLDER',$options_values['thumbnails_folder']);
-	define('THUMBS_QUALITY',$options_values['thumbnail_default_quality']);
-	define('THUMBS_USE_ABSOLUTE',$options_values['thumbnails_use_absolute']);
-	define('LOGO_MAX_WIDTH',$options_values['max_logo_width']);
-	define('LOGO_MAX_HEIGHT',$options_values['max_logo_height']);
+
 	define('LOGO_FILENAME',$options_values['logo_filename']);
-	define('THIS_INSTALL_SET_TITLE',$options_values['this_install_title']);
+	define('SITE_NAME',$options_values['this_install_title']);
 	define('TEMPLATE_USE',$options_values['selected_clients_template']);
 	define('TIMEZONE_USE',$options_values['timezone']);
 	define('TIMEFORMAT_USE',$options_values['timeformat']);
 	define('CLIENTS_CAN_REGISTER',$options_values['clients_can_register']);
 	/** Define the template path */
-	define('TEMPLATE_PATH',ROOT_DIR.'/templates/'.TEMPLATE_USE.'/template.php');
+	define('TEMPLATE_PATH',ROOT_DIR.DS.'templates'.DS.TEMPLATE_USE.DS.'template.php');
 	/**
 	 * Wrap the e-mail definition in an IF statement in case the user 
 	 * just updated to r135 and this value doesn't exist yet to prevent
@@ -327,15 +321,21 @@ if(!empty($options_values)) {
     define('BASE_URI', '/');
 }
 
-/**
- * Timthumb
- */
 if (defined('BASE_URI')) {
-	define('TIMTHUMB_URL',BASE_URI.'includes/timthumb/timthumb.php');
-	define('TIMTHUMB_ABS',ROOT_DIR.'/includes/timthumb/timthumb.php');
+    define('THUMBNAILS_FILES_URL', BASE_URI.'upload/thumbnails');
 
-	define('WIDGETS_FOLDER',ROOT_DIR.'/includes/widgets/');
-	define('WIDGETS_URL',BASE_URI.'includes/widgets/');
+    /* Widgets */
+    define('WIDGETS_URL',BASE_URI.'includes/widgets/');
+    
+    /* Logo Uploads */
+    define('ADMIN_UPLOADS_URI', BASE_URI . 'upload/admin/');
+
+    /* Assets */
+    define('ASSETS_URL',BASE_URI . 'assets');
+    define('ASSETS_CSS_URL', ASSETS_URL . '/css');
+    define('ASSETS_IMG_URL', ASSETS_URL . '/img');
+    define('ASSETS_JS_URL', ASSETS_URL . '/js');
+    define('ASSETS_LIB_URL', ASSETS_URL . '/lib');
 }
 
 /**

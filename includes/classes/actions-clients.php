@@ -146,8 +146,8 @@ class ClientActions
 		$this->notify_account   	= ( $arguments['notify_account'] == '1' ) ? 1 : 0;
 		$this->max_file_size	= ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
 		$this->request			= ( !empty( $arguments['account_requested'] ) ) ? $arguments['account_requested'] : 0;
-		$this->active			= ( $arguments['active'] );
-		$this->enc_password		= $hasher->HashPassword($this->password);
+        $this->active			= ( $arguments['active'] );
+        $this->enc_password		= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
 
 		if (strlen($this->enc_password) >= 20) {
 
@@ -233,7 +233,7 @@ class ClientActions
 		$this->notify_upload		= ( $arguments['notify_upload'] == '1' ) ? 1 : 0;
 		$this->active			= ( $arguments['active'] == '1' ) ? 1 : 0;
 		$this->max_file_size	= ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
-		$this->enc_password		= $hasher->HashPassword($arguments['password']);
+        $this->enc_password		= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
 
 		if (strlen($this->enc_password) >= 20) {
 

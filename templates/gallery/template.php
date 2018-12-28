@@ -35,6 +35,9 @@ foreach ($my_files as $file) {
 	}
 }
 $count = count($img_files);
+
+define('TEMPLATE_THUMBNAILS_WIDTH', '280');
+define('TEMPLATE_THUMBNAILS_HEIGHT', '215');
 ?>
 <!doctype html>
 <html lang="<?php echo SITE_LANG; ?>">
@@ -101,7 +104,7 @@ $count = count($img_files);
 		<header>
 			<?php if ($logo_file_info['exists'] === true) { ?>
 				<div id="logo">
-					<img src="<?php echo TIMTHUMB_URL; ?>?src=<?php echo $logo_file_info['url']; ?>&amp;w=<?php echo LOGO_MAX_WIDTH; ?>" alt="<?php echo html_output(THIS_INSTALL_SET_TITLE); ?>" />
+                    <?php echo get_branding_layout(true); // true: returns the thumbnail, not the full image ?>
 				</div>
 			<?php } ?>
 		</header>
@@ -130,14 +133,9 @@ $count = count($img_files);
 										else {
 									?>
 										<div class="img_prev">
-											<a href="<?php echo $download_link; ?>" target="_blank">
-												<?php
-													$this_thumbnail_url = UPLOADED_FILES_URL.$this_file['url'];
-													if (THUMBS_USE_ABSOLUTE == '1') {
-														$this_thumbnail_url = BASE_URI.$this_thumbnail_url;
-													}
-												?>
-												<img src="<?php echo TIMTHUMB_URL; ?>?src=<?php echo $this_thumbnail_url; ?>&amp;w=280&amp;h=215&amp;f=2&amp;q=<?php echo THUMBS_QUALITY; ?>" class="thumbnail" alt="<?php echo htmlentities($this_file['name']); ?>" />
+                                            <a href="<?php echo $download_link; ?>" target="_blank">
+                                                <?php $thumbnail = make_thumbnail( UPLOADED_FILES_DIR.DS.$this_file['url'], null, TEMPLATE_THUMBNAILS_WIDTH, TEMPLATE_THUMBNAILS_HEIGHT ); ?>
+												<img src="<?php echo $thumbnail['thumbnail']['url']; ?>" class="thumbnail" alt="<?php echo htmlentities($this_file['name']); ?>" />
 											</a>
 										</div>
 										<div class="img_data">

@@ -66,7 +66,7 @@
 				<dd><?php echo ROOT_DIR; ?></dd>
 
 				<dt><?php _e('Uploads folder','cftp_admin'); ?></dt>
-				<dd><?php echo UPLOADED_FILES_FOLDER; ?></dd>
+				<dd><?php echo UPLOADED_FILES_DIR; ?></dd>
 				*/
 			?>
 		</dl>

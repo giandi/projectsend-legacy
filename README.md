@@ -32,16 +32,16 @@ Your server needs to be configured with at least:
 * The following php extensions enabled on php.ini
   * php_pdo.dll
   * php_pdo_mysql.dll
-  * php_xmlrpc.dll
 
 If possible, make sure to have php configured with:
 
 * memory_limit set to 128M or more
 * The following php extensions enabled:
+  * php_fileinfo.dll
   * php_gd2.dll
   * php_gettext.dll
   * php_mbstring.dll
-  * php_fileinfo.dll
+  * php_xmlrpc.dll
 
 ## How to install on your server
 
@@ -89,28 +89,9 @@ ProjectSend is licensed under [GNU GPL v2](http://www.gnu.org/licenses/old-licen
 
 [Available at the official site](http://www.projectsend.org/change-log/)
 
-## Scripts used by ProjectSend
-
-Many thanks to the authors of the following scripts:
-
-* [jQuery](http://www.jquery.com/)
-* [Bootstrap](http://getbootstrap.com/)
-* [hashchange](http://benalman.com/projects/jquery-hashchange-plugin/)
-* [Plupload](http://www.plupload.com/)
-* [jQuery Tags Input](https://github.com/xoxco/jQuery-Tags-Input)
-* [Chosen](https://harvesthq.github.io/chosen/)
-* [footable](https://github.com/bradvin/FooTable)
-* [flot](https://github.com/flot/flot)
-* [jen](https://github.com/mykiimike/jen)
-* [JavaScript Cookie](https://github.com/js-cookie/js-cookie)
-* [ckeditor](http://ckeditor.com/)
-* [Bootstrap Toggle](https://github.com/minhur/bootstrap-toggle)
-* [Spin Edit for Twitter Bootstrap (modified for Bootstrap 3)](https://github.com/geersch/bootstrap-spinedit/)
-* [Bootstrap datepicker](http://www.eyecon.ro/bootstrap-datepicker)
-* [Timthumb](http://code.google.com/p/timthumb)
-* [phpmailer](http://phpmailer.worxware.com)
-
 ## Special thanks
+
+Many thanks to the authors and teams behind the dependencies used by ProjectSend.
 
 Also, thank you to the following people/communities that helped during development, either by giving support, sending code, translations, etc.
 

@@ -63,12 +63,6 @@ switch ( $section ) {
 								'recaptcha_enabled',
 							);
 		break;
-	case 'thumbnails':
-		$section_title	= __('Thumbnails','cftp_admin');
-		$checkboxes		= array(
-								'thumbnails_use_absolute',
-							);
-		break;
 	case 'branding':
 		$section_title	= __('Branding','cftp_admin');
 		$checkboxes		= array(
@@ -82,16 +76,16 @@ switch ( $section ) {
 	default:
 		$location = BASE_URI . 'options.php?section=general';
 		header("Location: $location");
-		die();
+		exit;
 		break;
 }
 
-//$page_title = __('System options','cftp_admin');
 $page_title = $section_title;
 
 $active_nav = 'options';
 include('header.php');
 
+/* Logo */
 $logo_file_info = generate_logo_url();
 
 /** Form sent */
@@ -233,7 +227,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 				case '2':
 					$msg = __('The file could not be moved to the corresponding folder.','cftp_admin');
 					$msg .= __("This is most likely a permissions issue. If that's the case, it can be corrected via FTP by setting the chmod value of the",'cftp_admin');
-					$msg .= ' '.LOGO_FOLDER.' ';
+					$msg .= ' '.ADMIN_UPLOADS_DIR.' ';
 					$msg .= __('directory to 755, or 777 as a last resource.','cftp_admin');
 					$msg .= __("If this doesn't solve the issue, try giving the same values to the directories above that one until it works.",'cftp_admin');
 					echo system_message('error',$msg);
@@ -302,7 +296,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="this_install_title" class="col-sm-4 control-label"><?php _e('Site name','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="this_install_title" id="this_install_title" class="form-control" value="<?php echo html_output(THIS_INSTALL_SET_TITLE); ?>" />
+										<input type="text" name="this_install_title" id="this_install_title" class="form-control" value="<?php echo html_output(SITE_NAME); ?>" />
 									</div>
 								</div>
 
@@ -805,51 +799,6 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								</div>
 					<?php
 							break;
-							case 'thumbnails':
-					?>
-								<h3><?php _e('Thumbnails','cftp_admin'); ?></h3>
-								<p><?php _e("Thumbnails are used on files lists. It is recommended to keep them small, unless you are using the system to upload only images, and will change the default client's template accordingly.",'cftp_admin'); ?></p>
-
-								<div class="options_column">
-									<div class="options_col_left">
-										<div class="form-group">
-											<label for="max_thumbnail_width" class="col-sm-6 control-label"><?php _e('Max width','cftp_admin'); ?></label>
-											<div class="col-sm-6">
-												<input type="text" name="max_thumbnail_width" id="max_thumbnail_width" class="form-control" value="<?php echo html_output(THUMBS_MAX_WIDTH); ?>" />
-											</div>
-										</div>
-
-										<div class="form-group">
-											<label for="max_thumbnail_height" class="col-sm-6 control-label"><?php _e('Max height','cftp_admin'); ?></label>
-											<div class="col-sm-6">
-												<input type="text" name="max_thumbnail_height" id="max_thumbnail_height" class="form-control" value="<?php echo html_output(THUMBS_MAX_HEIGHT); ?>" />
-											</div>
-										</div>
-									</div>
-									<div class="options_col_right">
-										<div class="form-group">
-											<label for="thumbnail_default_quality" class="col-sm-6 control-label"><?php _e('JPG Quality','cftp_admin'); ?></label>
-											<div class="col-sm-6">
-												<input type="text" name="thumbnail_default_quality" id="thumbnail_default_quality" class="form-control" value="<?php echo html_output(THUMBS_QUALITY); ?>" />
-											</div>
-										</div>
-									</div>
-								</div>
-
-								<div class="options_divide"></div>
-
-								<h3><?php _e("File's path", 'cftp_admin'); ?></h3>
-								<p><?php _e("If thumbnails are not showing (your company logo and file's preview on the branding page and client's files lists) try setting this option ON. It they still don't work, a folders permission issue might be the cause.",'cftp_admin'); ?></p>
-
-								<div class="form-group">
-									<div class="col-sm-8 col-sm-offset-4">
-										<label for="thumbnails_use_absolute">
-											<input type="checkbox" value="1" name="thumbnails_use_absolute" id="thumbnails_use_absolute" <?php echo (THUMBS_USE_ABSOLUTE == 1) ? 'checked="checked"' : ''; ?> /> <?php _e("Use file's absolute path",'cftp_admin'); ?>
-										</label>
-									</div>
-								</div>
-					<?php
-							break;
 							case 'branding':
 					?>
 								<h3><?php _e('Current logo','cftp_admin'); ?></h3>
@@ -861,11 +810,17 @@ $allowed_file_types = implode(',',$allowed_file_types);
 									<div id="current_logo_img">
 										<?php
 											if ($logo_file_info['exists'] === true) {
-										?>
-												<img src="<?php echo $logo_file_info['url']; ?>" alt="<?php _e('Logo Placeholder','cftp_admin'); ?>" />
-										<?php
-											}
-										?>
+                                                /** Make the image */
+                                                $logo = make_thumbnail($logo_file_info['dir'], LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT);
+
+                                                /** If the generator failed, use the original image */
+ 												$img_src = ( !empty( $logo ) ) ? $logo['thumbnail']['url'] : $logo_file_info['url'];
+                                            }
+                                            else {
+                                                $img_src = ASSETS_IMG_URL . '/projectsend-logo.png';
+                                            }
+                                        ?>
+                                        <img src="<?php echo $img_src; ?>">
 									</div>
 									<p class="preview_logo_note">
 										<?php _e('This preview uses a maximum width of 300px.','cftp_admin'); ?>
@@ -876,32 +831,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 									<div class="form-group">
 										<label class="col-sm-4 control-label"><?php _e('Select image to upload','cftp_admin'); ?></label>
 										<div class="col-sm-8">
-											<input type="file" name="select_logo" class="empty" />
-										</div>
-									</div>
-								</div>
-
-								<div class="options_divide"></div>
-
-								<h3><?php _e('Size settings','cftp_admin'); ?></h3>
-								<p><?php _e("The file viewer template may use this setting when showing the image.",'cftp_admin'); ?></p>
-
-								<div class="form-group">
-									<label for="max_logo_width" class="col-sm-4 control-label"><?php _e('Max width','cftp_admin'); ?></label>
-									<div class="col-sm-3">
-										<div class="input-group">
-											<input type="text" name="max_logo_width" id="max_logo_width" class="form-control" value="<?php echo html_output(LOGO_MAX_WIDTH); ?>" />
-											<span class="input-group-addon">px</span>
-										</div>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label for="max_logo_height" class="col-sm-4 control-label"><?php _e('Max height','cftp_admin'); ?></label>
-									<div class="col-sm-3">
-										<div class="input-group">
-											<input type="text" name="max_logo_height" id="max_logo_height" class="form-control" value="<?php echo html_output(LOGO_MAX_HEIGHT); ?>" />
-											<span class="input-group-addon">px</span>
+											<input type="file" name="select_logo" class="empty" accept=".jpg, .jpeg, .jpe, .gif, .png" />
 										</div>
 									</div>
 								</div>

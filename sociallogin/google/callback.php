@@ -3,7 +3,7 @@ require_once('../../sys.includes.php');
 
 $googleClient = new Google_Client();
 $oauth2 = new Google_Oauth2Service($googleClient);
-$googleClient->setApplicationName(THIS_INSTALL_SET_TITLE);
+$googleClient->setApplicationName(SITE_NAME);
 $googleClient->setClientSecret(GOOGLE_CLIENT_SECRET);
 $googleClient->setClientId(GOOGLE_CLIENT_ID);
 $googleClient->setRedirectUri(BASE_URI . 'sociallogin/google/callback.php');

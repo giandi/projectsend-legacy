@@ -86,11 +86,6 @@ function sql_add_order( $table, $column = 'id', $initial_order = 'ASC' )
 
 function generate_password()
 {
-	/**
-	 * Random compat library, a polyfill for PHP 7's random_bytes();
-	 * @link: https://github.com/paragonie/random_compat
-	 */
-	require_once(ROOT_DIR . '/includes/random_compat/random_compat.phar' );
 	$error_unexpected	= __('An unexpected error has occurred', 'cftp_admin');
 	$error_os_fail		= __('Could not generate a random password', 'cftp_admin');
 
@@ -732,10 +727,10 @@ function htmlentities_allowed($str, $quoteStyle = ENT_COMPAT, $charset = CHARSET
 
 	foreach ( $allowed_tags as $tag ) {
 		/** Opening tags */
-		$find[] = '&amp;lt;' . $tag . '&amp;gt;';
+		$find[] = '&lt;' . $tag . '&gt;';
 		$replace[] = '<' . $tag . '>';
 		/** Closing tags */
-		$find[] = '&amp;lt;/' . $tag . '&amp;gt;';
+		$find[] = '&lt;/' . $tag . '&gt;';
 		$replace[] = '</' . $tag . '>';
 	}
 
@@ -930,6 +925,106 @@ function generateRandomString($length = 10)
     return $rnd_result;
 }
 
+/**
+ * Try to recognize if a file is an image
+ *
+ * @todo Check the mime type also
+ */
+function file_is_image( $file )
+{
+	$is_image = false;
+	$pathinfo = pathinfo( $file );
+	$extension = strtolower( $pathinfo['extension'] );
+
+	if ( file_exists( $file ) ) {
+		/** Check the extension */
+		$image_extensions = array('jpg', 'jpeg', 'jpe', 'png', 'gif');
+		if ( in_array( $extension, $image_extensions ) ) {
+			$is_image = true;
+		}
+	}
+
+	return $is_image;
+}
+
+/**
+ * Try to recognize if a file is a valid svg
+ */
+function file_is_svg( $file )
+{
+	if ( file_exists( $file ) ) {
+        $svg_sanitizer = new Sanitizer();
+        $source_file = file_get_contents($file);
+        $sanitized_file = $svg_sanitizer->sanitize($source_file);
+    }
+    else {
+        return false;
+    }
+
+	return $sanitized_file;
+}
+
+/**
+ * Make a thumbnail with SimpleImage
+ */
+function make_thumbnail( $file, $type = 'thumbnail', $width = THUMBS_MAX_WIDTH, $height = THUMBS_MAX_HEIGHT, $quality = THUMBS_QUALITY )
+{
+    $thumbnail = array();
+    
+    if ( !file_exists($file) ) {
+        $thumbnail_file = 'thumb_unavailable_' . $width . 'x' . $height . '.png';
+
+        $thumbnail['original']['url'] = ASSETS_IMG_URL . '/thumbnail-unavailable.png';
+		$thumbnail['thumbnail']['location'] = THUMBNAILS_FILES_DIR . DS . $thumbnail_file;
+        $thumbnail['thumbnail']['url'] = THUMBNAILS_FILES_URL . '/' . $thumbnail_file;
+        
+        $file = ASSETS_IMG_DIR . DS . '/thumbnail-unavailable.png'; // Reset to make thumbnail
+    }
+    else {
+        if ( file_is_image( $file ) ) {
+            /** Original extension */
+            $pathinfo	= pathinfo( $file );
+            $filename	= md5( $pathinfo['basename'] );
+            $extension	= strtolower( $pathinfo['extension'] );
+            $mime_type	= mime_content_type($file);
+
+            $thumbnail_file = 'thumb_' . $filename . '_' . $width . 'x' . $height . '.' . $extension;
+
+            $thumbnail['original']['url'] = $file;
+            $thumbnail['thumbnail']['location'] = THUMBNAILS_FILES_DIR . DS . $thumbnail_file;
+            $thumbnail['thumbnail']['url'] = THUMBNAILS_FILES_URL . '/' . $thumbnail_file;
+        }
+    }
+
+    if ( !file_exists( $thumbnail['thumbnail']['location'] ) ) {
+        try {
+            $image = new \claviska\SimpleImage();
+            $image
+                ->fromFile($file)
+                ->autoOrient();
+
+            switch ( $type ) {
+                case 'proportional':
+                    $method = 'bestFit';
+                    break;
+                case 'thumbnail':
+                default:
+                    $method = 'thumbnail';
+                    break;
+            }
+
+            $image->$method($width, $height);
+
+            $image
+                ->toFile($thumbnail['thumbnail']['location'], $mime_type, $quality);
+
+        } catch(Exception $err) {
+            $thumbnail['error'] = $err->getMessage();
+        }
+    }
+
+	return $thumbnail;
+}
 
 /**
  * Prepare the branding image file using the database options
@@ -940,47 +1035,67 @@ function generate_logo_url()
 	$branding = array();
 	$branding['exists'] = false;
 
-	$logo_filename = LOGO_FILENAME;
-	if ( empty( $logo_filename ) ) {
-		$branding['filename'] = 'img/projectsend-logo.png';
-	}
-	else {
-		$branding['filename'] = 'img/custom/logo/'.LOGO_FILENAME;
-	}
+    // LOGO_FILENAME: filename gotten from the database
+    if ( empty( LOGO_FILENAME ) ) {
+        $branding['dir'] = ASSETS_IMG_DIR . DS . DEFAULT_LOGO_FILENAME;
+        $branding['url'] = ASSETS_IMG_URI . DEFAULT_LOGO_FILENAME;
+    }
+    else {
+        $branding['dir'] = ADMIN_UPLOADS_DIR . DS . LOGO_FILENAME;
+        $branding['url'] = ADMIN_UPLOADS_URI . LOGO_FILENAME;
+    }
 
-	if (file_exists(ROOT_DIR . '/' . $branding['filename'])) {
-		$branding['exists'] = true;
-		$branding['url'] = BASE_URI.$branding['filename'];
-	}
+	if (file_exists( $branding['dir'] )) {
+        $branding['exists'] = true;
+        
+        /* Make thumbnails for raster files */
+        if ( file_is_image($branding['dir']) ) {
+            $thumbnail = make_thumbnail($branding['dir'], 'proportional', LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT);
+		    $branding['thumbnail'] = ( !empty( $thumbnail['thumbnail']['url'] ) ) ? $thumbnail['thumbnail']['url'] : $branding['url'];
+            $branding['thumbnail_info'] = $thumbnail;
+            $branding['type'] = 'raster';
+        }
+        elseif ( file_is_svg($branding['dir']) ) {
+            $branding['type'] = 'vector';
+            $branding['thumbnail'] = $branding['dir']; // no thumbnail, just return the original file
+        }
+
+        $branding['ext'] = pathinfo($branding['dir'], PATHINFO_EXTENSION);
+    }
+
 	return $branding;
 }
 
-
 /**
- * Returns the full layout with the branding image.
- * Used on the unlogged header file.
+ * Returns the corresponding layout to show an image tag or the svg contents
+ * of the current uploaded logo file.
  */
-function generate_branding_layout()
+function get_branding_layout($return_thumbnail = false)
 {
-	$branding	= generate_logo_url();
-	$layout		= '';
+    $layout = '';
+    $branding = generate_logo_url();
 
 	if ($branding['exists'] === true) {
-		$branding_image = $branding['url'];
+        $branding_image = ( $return_thumbnail === true ) ? $branding['thumbnail'] : $branding['url'];
 	}
 	else {
-		$branding_image = BASE_URI . 'img/projectsend-logo.png';
-	}
-
-	$layout = '<div class="row">
-					<div class="col-xs-12 branding_unlogged">
-						<img src="' . $branding_image . '" alt="' . html_output(THIS_INSTALL_SET_TITLE) . '" />
+		$branding_image = ASSETS_IMG_URI . DEFAULT_LOGO_FILENAME;
+    }
+    
+    if ($branding['type'] == 'raster') {
+        $layout = '
+            <div class="row">
+                <div class="col-xs-12 branding_unlogged">
+                    <img src="' . $branding_image . '" alt="' . html_output(SITE_NAME) . '" />
 					</div>
 				</div>';
+    }
+    elseif ($branding['type'] == 'vector') {
+        $layout = file_is_svg($branding['dir']);
+    }
 
 	return $layout;
 }
-
 
 /**
  * This function is called when a file is loaded
@@ -1012,7 +1127,7 @@ function meta_noindex()
  */
 function meta_favicon()
 {
-	$favicon_location = BASE_URI . 'img/favicon/';
+	$favicon_location = BASE_URI . 'assets/img/favicon/';
 	echo '<link rel="shortcut icon" type="image/x-icon" href="' . BASE_URI . 'favicon.ico" />' . "\n";
 	echo '<link rel="icon" type="image/png" href="' . $favicon_location . 'favicon-32.png" sizes="32x32">' . "\n";
 	echo '<link rel="apple-touch-icon" href="' . $favicon_location . 'favicon-152.png" sizes="152x152">' . "\n";
@@ -1116,15 +1231,9 @@ function add_body_class( $custom = '' )
  */
 function make_download_link($file_info)
 {
-	global $client_info;
 	$download_link = BASE_URI.'process.php?do=download&amp;id='.$file_info['id'];
-	/*
-						&amp;origin='.$file_info['origin'];
-	if (!empty($file_info['group_id'])) {
-		$download_link .= '&amp;group_id='.$file_info['group_id'];
-	}
-	*/
-	return $download_link;
+
+    return $download_link;
 }
 
 /**
@@ -1173,7 +1282,7 @@ function option_file_upload( $file, $validate_ext = '', $option = '', $action = 
 			 * Move the file to the destination defined on sys.vars.php. If ok, add the
 			 * new file name to the database.
 			 */
-			if ( move_uploaded_file( $file['tmp_name'], LOGO_FOLDER . $safe_filename ) ) {
+			if ( move_uploaded_file( $file['tmp_name'], ADMIN_UPLOADS_DIR . DS . $safe_filename ) ) {
 				if ( !empty( $option ) ) {
 					$query = "UPDATE " . TABLE_OPTIONS . " SET value=:value WHERE name='" . $option . "'";
 					$sql = $dbh->prepare( $query );

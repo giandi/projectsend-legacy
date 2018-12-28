@@ -20,7 +20,7 @@ function look_for_templates() {
 	$templates_error = array();
 
 	$ignore = array('.', '..');
-	$base_directory = './templates/';
+	$base_directory = ROOT_DIR . DS . 'templates';
 	$directories = glob($base_directory . "*");
 	foreach($directories as $directory) {
 		if(is_dir($directory) && !in_array($directory,$ignore)) {
@@ -76,7 +76,7 @@ function look_for_templates() {
 				$screenshot_file	= $directory . '/screenshot.png';
 				$cover_file			= $directory . '/cover.png';
 
-				$template_info['screenshot']	= ( file_exists( $screenshot_file ) ) ? $screenshot_file : BASE_URI . 'img/template-screenshot.png';
+				$template_info['screenshot']	= ( file_exists( $screenshot_file ) ) ? $screenshot_file : BASE_URI . 'assets/img/template-screenshot.png';
 				if ( file_exists( $cover_file ) ) {
 					$template_info['cover']	= $cover_file;
 				}

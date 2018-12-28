@@ -14,6 +14,9 @@
  * @subpackage	Classes
  */
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 /**
  * Call the file that has the markup for the header and footer
  * of the e-mails.
@@ -37,8 +40,8 @@ define('EMAIL_TEMPLATE_PASSWORD_RESET', 'password-reset.html');
 
 global $email_template_header;
 global $email_template_footer;
-$email_template_header = file_get_contents(ROOT_DIR.'/emails/'.EMAIL_TEMPLATE_HEADER);
-$email_template_footer = file_get_contents(ROOT_DIR.'/emails/'.EMAIL_TEMPLATE_FOOTER);
+$email_template_header = file_get_contents(ROOT_DIR.DS.'emails'.DS.EMAIL_TEMPLATE_HEADER);
+$email_template_footer = file_get_contents(ROOT_DIR.DS.'emails'.DS.EMAIL_TEMPLATE_FOOTER);
 
 /** Define the messages texts */
 
@@ -590,12 +593,6 @@ class PSend_Email
 		$this->token		= (!empty($arguments['token'])) ? $arguments['token'] : '';
 		$this->memberships	= (!empty($arguments['memberships'])) ? $arguments['memberships'] : '';
 
-		require_once(ROOT_DIR.'/includes/phpmailer/class.phpmailer.php');
-
-		if (!spl_autoload_functions() OR (!in_array('PHPMailerAutoload', spl_autoload_functions()))) {
-			require_once(ROOT_DIR.'/includes/phpmailer/PHPMailerAutoload.php');
-		}
-
 		$this->try_bcc = false;
 		switch($this->type) {
 			case 'new_files_for_client':
@@ -659,8 +656,13 @@ class PSend_Email
 			/**
 			 * phpMailer
 			 */
-			$this->send_mail = new PHPMailer();
-			switch (MAIL_SYSTEM) {
+            $this->send_mail = new PHPMailer();
+            
+            $this->send_mail->SMTPDebug = 0;
+            $this->send_mail->CharSet = 'UTF-8';
+            $this->send_mail->Encoding = 'base64';
+    
+            switch (MAIL_SYSTEM) {
 				case 'smtp':
 						$this->send_mail->IsSMTP();
 						$this->send_mail->Host = SMTP_HOST;
@@ -694,7 +696,7 @@ class PSend_Email
 
 			$this->send_mail->Subject = $this->mail_info['subject'];
 			$this->send_mail->MsgHTML($this->mail_info['body']);
-			$this->send_mail->AltBody = __('This email contains HTML formatting and cannot be displayed right now. Please use an HTML compatible reader.','cftp_admin');
+			$this->send_mail->AltBody = __('This email contains HTML formatting and cannot be displayed right now. Please use a HTML compatible reader.','cftp_admin');
 
 			$this->send_mail->SetFrom(ADMIN_EMAIL_ADDRESS, MAIL_FROM_NAME);
 			$this->send_mail->AddReplyTo(ADMIN_EMAIL_ADDRESS, MAIL_FROM_NAME);

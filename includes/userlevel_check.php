@@ -8,11 +8,6 @@
  */
 
 /**
- * Create the phpass hash object
- */
-$hasher = new PasswordHash(HASH_COST_LOG2, HASH_PORTABLE);
-
-/**
  * Used when checking if there is a client or user logged in via cookie.
  *
  * @see check_for_session
@@ -175,7 +170,7 @@ function permission_denied_page($error_type) {
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
             
-                <title><?php echo html_output( $page_title . ' &raquo; ' . THIS_INSTALL_SET_TITLE ); ?></title>
+                <title><?php echo html_output( $page_title . ' &raquo; ' . SITE_NAME ); ?></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <?php meta_favicon(); ?>
                 <script type="text/javascript" src="<?php echo BASE_URI; ?>includes/js/jquery.1.12.4.min.js"></script>

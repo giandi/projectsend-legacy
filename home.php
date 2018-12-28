@@ -69,7 +69,7 @@ if (in_session_or_cookies($log_allowed)) {
 			function ajax_widget_statistics( days ) {
 				var target = $('.statistics_graph');
 				target.html('<div class="loading-graph">'+
-								'<img src="<?php echo BASE_URI; ?>/img/ajax-loader.gif" alt="Loading" />'+
+								'<img src="<?php echo BASE_URI; ?>/assets/img/ajax-loader.gif" alt="Loading" />'+
 							'</div>'
 						);
 				$.ajax({
@@ -102,7 +102,7 @@ if (in_session_or_cookies($log_allowed)) {
 			function ajax_widget_log( action ) {
 				var target = $('.activities_log');
 				target.html('<div class="loading-graph">'+
-								'<img src="<?php echo BASE_URI; ?>/img/ajax-loader.gif" alt="Loading" />'+
+								'<img src="<?php echo BASE_URI; ?>/assets/img/ajax-loader.gif" alt="Loading" />'+
 							'</div>'
 						);
 				$.ajax({

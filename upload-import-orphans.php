@@ -46,22 +46,14 @@ include('header.php');
 
 		});
 	</script>
-<?php
-/**
- * Use the folder defined on sys.vars.php
- * Composed of the absolute path to that file plus the
- * default uploads folder.
- */
-$work_folder = UPLOADED_FILES_FOLDER;
 
-		if ( false === CAN_UPLOAD_ANY_FILE_TYPE ) {
-			$msg = __('This list only shows the files that are allowed according to your security settings. If the file type you need to add is not listed here, add the extension to the "Allowed file extensions" box on the options page.', 'cftp_admin');
-			echo system_message('warning',$msg);
-		}
-	?>
-	
-	<?php
-		/** Count clients to show an error message, or the form */
+    <?php
+        if ( false === CAN_UPLOAD_ANY_FILE_TYPE ) {
+            $msg = __('This list only shows the files that are allowed according to your security settings. If the file type you need to add is not listed here, add the extension to the "Allowed file extensions" box on the options page.', 'cftp_admin');
+            echo system_message('warning',$msg);
+        }
+
+        /** Count clients to show an error message, or the form */
 		$statement		= $dbh->query("SELECT id FROM " . TABLE_USERS . " WHERE level = '0'");
 		$count_clients	= $statement->rowCount();
 		$statement		= $dbh->query("SELECT id FROM " . TABLE_GROUPS);
@@ -103,19 +95,19 @@ $work_folder = UPLOADED_FILES_FOLDER;
 		$files_to_add = array();
 
 		/** Read the temp folder and list every allowed file */
-		if ($handle = opendir($work_folder)) {
+		if ($handle = opendir(UPLOADED_FILES_DIR)) {
 			while (false !== ($filename = readdir($handle))) {
-				$filename_path = $work_folder.'/'.$filename;
+				$filename_path = UPLOADED_FILES_DIR.DS.$filename;
 				if(!is_dir($filename_path)) {
 					if ($filename != "." && $filename != "..") {
 						/** Check types of files that are not on the database */							
 						if (!array_key_exists($filename,$db_files)) {
 							$file_object = new PSend_Upload_File();
-							$new_filename = $file_object->safe_rename_on_disk($filename,$work_folder);
+							$new_filename = $file_object->safe_rename_on_disk($filename,UPLOADED_FILES_DIR);
 							/** Check if the filetype is allowed */
 							if ($file_object->is_filetype_allowed($new_filename)) {
 								/** Add it to the array of available files */
-								$new_filename_path = $work_folder.'/'.$new_filename;
+								$new_filename_path = UPLOADED_FILES_DIR.DS.$new_filename;
 								//$files_to_add[$new_filename] = $new_filename_path;
 								$files_to_add[] = array(
 														'path'		=> $new_filename_path,
@@ -283,7 +275,7 @@ $work_folder = UPLOADED_FILES_FOLDER;
 				else {
 					$no_results_message = __('There are no files available to add right now.','cftp_admin');
 					$no_results_message .= __('To use this feature you need to upload your files via FTP to the folder','cftp_admin');
-					$no_results_message .= ' <span class="format_url"><strong>'.html_output($work_folder).'</strong></span>.';
+					$no_results_message .= ' <span class="format_url"><strong>'.html_output(UPLOADED_FILES_DIR).'</strong></span>.';
 				}
 	
 				echo system_message('error',$no_results_message);
