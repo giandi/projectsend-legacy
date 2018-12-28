@@ -79,7 +79,7 @@ if ( !isset( $body_class ) ) { $body_class = ''; }
 
 	<title><?php echo html_output( $header_vars['title'] ); ?></title>
 	<?php meta_favicon(); ?>
-	<script type="text/javascript" src="<?php echo ASSETS_JS_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
+	<script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
 
 	<!--[if lt IE 9]>
 		<script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>

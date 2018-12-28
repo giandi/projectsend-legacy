@@ -102,7 +102,7 @@ function permission_denied_page($error_type) {
                 <title><?php echo html_output( $page_title . ' &raquo; ' . SITE_NAME ); ?></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <?php meta_favicon(); ?>
-                <script type="text/javascript" src="<?php echo ASSETS_JS_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
+                <script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
             
                 <!--[if lt IE 9]>
                     <script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>
