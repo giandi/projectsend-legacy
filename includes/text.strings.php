@@ -22,13 +22,6 @@ define('USER_ROLE_LVL_0', __('Client','cftp_admin'));
  */
 global $json_strings;
 $json_strings = [
-    'uri'	=> [
-        'base'						=> BASE_URI,
-        'public_group'				=> PUBLIC_GROUP_URI,
-        'public_download'			=> PUBLIC_DOWNLOAD_URI,
-        'assets_img'				=> ASSETS_IMG_URI,
-        'widgets'   				=> WIDGETS_URL,
-    ],
     'translations'	=> [
         'public_group_note'			=> __('Send this URL to someone to view the allowed group contents according to your privacy settings.','cftp_admin'),
         'public_file_note'			=> __('Send this URL to someone to download the file without registering or logging in.','cftp_admin'),

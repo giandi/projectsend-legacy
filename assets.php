@@ -81,9 +81,9 @@ if ( !empty( $load_scripts ) ) {
 				 * corresponding plupload file exists.
 				 */
 				if ( LOADED_LANG != 'en' ) {
-					$plupload_lang_file = 'assets/lib/plupload/js/i18n/'.LOADED_LANG.'.js';
-					if ( file_exists( $plupload_lang_file ) ) {
-						$load_js_files[] = ASSETS_LIB_URL . $plupload_lang_file;
+					$plupload_lang_file = 'plupload/js/i18n/'.LOADED_LANG.'.js';
+					if ( file_exists( ASSETS_LIB_DIR . $plupload_lang_file ) ) {
+						$load_js_files[] = ASSETS_LIB_URL . '/' . $plupload_lang_file;
 					}
 				}
 

@@ -89,7 +89,7 @@ function list_file($data, $origin) {
 ?>
 <div class="col-xs-12 col-sm-12 col-lg-6 col-lg-offset-3">
 
-	<?php echo generate_branding_layout(); ?>
+	<?php echo get_branding_layout(true); ?>
 
 	<div class="white-box">
 		<div class="white-box-interior">

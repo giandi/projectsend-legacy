@@ -14,9 +14,7 @@ $load_scripts	= array(
 $allowed_levels = array(9);
 require_once('sys.includes.php');
 
-if(!check_for_admin()) {
-    return;
-}
+if (!check_for_admin()) { return; }
 
 $active_nav = 'users';
 
