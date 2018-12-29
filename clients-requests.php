@@ -13,7 +13,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9,8);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'clients';
 $this_page = 'clients-requests.php';
@@ -56,11 +56,11 @@ include('header.php');
 		switch ($_GET['action']) {
 			case 'apply':
 				$msg = __('The selected actions were applied.','cftp_admin');
-				echo system_message('ok',$msg);
+				echo system_message('success',$msg);
 				break;
 			case 'delete':
 				$msg = __('The selected clients were deleted.','cftp_admin');
-				echo system_message('ok',$msg);
+				echo system_message('success',$msg);
 				break;
 		}
 	}
@@ -101,7 +101,7 @@ include('header.php');
 						/**
 						 * 1- Approve or deny account
 						 */
-						$process_account = new ClientActions();
+						$process_account = new \ProjectSend\Classes\ClientActions();
 
 						/** $client['account'] == 1 means approve that account */
 						if ( !empty( $client['account'] ) and $client['account'] == '1' ) {
@@ -150,7 +150,7 @@ include('header.php');
 						$processed_requests = $process_requests['memberships'];
 						$client_information = get_client_by_id( $client['id'] );
 
-						$notify_client = new PSend_Email();
+						$notify_client = new \ProjectSend\Classes\Emails;
 						$email_arguments = array(
 														'type'			=> $email_type,
 														'username'		=> $client_information['username'],
@@ -166,7 +166,7 @@ include('header.php');
 					break;
 				case 'delete':
 					foreach ($selected_clients as $client) {
-						$this_client = new ClientActions();
+						$this_client = new \ProjectSend\Classes\ClientActions();
 						$delete_client = $this_client->delete_client($client['id']);
 					}
 					
@@ -179,13 +179,13 @@ include('header.php');
 			/** Record the action log */
 			if ( !empty( $log_action_number ) ) {
 				foreach ($selected_clients_ids as $client) {
-					$new_log_action = new LogActions();
+					$logger = new \ProjectSend\Classes\ActionsLog();
 					$log_action_args = array(
 											'action' => $log_action_number,
 											'owner_id' => CURRENT_USER_ID,
 											'affected_account_name' => $all_users[$client]
 										);
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				}
 			}
 
@@ -360,7 +360,7 @@ include('header.php');
 												'id'		=> 'clients_tbl',
 												'class'		=> 'footable table',
 											);
-					$table = new generateTable( $table_attributes );
+					$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 	
 					$thead_columns		= array(
 												array(

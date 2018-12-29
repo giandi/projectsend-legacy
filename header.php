@@ -93,7 +93,7 @@ if (current_role_in($core_update_allowed)) {
 
 			<ul class="nav pull-right nav_account">
 				<li id="header_welcome">
-					<span><?php //_e('Welcome', 'cftp_admin'); ?> <?php echo $global_name; ?></span>
+					<span><?php //_e('Welcome', 'cftp_admin'); ?> <?php echo CURRENT_USER_NAME; ?></span>
 				</li>
 				<li>
 					<?php

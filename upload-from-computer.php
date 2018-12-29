@@ -13,7 +13,7 @@ $load_scripts	= array(
 						'plupload',
 					); 
 
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'files';
 

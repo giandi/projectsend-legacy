@@ -1,5 +1,5 @@
 <?php
-require_once('../../sys.includes.php');
+require_once('../../bootstrap.php');
 
 $googleClient = new Google_Client();
 $oauth2 = new Google_Oauth2Service($googleClient);
@@ -67,13 +67,13 @@ if (isset($_SESSION['id_token_token']) && isset($_SESSION['id_token_token']->id_
         }
 
         /** Record the action log */
-        $new_log_action = new LogActions();
+        $logger = new \ProjectSend\Classes\ActionsLog();
         $log_action_args = array(
           'action' => 1,
           'owner_id' => $logged_id,
           'affected_account_name' => $global_name
         );
-        $new_record_action = $new_log_action->log_action_save($log_action_args);
+        $new_record_action = $logger->add_entry($log_action_args);
 
         if ($user_level == '0') {
           header("location:" . BASE_URI . "my_files/");
@@ -95,8 +95,8 @@ if (isset($_SESSION['id_token_token']) && isset($_SESSION['id_token_token']->id_
         return;
       }else {
         $_SESSION['errorstate'] = 'no_account'; //TODO: create new account
-        $new_client = new ClientActions();
-        $username = $new_client->generateUsername($userData['name']);
+        $new_client = new \ProjectSend\Classes\ClientActions();
+        $username = generateUsername($userData['name']);
         $password = generate_password();
 
         $clientData = array(
@@ -128,7 +128,7 @@ if (isset($_SESSION['id_token_token']) && isset($_SESSION['id_token_token']->id_
           $add_to_group->execute();
         }
 
-        $notify_admin = new PSend_Email();
+        $notify_admin = new \ProjectSend\Classes\Emails;
         $email_arguments = array(
           'type' => 'new_client_self',
           'address' => ADMIN_EMAIL_ADDRESS,

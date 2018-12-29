@@ -11,7 +11,7 @@ $load_scripts	= array(
 					);
 
 $allowed_levels = array(9);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $section = ( !empty( $_GET['section'] ) ) ? $_GET['section'] : $_POST['section'];
 
@@ -205,7 +205,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 			switch ($_GET['status']) {
 				case '1':
 					$msg = __('Options updated succesfuly.','cftp_admin');
-					echo system_message('ok',$msg);
+					echo system_message('success',$msg);
 					break;
 				case '2':
 					$msg = __('There was an error. Please try again.','cftp_admin');

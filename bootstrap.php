@@ -61,24 +61,19 @@ require_once(ROOT_DIR.'/includes/functions.categories.php');
 /** Search, filters and actions forms */
 require_once(ROOT_DIR.'/includes/functions.forms.php');
 
+/** Search, filters and actions forms */
+require_once(ROOT_DIR.'/includes/functions.groups.php');
+
 /**
  * Always require this classes to avoid repetition of code
  * on other files.
  *
  */
 $classes_files = array(
-						'actions-clients.php',
 						'actions-files.php',
-						'actions-categories.php',
 						'actions-groups.php',
-						'actions-members.php',
-						'actions-log.php',
-						'actions-users.php',
 						'file-upload.php',
-						'form-validation.php',
 						'send-email.php',
-						'generate-form.php',
-						'generate-table.php',
 					);
 foreach ( $classes_files as $filename ) {
 	$location = ROOT_DIR . '/includes/classes/' . $filename;

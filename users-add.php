@@ -7,7 +7,7 @@
  *
  */
 $allowed_levels = array(9);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 if(!check_for_admin()) {
     return;
@@ -17,51 +17,44 @@ $active_nav = 'users';
 
 $page_title = __('Add system user','cftp_admin');
 
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 /**
  * Set checkboxes as 1 to defaul them to checked when first entering
  * the form
  */
-$add_user_data_active = 1;
-$add_user_data_notify_account = 1;
+$user_arguments = array(
+    'active'            => 1,
+    'notify_account'    => 1,
+);
 
 if ($_POST) {
-	$new_user = new UserActions();
+	$new_user = new \ProjectSend\Classes\UserActions;
 
 	/**
 	 * Clean the posted form values to be used on the user actions,
 	 * and again on the form if validation failed.
 	 */
-	$add_user_data_name = encode_html($_POST['add_user_form_name']);
-	$add_user_data_email = encode_html($_POST['add_user_form_email']);
-	$add_user_data_level = encode_html($_POST['add_user_form_level']);
-	$add_user_data_user = encode_html($_POST['add_user_form_user']);
-	$add_user_data_maxfilesize = (isset($_POST["add_user_form_maxfilesize"])) ? encode_html($_POST["add_user_form_maxfilesize"]) : '';
-	$add_user_data_active = (isset($_POST["add_user_form_active"])) ? 1 : 0;
-	$add_user_data_notify_account = (isset($_POST["add_user_form_notify_account"])) ? 1 : 0;
-
-	/** Arguments used on validation and user creation. */
-	$new_arguments = array(
-							'id' => '',
-							'username' => $add_user_data_user,
-							'password' => $_POST['add_user_form_pass'],
-							//'password_repeat' => $_POST['add_user_form_pass2'],
-							'name' => $add_user_data_name,
-							'email' => $add_user_data_email,
-							'role' => $add_user_data_level,
-							'active' => $add_user_data_active,
-							'max_file_size'	=> $add_user_data_maxfilesize,
-							'notify_account' => $add_user_data_notify_account,
-							'type' => 'new_user'
-						);
+    $user_arguments = array(
+        'id'	    		=> '',
+        'username'	    	=> encode_html($_POST['username']),
+        'password'		    => $_POST['password'],
+        //'password_repeat' => $_POST['password_repeat'],
+        'name'	    		=> encode_html($_POST['name']),
+        'email'		    	=> encode_html($_POST['email']),
+        'level'		        => encode_html($_POST['level']),
+        'max_file_size'	    => (isset($_POST["max_file_size"])) ? encode_html($_POST['max_file_size']) : '',
+        'notify_account' 	=> (isset($_POST["notify_account"])) ? 1 : 0,
+        'active'	    	=> (isset($_POST["active"])) ? 1 : 0,
+        'type'		    	=> 'new_user',
+    );
 
 	/** Validate the information from the posted form. */
-	$new_validate = $new_user->validate_user($new_arguments);
+	$validation = $new_user->validate($user_arguments);
 	
 	/** Create the user if validation is correct. */
-	if ($new_validate == 1) {
-		$new_response = $new_user->create_user($new_arguments);
+    if ($validation['passed'] == true) {
+		$new_response = $new_user->create($user_arguments);
 	}
 	
 }
@@ -74,10 +67,10 @@ if ($_POST) {
 				/**
 				 * If the form was submited with errors, show them here.
 				 */
-				$valid_me->list_errors();
-			?>
-			
-			<?php
+                if (isset($validation['errors'])) {
+                    echo $validation['errors'];
+                }
+
 				if (isset($new_response)) {
 					/**
 					 * Get the process state and show the corresponding ok or error message.
@@ -85,22 +78,22 @@ if ($_POST) {
 					switch ($new_response['query']) {
 						case 1:
 							$msg = __('User added correctly.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 	
 							/** Record the action log */
-							$new_log_action = new LogActions();
+                            $logger = new ProjectSend\Classes\ActionsLog;
 							$log_action_args = array(
 													'action' => 2,
 													'owner_id' => CURRENT_USER_ID,
 													'affected_account' => $new_response['new_id'],
-													'affected_account_name' => $add_user_data_name
+													'affected_account_name' => $user_arguments['name']
 												);
-							$new_record_action = $new_log_action->log_action_save($log_action_args);
+							$new_record_action = $logger->add_entry($log_action_args);
 	
 						break;
 						case 0:
 							$msg = __('There was an error. Please try again.','cftp_admin');
-							echo system_message('error',$msg);
+							echo system_message('danger',$msg);
 						break;
 					}
 					/**
@@ -109,15 +102,15 @@ if ($_POST) {
 					switch ($new_response['email']) {
 						case 2:
 							$msg = __('A welcome message was not sent to the new user.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 						break;
 						case 1:
 							$msg = __('A welcome message with login information was sent to the new user.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 						break;
 						case 0:
 							$msg = __("E-mail notification couldn't be sent.",'cftp_admin');
-							echo system_message('error',$msg);
+							echo system_message('danger',$msg);
 						break;
 					}
 				}
@@ -127,7 +120,7 @@ if ($_POST) {
 					 * Include the form.
 					 */
 					$user_form_type = 'new_user';
-					include('users-form.php');
+					include_once FORMS_DIR . DS . 'users.php';
 				}
 			?>
 
@@ -136,4 +129,4 @@ if ($_POST) {
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

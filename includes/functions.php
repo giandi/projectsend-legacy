@@ -33,28 +33,23 @@ function is_projectsend_installed()
 	}
 }
 
-/**
- * Add any existing $_GET parameters as hidden fields on a form
- */
-function form_add_existing_parameters( $ignore = array() )
-{
-	// Don't add the pagination parameter
-	$ignore[] = 'page';
+function generateUsername($string, $i = 1) {
+    $string = preg_replace('/[^A-Za-z0-9]/', "", $string);
+    $username = $string;
+    while(isUniqueUsername($username)) {
+        $username = $string . $i;
+        $i++;
+    }
+    return $username;
+}
 
-	// Remove this parameters so they only exist when the action is done
-	$remove = array('action', 'batch', 'status');
-
-	if ( !empty( $_GET ) ) {
-		foreach ( $_GET as $param => $value ) {
-			// Remove status and actions
-			if ( in_array( $param, $remove ) ) {
-				unset( $_GET[$param] );
-			}
-			if ( !is_array( $value ) && !in_array( $param, $ignore ) ) {
-				echo '<input type="hidden" name="' . $param . '" value="' . encode_html($value) . '">';
-			}
-		}
-	}
+function isUniqueUsername($string) {
+    $statement = $this->dbh->prepare( "SELECT * FROM " . TABLE_USERS . " WHERE user = :user" );
+    $statement->execute(array(':user'	=> $string));
+    if($statement->rowCount() > 0) {
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -263,103 +258,78 @@ function user_exists_id($id)
 }
 
 /**
- * Check if a group id exists on the database.
- * Used on the Edit group page.
- *
- * @return bool
- */
-function group_exists_id($id)
-{
-	global $dbh;
-	$statement = $dbh->prepare("SELECT * FROM " . TABLE_GROUPS . " WHERE id=:id");
-	$statement->bindParam(':id', $id, PDO::PARAM_INT);
-	$statement->execute();
-	if ( $statement->rowCount() > 0 ) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-/**
- * Get all the client information knowing only the id
- * Used on the Manage files page.
- *
- * @return array
- */
+* Get all the client information knowing only the id
+* Used on the Manage files page.
+*
+* @return array
+*/
 function get_client_by_id($client)
 {
-	global $dbh;
-	$statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE id=:id");
-	$statement->bindParam(':id', $client, PDO::PARAM_INT);
-	$statement->execute();
-	$statement->setFetchMode(PDO::FETCH_ASSOC);
+    global $dbh;
 
-	while ( $row = $statement->fetch() ) {
-		$information = array(
-							'id'					=> html_output($row['id']),
-							'username'			=> html_output($row['user']),
-							'name'				=> html_output($row['name']),
-							'address'			=> html_output($row['address']),
-							'phone'				=> html_output($row['phone']),
-							'email'				=> html_output($row['email']),
-							'notify'				=> html_output($row['notify']),
-							'level'				=> html_output($row['level']),
-							'active'				=> html_output($row['active']),
-							'max_file_size'	=> html_output($row['max_file_size']),
-							'contact'			=> html_output($row['contact']),
-							'created_date'		=> html_output($row['timestamp']),
-							'created_by'		=> html_output($row['created_by'])
-						);
-		if ( !empty( $information ) ) {
-			return $information;
-		}
-		else {
-			return false;
-		}
-	}
+    $statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE id=:id");
+    $statement->bindParam(':id', $client, PDO::PARAM_INT);
+    $statement->execute();
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+    if ( $statement->rowCount() > 0 ) {
+        while ( $row = $statement->fetch() ) {
+            $information = array(
+                                'id'				=> html_output($row['id']),
+                                'username'			=> html_output($row['user']),
+                                'name'				=> html_output($row['name']),
+                                'address'			=> html_output($row['address']),
+                                'phone'				=> html_output($row['phone']),
+                                'email'				=> html_output($row['email']),
+                                'notify_upload'		=> html_output($row['notify']),
+                                'level'				=> html_output($row['level']),
+                                'active'			=> html_output($row['active']),
+                                'max_file_size' 	=> html_output($row['max_file_size']),
+                                'contact'			=> html_output($row['contact']),
+                                'created_date'		=> html_output($row['timestamp']),
+                                'created_by'		=> html_output($row['created_by'])
+                            );
+            if ( !empty( $information ) ) {
+                return $information;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    else {
+        return false;
+    }
 }
 
 
 /**
- * Get all the client information knowing only the log in username
- *
- * @return array
- */
+* Get all the client information knowing only the log in username
+*
+* @return array
+*/
 function get_client_by_username($client)
 {
-	global $dbh;
-	$statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE user=:username");
-	$statement->bindParam(':username', $client);
-	$statement->execute();
-	$statement->setFetchMode(PDO::FETCH_ASSOC);
+    global $dbh;
 
-	while ( $row = $statement->fetch() ) {
-		$information = array(
-							'id'					=> html_output($row['id']),
-							'name'				=> html_output($row['name']),
-							'username'			=> html_output($row['user']),
-							'address'			=> html_output($row['address']),
-							'phone'				=> html_output($row['phone']),
-							'email'				=> html_output($row['email']),
-							'notify'				=> html_output($row['notify']),
-							'level'				=> html_output($row['level']),
-							'active'				=> html_output($row['active']),
-							'max_file_size'	=> html_output($row['max_file_size']),
-							'contact'			=> html_output($row['contact']),
-							'created_date'		=> html_output($row['timestamp']),
-							'created_by'		=> html_output($row['created_by'])
-						);
-		if ( !empty( $information ) ) {
-			return $information;
-		}
-		else {
-			return false;
-		}
-	}
+    $statement = $dbh->prepare("SELECT id FROM " . TABLE_USERS . " WHERE username=:username");
+    $statement->bindParam(':username', $client);
+    $statement->execute();
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+    while ( $row = $statement->fetch() ) {
+        $found_id = html_output($row['id']);
+        if ( !empty( $found_id ) ) {
+            $information = get_client_by_id($found_id);
+            return $information;
+        }
+        else {
+            return false;
+        }
+    }
 }
-
+ 
+ 
 /**
  * Get all the client information knowing only the log in username
  *
@@ -413,77 +383,119 @@ function check_if_notify_client($client)
 	}
 }
 
-
 /**
- * Get all the user information knowing only the log in username
- *
- * @return array
- */
-function get_user_by_username($user)
+* Get a user using any of the accepted field names
+* 
+* @uses get_user_by_id
+* @return array
+*/
+function get_user_by($user_type, $field, $value)
 {
-	global $dbh;
-	$statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE user=:user");
-	$statement->execute(
-						array(
-							':user'	=> $user
-						)
-					);
-	$statement->setFetchMode(PDO::FETCH_ASSOC);
+    global $dbh;
 
-	if ( $statement->rowCount() > 0 ) {
-		while ( $row = $statement->fetch() ) {
-			$information = array(
-								'id'					=> html_output($row['id']),
-								'username'			=> html_output($row['user']),
-								'name'				=> html_output($row['name']),
-								'email'				=> html_output($row['email']),
-								'level'				=> html_output($row['level']),
-								'active'				=> html_output($row['active']),
-								'max_file_size'	=> html_output($row['max_file_size']),
-								'created_date'		=> html_output($row['timestamp'])
-							);
-			if ( !empty( $information ) ) {
-				return $information;
-			}
-			else {
-				return false;
-			}
-		}
-	}
+    $field = (string)$field;
+    $field = trim( strip_Tags( htmlentities( strtolower( $field ) ) ) );
+    $acceptable_fields = [
+        'username',
+        'name',
+        'email',
+    ];
+
+    if ( in_array( $field, $acceptable_fields ) ) {
+        $statement = $dbh->prepare("SELECT id FROM " . TABLE_USERS . " WHERE `$field`=:value");
+        $statement->bindParam(':value', $value);
+        $statement->execute();
+        
+        $result = $statement->fetchColumn();
+        if ( $result ) {
+            switch ( $user_type ) {
+                case 'user':
+                    $user_data = get_user_by_id($result);
+                    break;
+                case 'client':
+                    $user_data = get_client_by_id($result);
+            }
+
+            return $user_data;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
 }
 
 /**
- * Get all the user information knowing only the log in username
- *
- * @return array
- */
+* Get all the user information knowing only the id
+*
+* @return array
+*/
 function get_user_by_id($id)
 {
-	global $dbh;
-	$statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE id=:id");
-	$statement->bindParam(':id', $id, PDO::PARAM_INT);
-	$statement->execute();
-	$statement->setFetchMode(PDO::FETCH_ASSOC);
+    global $dbh;
 
-	while ( $row = $statement->fetch() ) {
-		$information = array(
-							'id'					=> html_output($row['id']),
-							'username'			=> html_output($row['user']),
-							'name'				=> html_output($row['name']),
-							'email'				=> html_output($row['email']),
-							'level'				=> html_output($row['level']),
-							'max_file_size'	=> html_output($row['max_file_size']),
-							'created_date'		=> html_output($row['timestamp']),
-						);
-		if ( !empty( $information ) ) {
-			return $information;
-		}
-		else {
-			return false;
-		}
-	}
+    $statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE id=:id");
+    $statement->bindParam(':id', $id, PDO::PARAM_INT);
+    $statement->execute();
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+    while ( $row = $statement->fetch() ) {
+        $information = array(
+                            'id'			=> html_output($row['id']),
+                            'username'		=> html_output($row['user']),
+                            'name'			=> html_output($row['name']),
+                            'email'			=> html_output($row['email']),
+                            'level'			=> html_output($row['level']),
+                            'active'		=> html_output($row['active']),
+                            'max_file_size'	=> html_output($row['max_file_size']),
+                            'created_date'	=> html_output($row['timestamp']),
+                        );
+        if ( !empty( $information ) ) {
+            return $information;
+        }
+        else {
+            return false;
+        }
+    }
 }
 
+/**
+* Get all the user information knowing only the log in username
+*
+* @return array
+* @uses get_user_by_id
+*/
+function get_user_by_username($user)
+{
+    global $dbh;
+
+    $statement = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE user=:user");
+    $statement->execute(
+                        array(
+                            ':user'	=> $user
+                        )
+                    );
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+    if ( $statement->rowCount() > 0 ) {
+        while ( $row = $statement->fetch() ) {
+            $found_id = html_output($row['id']);
+            if ( !empty( $found_id ) ) {
+                $information = get_user_by_id($found_id);
+                return $information;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    else {
+        return false;
+    }
+}
+ 
 
 /**
  * Get all the file information knowing only the id
@@ -515,40 +527,6 @@ function get_file_by_id($id)
 	}
 }
 
-
-/**
- * Get all the group information knowing only the id
- *
- * @return array
- */
-function get_group_by_id($id)
-{
-	global $dbh;
-	$statement = $dbh->prepare("SELECT * FROM " . TABLE_GROUPS . " WHERE id=:id");
-	$statement->bindParam(':id', $id, PDO::PARAM_INT);
-	$statement->execute();
-	$statement->setFetchMode(PDO::FETCH_ASSOC);
-
-	while ( $row = $statement->fetch() ) {
-		$information = array(
-							'id'				=> html_output($row['id']),
-							'created_by'	=> html_output($row['created_by']),
-							'created_date'	=> html_output($row['timestamp']),
-							'name'			=> html_output($row['name']),
-							'description'	=> html_output($row['description']),
-							'public'			=> html_output($row['public']),
-							'public_token'	=> html_output($row['public_token']),
-						);
-		if ( !empty( $information ) ) {
-			return $information;
-		}
-		else {
-			return false;
-		}
-	}
-}
-
-
 /**
  * Standard footer mark up and information generated on this function to
  * prevent code repetition.
@@ -563,7 +541,6 @@ function default_footer_info($logged = true)
 			<?php
 				if ( defined('FOOTER_CUSTOM_ENABLE') && FOOTER_CUSTOM_ENABLE == '1' ) {
 					echo strip_tags(FOOTER_CUSTOM_CONTENT, '<br><span><a><strong><em><b><i><u><s>');
-					//echo htmlentities_allowed(FOOTER_CUSTOM_CONTENT);
 				}
 				else {
 					_e('Provided by', 'cftp_admin'); ?> <a href="<?php echo SYSTEM_URI; ?>" target="_blank"><?php echo SYSTEM_NAME; ?></a> <?php if ($logged == true) { _e('version', 'cftp_admin'); echo ' ' . CURRENT_VERSION; } ?> - <?php _e('Free software', 'cftp_admin');
@@ -597,36 +574,34 @@ function message_no_clients()
  * - message_info
  *
  */
+/**
+ * Generate a system text message using Bootstrap's alert box.
+ */
 function system_message( $type, $message, $div_id = '' )
 {
-	$close = false;
+    if ( empty( $type ) ) {
+        $type = 'success';
+    }
 
 	switch ($type) {
-		case 'ok':
-			$class = 'success';
-			$close = true;
-			break;
-		case 'error':
-			$class = 'danger';
-			$close = true;
+        case 'success':
+            break;
+		case 'danger':
 			break;
 		case 'info':
-			$class = 'info';
-			break;
-		case 'warning':
-			$class = 'warning';
-			break;
+            break;
+        case 'warning':
+            break;
 	}
 
-	//$return = '<div class="message message_'.$type.'"';
-	$return = '<div class="alert alert-'.$class.'"';
+	$return = '<div class="alert alert-'.$type.'"';
 	if ( isset( $div_id ) && $div_id != '' ) {
 		$return .= ' id="' . $div_id . '"';
 	}
 
 	$return .= '>';
 
-	if ($close == true) {
+	if (isset($close) && $close == true) {
 		$return .= '<a href="#" class="close" data-dismiss="alert">&times;</a>';
 	}
 
@@ -1283,12 +1258,12 @@ function option_file_upload( $file, $validate_ext = '', $option = '', $action = 
 
 				/** Record the action log */
 				if ( !empty( $action ) ) {
-					$new_log_action = new LogActions();
+					$logger = new \ProjectSend\Classes\ActionsLog();
 					$log_action_args = array(
 											'action' => $action,
 											'owner_id' => CURRENT_USER_ID
 										);
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				}
 			}
 			else {

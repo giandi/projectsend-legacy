@@ -323,6 +323,8 @@ if(!empty($options_values)) {
 
 if (defined('BASE_URI')) {
     define('THUMBNAILS_FILES_URL', BASE_URI.'upload/thumbnails');
+    define('EMAIL_TEMPLATES_URL', BASE_URI . 'emails/');
+    define('TEMPLATES_URL', BASE_URI . 'templates/');
 
     /* Widgets */
     define('WIDGETS_URL',BASE_URI.'includes/widgets/');

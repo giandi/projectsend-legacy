@@ -121,7 +121,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 													'id'		=> 'files_list',
 													'class'		=> 'footable table',
 												);
-						$table = new generateTable( $table_attributes );
+						$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 		
 						$thead_columns		= array(
 													array(
@@ -196,8 +196,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 							}
 							
 							/** Extension */
-							$pathinfo = pathinfo($file['url']);
-							$extension = strtolower($pathinfo['extension']);
+							$extension = strtolower($file['extension']);
 							$extension_cell = '<span class="label label-success label_big">' . $extension . '</span>';
 
 							/** Description */

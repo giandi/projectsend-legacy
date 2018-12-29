@@ -12,7 +12,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 if (!check_for_admin()) { return; }
 
@@ -56,11 +56,11 @@ include('header.php');
 					 * Inactive users are not allowed to log in.
 					 */
 					foreach ($selected_users as $work_user) {
-						$this_user = new UserActions();
-						$hide_user = $this_user->change_user_active_status($work_user,'1');
+						$this_user = new \ProjectSend\Classes\UserActions;
+						$hide_user = $this_user->setActiveStatus($work_user,'1');
 					}
 					$msg = __('The selected users were marked as active.','cftp_admin');
-					echo system_message('ok',$msg);
+					echo system_message('success',$msg);
 					$log_action_number = 27;
 					break;
 
@@ -74,8 +74,8 @@ include('header.php');
 						 * A user should not be able to deactivate himself
 						 */
 						if ($work_user != $my_info['id']) {
-							$this_user = new UserActions();
-							$hide_user = $this_user->change_user_active_status($work_user,'0');
+							$this_user = new \ProjectSend\Classes\UserActions;
+							$hide_user = $this_user->setActiveStatus($work_user,'0');
 							$affected_users++;
 						}
 						else {
@@ -86,7 +86,7 @@ include('header.php');
 
 					if ($affected_users > 0) {
 						$msg = __('The selected users were marked as inactive.','cftp_admin');
-						echo system_message('ok',$msg);
+						echo system_message('success',$msg);
 						$log_action_number = 28;
 					}
 					break;
@@ -97,8 +97,8 @@ include('header.php');
 						 * A user should not be able to delete himself
 						 */
 						if ($work_user != $my_info['id']) {
-							$this_user = new UserActions();
-							$delete_user = $this_user->delete_user($work_user);
+							$this_user = new \ProjectSend\Classes\UserActions;
+							$delete_user = $this_user->delete($work_user);
 							$affected_users++;
 						}
 						else {
@@ -109,7 +109,7 @@ include('header.php');
 					
 					if ($affected_users > 0) {
 						$msg = __('The selected users were deleted.','cftp_admin');
-						echo system_message('ok',$msg);
+						echo system_message('success',$msg);
 						$log_action_number = 16;
 					}
 				break;
@@ -117,13 +117,13 @@ include('header.php');
 
 			/** Record the action log */
 			foreach ($selected_users as $user) {
-				$new_log_action = new LogActions();
+				$logger = new \ProjectSend\Classes\ActionsLog();
 				$log_action_args = array(
 										'action' => $log_action_number,
 										'owner_id' => CURRENT_USER_ID,
 										'affected_account_name' => $all_users[$user]
 									);
-				$new_record_action = $new_log_action->log_action_save($log_action_args);
+				$new_record_action = $logger->add_entry($log_action_args);
 			}
 		}
 		else {
@@ -292,7 +292,7 @@ include('header.php');
 											'id'		=> 'users_tbl',
 											'class'		=> 'footable table',
 										);
-				$table = new generateTable( $table_attributes );
+				$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 
 				$thead_columns		= array(
 											array(

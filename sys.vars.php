@@ -218,6 +218,15 @@ define('ASSETS_IMG_DIR', ASSETS_DIR . DS . 'img/');
 define('ASSETS_JS_DIR', ASSETS_DIR . DS . 'js/');
 define('ASSETS_LIB_DIR', ASSETS_DIR . DS . 'lib/');
 
+/** Directories */
+define('CORE_LANG_DIR', ROOT_DIR . DS . 'lang');
+define('INCLUDES_DIR', ROOT_DIR . DS . 'includes');
+define('FORMS_DIR', INCLUDES_DIR . DS . 'forms');
+define('ADMIN_VIEWS_DIR', ROOT_DIR);
+define('EMAIL_TEMPLATES_DIR', ADMIN_VIEWS_DIR . DS . 'emails');
+define('TEMPLATES_DIR', ROOT_DIR . DS . 'templates');
+
+
 /* Branding */
 define('ADMIN_UPLOADS_DIR', UPLOADED_FILES_ROOT . DS . 'admin');
 define('LOGO_MAX_WIDTH', 300);

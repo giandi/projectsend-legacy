@@ -5,7 +5,7 @@
  * @package		ProjectSend
  */
 $allowed_levels = array(9,8,7,0);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $_SESSION['last_call']	= time();
 
@@ -88,19 +88,19 @@ class process {
 					}
 
 					/** Record the action log */
-					$this->new_log_action = new LogActions();
+					$this->new_log_action = new \ProjectSend\Classes\ActionsLog();
 					$this->log_action_args = array(
 											'action' => 1,
 											'owner_id' => $this->logged_id,
 											'owner_user' => $this->global_name,
 											'affected_account_name' => $this->global_name
 										);
-					$this->new_record_action = $this->new_log_action->log_action_save($this->log_action_args);
+					$this->new_record_action = $this->new_log_action->add_entry($this->log_action_args);
 
 
 					$results = array(
 									'status'	=> 'success',
-									'message'	=> system_message('ok','Login success. Redirecting...','login_response'),
+									'message'	=> system_message('success','Login success. Redirecting...','login_response'),
 								);
 					if ($this->user_level == '0') {
 						$results['location']	= BASE_URI."my_files/";
@@ -192,13 +192,13 @@ class process {
 		session_destroy();
 
 		/** Record the action log */
-		$new_log_action = new LogActions();
+		$logger = new \ProjectSend\Classes\ActionsLog();
 		$log_action_args = array(
 								'action'	=> 31,
 								'owner_id'	=> CURRENT_USER_ID,
-								'affected_account_name' => $global_name
+								'affected_account_name' => CURRENT_USER_NAME
 							);
-		$new_record_action = $new_log_action->log_action_save($log_action_args);
+		$new_record_action = $logger->add_entry($log_action_args);
 		
 		$redirect_to = 'index.php';
 		if ( isset( $_GET['timeout'] ) ) {
@@ -301,7 +301,7 @@ class process {
 						$this->statement->execute();
 
 						/** Record the action log */
-						$new_log_action = new LogActions();
+						$logger = new \ProjectSend\Classes\ActionsLog();
 						$log_action_args = array(
 												'action'				=> $log_action,
 												'owner_id'				=> $log_action_owner_id,
@@ -312,7 +312,7 @@ class process {
 												'get_user_real_name'	=> true,
 												'get_file_real_name'	=> true
 											);
-						$new_record_action = $new_log_action->log_action_save($log_action_args);
+						$new_record_action = $logger->add_entry($log_action_args);
 						$this->real_file = UPLOADED_FILES_DIR.DS.$this->filename_find;
                         $this->save_file = UPLOADED_FILES_DIR.DS.$this->filename_save;
 

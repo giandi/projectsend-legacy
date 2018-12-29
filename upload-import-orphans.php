@@ -15,7 +15,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9,8,7);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'files';
 
@@ -173,7 +173,7 @@ include('header.php');
 											'class'				=> 'footable table',
 											'data-page-size'	=> FOOTABLE_PAGING_NUMBER,
 										);
-				$table = new generateTable( $table_attributes );
+				$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 	
 				$thead_columns		= array(
 											array(

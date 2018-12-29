@@ -6,7 +6,7 @@
  *
  */
 $allowed_levels = array(9,8,7,0);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $page_title = __('Lost password','cftp_admin');
 
@@ -107,7 +107,7 @@ include('header-unlogged.php');
 						$sql_pass->execute();
 			
 						/** Send email */
-						$notify_user = new PSend_Email();
+						$notify_user = new \ProjectSend\Classes\Emails;
 						$email_arguments = array(
 														'type' => 'password_reset',
 														'address' => $email,
@@ -235,7 +235,7 @@ include('header-unlogged.php');
 					switch ($state['email']) {
 						case 1:
 							$msg = __('An e-mail with further instructions has been sent. Please check your inbox to proceed.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 						break;
 						case 0:
 							$msg = __("E-mail couldn't be sent.",'cftp_admin');
@@ -252,7 +252,7 @@ include('header-unlogged.php');
 					switch ($state['reset']) {
 						case 1:
 							$msg = __('Your new password has been set. You can now log in using it.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 						break;
 						case 0:
 							$msg = __("Your new password couldn't be set.",'cftp_admin');

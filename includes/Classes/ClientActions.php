@@ -7,46 +7,33 @@
  * @subpackage	Classes
  */
 
+namespace ProjectSend\Classes;
+use \PDO;
+
 class ClientActions
 {
 
 	var $client = '';
+    private $dbh;
 
-	function __construct() {
-		global $dbh;
-		$this->dbh = $dbh;
-	}
-
-	public function generateUsername($string, $i = 1) {
-		$string = preg_replace('/[^A-Za-z0-9]/', "", $string);
-		$username = $string;
-		while(!$this->isUniqueUsername($username)) {
-			$username = $string . $i;
-			$i++;
-		}
-		return $username;
-	}
-
-	private function isUniqueUsername($string) {
-		$statement = $this->dbh->prepare( "SELECT * FROM " . TABLE_USERS . " WHERE user = :user" );
-		$statement->execute(array(':user'	=> $string));
-		if($statement->rowCount() > 0) {
-			return false;
-		}
-		return true;
-	}
+    public function __construct()
+    {
+        global $dbh;
+        $this->dbh = $dbh;
+    }
 
 	/**
 	 * Validate the information from the form.
 	 */
-	function validate_client($arguments)
+	function validate($arguments)
 	{
-		require(ROOT_DIR.'/includes/vars.php');
+        $validation = new \ProjectSend\Classes\Validation;
 
-		global $valid_me;
+		global $json_strings;
 		$this->state = array();
 
 		$this->id = $arguments['id'];
+		$this->username = ( !empty( $arguments['username'] ) ) ? $arguments['username'] : 0;
 		$this->name = $arguments['name'];
 		$this->email = $arguments['email'];
 		$this->password = $arguments['password'];
@@ -54,33 +41,31 @@ class ClientActions
 		$this->address = $arguments['address'];
 		$this->phone = $arguments['phone'];
 		$this->contact = $arguments['contact'];
-		$this->notify_account = $arguments['notify_account'];
+		$this->notify_account = ( !empty( $arguments['notify_account'] ) ) ? $arguments['notify_account'] : 0;
 		$this->notify_upload = $arguments['notify_upload'];
 		$this->max_file_size = ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
 		$this->type = $arguments['type'];
-		$this->recaptcha = ( isset( $arguments['recaptcha'] ) ) ? $arguments['recaptcha'] : '';
-
+        $this->recaptcha = ( isset( $arguments['recaptcha'] ) ) ? $arguments['recaptcha'] : '';
+        
 		/**
 		 * These validations are done both when creating a new client and
 		 * when editing an existing one.
 		 */
-		$valid_me->validate('completed',$this->name,$validation_no_name);
-		$valid_me->validate('completed',$this->email,$validation_no_email);
-		$valid_me->validate('email',$this->email,$validation_invalid_mail);
-		$valid_me->validate('number',$this->max_file_size,$validation_file_size);
+		$validation->validate('completed',$this->name,$json_strings['validation']['no_name']);
+		$validation->validate('completed',$this->email,$json_strings['validation']['no_email']);
+		$validation->validate('email',$this->email,$json_strings['validation']['invalid_email']);
+		$validation->validate('number',$this->max_file_size,$json_strings['validation']['file_size']);
 
 		/**
 		 * Validations for NEW CLIENT submission only.
 		 */
 		if ($this->type == 'new_client') {
-			$this->username = $arguments['username'];
-
-			$valid_me->validate('email_exists',$this->email,$add_user_mail_exists);
+			$validation->validate('email_exists',$this->email,$json_strings['validation']['email_exists']);
 			/** Username checks */
-			$valid_me->validate('user_exists',$this->username,$add_user_exists);
-			$valid_me->validate('completed',$this->username,$validation_no_user);
-			$valid_me->validate('alpha_dot',$this->username,$validation_alpha_user);
-			$valid_me->validate('length',$this->username,$validation_length_user,MIN_USER_CHARS,MAX_USER_CHARS);
+			$validation->validate('user_exists',$this->username,$json_strings['validation']['user_exists']);
+			$validation->validate('completed',$this->username,$json_strings['validation']['no_user']);
+			$validation->validate('alpha_dot',$this->username,$json_strings['validation']['alpha_user']);
+			$validation->validate('length',$this->username,$json_strings['validation']['length_user'],MIN_USER_CHARS,MAX_USER_CHARS);
 
 			$this->validate_password = true;
 		}
@@ -96,38 +81,44 @@ class ClientActions
 				$this->validate_password = true;
 			}
 			/**
-			 * Check if the email is currently assigned to this clients's id.
-			 * If not, then check if it exists.
+			 * Check if the email is currently assigned to this clients's id. If not, then check if it exists.
 			 */
-			$valid_me->validate('email_exists',$this->email,$add_user_mail_exists,'','','','','',$this->id);
+			$validation->validate('email_exists',$this->email,$json_strings['validation']['email_exists'],'','','','','',$this->id);
 		}
 
 		/** Password checks */
 		if (isset($this->validate_password) && $this->validate_password === true) {
-			$valid_me->validate('completed',$this->password,$validation_no_pass);
-			$valid_me->validate('password',$this->password,$validation_valid_pass.' '.$validation_valid_chars);
-			$valid_me->validate('pass_rules',$this->password,$validation_rules_pass);
-			$valid_me->validate('length',$this->password,$validation_length_pass,MIN_PASS_CHARS,MAX_PASS_CHARS);
-			//$valid_me->validate('pass_match','',$validation_match_pass,'','',$this->password,$this->password_repeat);
+			$validation->validate('completed',$this->password,$json_strings['validation']['no_pass']);
+			$validation->validate('password',$this->password,$json_strings['validation']['valid_pass'] . " " . addslashes($json_strings['validation']['valid_chars']));
+			$validation->validate('pass_rules',$this->password,$json_strings['validation']['rules_pass']);
+			$validation->validate('length',$this->password,$json_strings['validation']['length_pass'],MIN_PASS_CHARS,MAX_PASS_CHARS);
+			//$validation->validate('pass_match','',$json_strings['validation']['match_pass'],'','',$this->password,$this->password_repeat);
 		}
 
 		if ( !empty($this->recaptcha) ) {
-			$valid_me->validate('recaptcha',$this->recaptcha,$validation_recaptcha);
+			$validation->validate('recaptcha',$this->recaptcha,$json_strings['validation']['recaptcha']);
 		}
 
-		if ($valid_me->return_val) {
-			return 1;
+		if ($validation->passed()) {
+            $results = [
+                'passed' => true
+            ];
 		}
 		else {
-			return 0;
-		}
+            $results = [
+                'passed' => false,
+                'errors' => $validation->list_errors(),
+            ];
+        }
+        
+        return $results;
 	}
 
 
 	/**
 	 * Create a new client.
 	 */
-	function create_client($arguments)
+	function create($arguments)
 	{
 		global $hasher;
 		$this->state = array();
@@ -136,18 +127,19 @@ class ClientActions
 		$this->id				= $arguments['id'];
 		$this->name				= encode_html($arguments['name']);
 		$this->email			= encode_html($arguments['email']);
-		$this->username		= encode_html($arguments['username']);
-		$this->password		= $arguments['password'];
+		$this->username			= encode_html($arguments['username']);
+		$this->password			= $arguments['password'];
 		//$this->password_repeat = $arguments['password_repeat'];
 		$this->address			= encode_html($arguments['address']);
 		$this->phone			= encode_html($arguments['phone']);
 		$this->contact			= encode_html($arguments['contact']);
-		$this->notify_upload    	= ( $arguments['notify_upload'] == '1' ) ? 1 : 0;
-		$this->notify_account   	= ( $arguments['notify_account'] == '1' ) ? 1 : 0;
+		$this->notify_upload   	= ( $arguments['notify_upload'] == '1' ) ? 1 : 0;
+		$this->notify_account  	= ( $arguments['notify_account'] == '1' ) ? 1 : 0;
 		$this->max_file_size	= ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
 		$this->request			= ( !empty( $arguments['account_requested'] ) ) ? $arguments['account_requested'] : 0;
-        $this->active			= ( $arguments['active'] );
-        $this->enc_password		= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
+		$this->active			= ( $arguments['active'] );
+		$this->enc_password		= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
+		//$this->enc_password	= $hasher->HashPassword($this->password);
 
 		if (strlen($this->enc_password) >= 20) {
 
@@ -159,14 +151,14 @@ class ClientActions
 			/** Insert the client information into the database */
 			$this->timestamp = time();
 			$this->sql_query = $this->dbh->prepare("INSERT INTO " . TABLE_USERS . " (name,user,password,address,phone,email,notify,contact,created_by,active,account_requested,max_file_size)"
-												."VALUES (:name, :username, :password, :address, :phone, :email, :notify, :contact, :admin, :active, :request, :max_file_size)");
+												."VALUES (:name, :username, :password, :address, :phone, :email, :notify_upload, :contact, :admin, :active, :request, :max_file_size)");
 			$this->sql_query->bindParam(':name', $this->name);
 			$this->sql_query->bindParam(':username', $this->username);
 			$this->sql_query->bindParam(':password', $this->enc_password);
 			$this->sql_query->bindParam(':address', $this->address);
 			$this->sql_query->bindParam(':phone', $this->phone);
 			$this->sql_query->bindParam(':email', $this->email);
-			$this->sql_query->bindParam(':notify', $this->notify_upload, PDO::PARAM_INT);
+			$this->sql_query->bindParam(':notify_upload', $this->notify_upload, PDO::PARAM_INT);
 			$this->sql_query->bindParam(':contact', $this->contact);
 			$this->sql_query->bindParam(':admin', $this->this_admin);
 			$this->sql_query->bindParam(':active', $this->active, PDO::PARAM_INT);
@@ -180,7 +172,7 @@ class ClientActions
 				$this->state['new_id']	= $this->dbh->lastInsertId();
 
 				/** Send account data by email */
-				$this->notify_client = new PSend_Email();
+				$this->notify_client = new \ProjectSend\Classes\Emails;
 				$this->email_arguments = array(
 												'type'		=> 'new_client',
 												'address'	=> $this->email,
@@ -188,7 +180,7 @@ class ClientActions
 												'password'	=> $this->password
 											);
 				if ($this->notify_account == 1) {
-					$this->notify_send = $this->notify_client->psend_send_email($this->email_arguments);
+					$this->notify_send = $this->notify_client->send($this->email_arguments);
 
 					if ($this->notify_send == 1){
 						$this->state['email'] = 1;
@@ -216,7 +208,7 @@ class ClientActions
 	/**
 	 * Edit an existing client.
 	 */
-	function edit_client($arguments)
+	function edit($arguments)
 	{
 		global $hasher;
 		global $dbh;
@@ -225,15 +217,16 @@ class ClientActions
 		/** Define the account information */
 		$this->id				= $arguments['id'];
 		$this->name				= encode_html($arguments['name']);
-		$this->password		= $arguments['password'];
+		$this->password			= $arguments['password'];
 		$this->email			= encode_html($arguments['email']);
 		$this->address			= encode_html($arguments['address']);
 		$this->phone			= encode_html($arguments['phone']);
 		$this->contact			= encode_html($arguments['contact']);
-		$this->notify_upload		= ( $arguments['notify_upload'] == '1' ) ? 1 : 0;
+        $this->notify_upload	= ( $arguments['notify_upload'] == '1' ) ? 1 : 0;
 		$this->active			= ( $arguments['active'] == '1' ) ? 1 : 0;
 		$this->max_file_size	= ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
-        $this->enc_password		= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
+		$this->enc_password		= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
+		//$this->enc_password	= $hasher->HashPassword($arguments['password']);
 
 		if (strlen($this->enc_password) >= 20) {
 
@@ -246,7 +239,7 @@ class ClientActions
 										phone = :phone,
 										email = :email,
 										contact = :contact,
-										notify = :notify,
+										notify = :notify_upload,
 										active = :active,
 										max_file_size = :max_file_size
 										";
@@ -258,14 +251,13 @@ class ClientActions
 
 			$this->edit_client_query .= " WHERE id = :id";
 
-
 			$this->sql_query = $this->dbh->prepare( $this->edit_client_query );
 			$this->sql_query->bindParam(':name', $this->name);
 			$this->sql_query->bindParam(':address', $this->address);
 			$this->sql_query->bindParam(':phone', $this->phone);
 			$this->sql_query->bindParam(':email', $this->email);
 			$this->sql_query->bindParam(':contact', $this->contact);
-			$this->sql_query->bindParam(':notify', $this->notify_upload, PDO::PARAM_INT);
+			$this->sql_query->bindParam(':notify_upload', $this->notify_upload, PDO::PARAM_INT);
 			$this->sql_query->bindParam(':active', $this->active, PDO::PARAM_INT);
 			$this->sql_query->bindParam(':max_file_size', $this->max_file_size, PDO::PARAM_INT);
 			$this->sql_query->bindParam(':id', $this->id, PDO::PARAM_INT);
@@ -293,7 +285,8 @@ class ClientActions
 	/**
 	 * Delete an existing client.
 	 */
-	function delete_client($client_id) {
+    function delete($client_id)
+    {
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
 			/** Do a permissions check */
@@ -330,7 +323,7 @@ class ClientActions
 	/**
 	 * Approve account
 	 */
-	function client_account_approve($client_id)
+	function account_approve($client_id)
 	{
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
@@ -354,7 +347,7 @@ class ClientActions
 	/**
 	 * Deny account
 	 */
-	function client_account_deny($client_id)
+	function account_deny($client_id)
 	{
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
@@ -374,5 +367,4 @@ class ClientActions
 
 		return $this->status;
 	}
-
 }

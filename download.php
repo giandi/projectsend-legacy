@@ -6,7 +6,7 @@
  *
  */
 $allowed_levels = array(9,8,7,0);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $page_title = __('File information','cftp_admin');
 
@@ -76,14 +76,14 @@ include('header-unlogged.php');
 				$statement->execute();
 
 				/** Record the action log */
-				$new_log_action = new LogActions();
+				$logger = new \ProjectSend\Classes\ActionsLog();
 				$log_action_args = array(
 										'action'				=> 37,
 										'owner_id'				=> 0,
 										'affected_file'			=> (int)$got_file_id,
 										'affected_file_name'	=> $real_file_url,
 									);
-				$new_record_action = $new_log_action->log_action_save($log_action_args);
+				$new_record_action = $logger->add_entry($log_action_args);
 
 				// DOWNLOAD
 				$real_file = UPLOADED_FILES_DIR.DS.basename($real_file_url);

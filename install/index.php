@@ -8,7 +8,7 @@
 define( 'IS_INSTALL', true );
 
 define( 'ABS_PARENT', dirname( dirname(__FILE__) ) );
-require_once( ABS_PARENT . '/sys.includes.php' );
+require_once( ABS_PARENT . '/bootstrap.php' );
 
 /** Version requirements check */
 $version_php	= phpversion();
@@ -100,7 +100,7 @@ include_once('../header-unlogged.php');
 					switch ( $_GET['status'] ) {
 						case 'success';
 							$msg = __('Congratulations! Everything is up and running.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 							?>
 								<p><?php _e('You may proceed to','cftp_admin'); ?> <a href="<?php echo BASE_URI; ?>" target="_self"><?php _e('log in','cftp_admin'); ?></a> <?php _e('with your newely created username and password.','cftp_admin'); ?></p>
 							<?php
@@ -195,13 +195,13 @@ include_once('../header-unlogged.php');
 									chmod_main_files();
 
 									/** Record the action log */
-									$new_log_action = new LogActions();
+									$logger = new \ProjectSend\Classes\ActionsLog();
 									$log_action_args = array(
 															'action' => 0,
 															'owner_id' => 1,
 															'owner_user' => $got_admin_name
 														);
-									$new_record_action = $new_log_action->log_action_save($log_action_args);
+									$new_record_action = $logger->add_entry($log_action_args);
 
 									$location = 'index.php?status=success';
 									header("Location: $location");

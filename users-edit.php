@@ -7,12 +7,12 @@
  *
  */
 $allowed_levels = array(9,8,7);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'users';
 
 /** Create the object */
-$edit_user = new UserActions();
+$edit_user = new \ProjectSend\Classes\UserActions;
 
 /** Check if the id parameter is on the URI. */
 if (isset($_GET['id'])) {
@@ -28,21 +28,10 @@ else {
 
 /**
  * Get the user information from the database to use on the form.
+ * @todo replace when a User class is made
  */
 if ($page_status === 1) {
-	$editing = $dbh->prepare("SELECT * FROM " . TABLE_USERS . " WHERE id=:id");
-	$editing->bindParam(':id', $user_id, PDO::PARAM_INT);
-	$editing->execute();
-	$editing->setFetchMode(PDO::FETCH_ASSOC);
-
-	while ( $data = $editing->fetch() ) {
-		$add_user_data_name = $data['name'];
-		$add_user_data_user = $data['user'];
-		$add_user_data_email = $data['email'];
-		$add_user_data_level = $data['level'];
-		$add_user_data_maxfilesize	= $data['max_file_size'];
-		if ($data['active'] == 1) { $add_user_data_active = 1; } else { $add_user_data_active = 0; }
-	}
+    $user_arguments = get_user_by_id($user_id);
 }
 
 /**
@@ -53,7 +42,7 @@ if (CURRENT_USER_LEVEL == 7) {
 	$ignore_size = true;
 }
 else {
-	if (CURRENT_USER_USERNAME == $add_user_data_user) {
+	if (CURRENT_USER_USERNAME == $user_arguments['username']) {
 		$user_form_type = 'edit_user_self';
 		$ignore_size = true;
 	}
@@ -67,7 +56,7 @@ else {
  * Compare the client editing this account to the on the db.
  */
 if (CURRENT_USER_LEVEL != 9) {
-	if (CURRENT_USER_USERNAME != $add_user_data_user) {
+	if (CURRENT_USER_USERNAME != $user_arguments['username']) {
 		$page_status = 3;
 	}
 }
@@ -90,72 +79,66 @@ if ($_POST) {
 	 * validation failed, the new unsaved values are shown to avoid
 	 * having to type them again.
 	 */
-	$add_user_data_name			= $_POST['add_user_form_name'];
-	$add_user_data_email		= $_POST['add_user_form_email'];
 
-	if ( $ignore_size == false ) {
-		$add_user_data_maxfilesize	= (isset($_POST["add_user_form_maxfilesize"])) ? $_POST["add_user_form_maxfilesize"] : '';
+    $user_arguments = array(
+        'id'	    		=> $user_id,
+        'username'          => $user_arguments['username'],
+        'name'	    		=> encode_html($_POST['name']),
+        'email'		    	=> encode_html($_POST['email']),
+        'role'              => $user_arguments['level'],
+        'max_file_size'     => $user_arguments['max_file_size'],
+        'active'            => $user_arguments['active'],
+        'type'		    	=> 'edit_user',
+    );
+    
+    if ( $ignore_size == false ) {
+		$user_arguments['max_file_size'] = (isset($_POST["max_file_size"])) ? $_POST["max_file_size"] : '';
 	}
-	else {
-		$add_user_data_maxfilesize	= $add_user_data_maxfilesize;
-	}
+
+    /**
+	 * If the password field, or the verification are not completed,
+	 * send an empty value to prevent notices.
+	 */
+	$user_arguments['password'] = (isset($_POST['password'])) ? $_POST['password'] : '';
+	//$user_arguments['password_repeat'] = (isset($_POST['password_repeat'])) ? $_POST['password_repeat'] : '';
 
 	/**
 	 * Edit level only when user is not Uploader (level 7) or when
 	 * editing other's account (not own).
 	 */	
-	$edit_level_active = true;
+	$can_edit_level_and_active = true;
 	if (CURRENT_USER_LEVEL == 7) {
-		$edit_level_active = false;
+		$can_edit_level_and_active = false;
 	}
 	else {
-		if (CURRENT_USER_USERNAME == $add_user_data_user) {
-			$edit_level_active = false;
+		if (CURRENT_USER_USERNAME == $user_arguments['username']) {
+			$can_edit_level_and_active = false;
 		}
 	}
-	if ($edit_level_active === true) {
-		/** Default level to 7 just in case */
-		$add_user_data_level = (isset($_POST["add_user_form_level"])) ? $_POST['add_user_form_level'] : '7';
-		$add_user_data_active = (isset($_POST["add_user_form_active"])) ? 1 : 0;
-	}
-
-	/** Arguments used on validation and user creation. */
-	$edit_arguments = array(
-							'id'			=> $user_id,
-							'name'			=> $add_user_data_name,
-							'email'				=> $add_user_data_email,
-							'role'				=> $add_user_data_level,
-							'active'				=> $add_user_data_active,
-							'max_file_size'	=> $add_user_data_maxfilesize,
-							'type'				=> 'edit_user'
-						);
-
-	/**
-	 * If the password field, or the verification are not completed,
-	 * send an empty value to prevent notices.
-	 */
-	$edit_arguments['password'] = (isset($_POST['add_user_form_pass'])) ? $_POST['add_user_form_pass'] : '';
-	//$edit_arguments['password_repeat'] = (isset($_POST['add_user_form_pass2'])) ? $_POST['add_user_form_pass2'] : '';
+	if ($can_edit_level_and_active === true) {
+        $user_arguments['level'] = (isset($_POST['level'])) ? $_POST['level'] : $user_arguments['level'];
+        $user_arguments['active'] = (isset($_POST["active"])) ? 1 : 0;
+    }
 
 	/** Validate the information from the posted form. */
-	$edit_validate = $edit_user->validate_user($edit_arguments);
+	$validation = $edit_user->validate($user_arguments);
 	
 	/** Create the user if validation is correct. */
-	if ($edit_validate == 1) {
-		$edit_response = $edit_user->edit_user($edit_arguments);
-	}
+	if ($validation['passed'] == true) {
+		$edit_response = $edit_user->edit($user_arguments);
+    }
 
 	$location = BASE_URI . 'users-edit.php?id=' . $user_id . '&status=' . $edit_response['query'];
 	header("Location: $location");
-	die();
+	exit;
 }
 
 $page_title = __('Edit system user','cftp_admin');
-if (CURRENT_USER_USERNAME == $add_user_data_user) {
+if (CURRENT_USER_USERNAME == $user_arguments['username']) {
 	$page_title = __('My account','cftp_admin');
 }
 
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
 <div class="col-xs-12 col-sm-12 col-lg-6">
@@ -164,11 +147,11 @@ include('header.php');
 			switch ($_GET['status']) {
 				case 1:
 					$msg = __('User edited correctly.','cftp_admin');
-					echo system_message('ok',$msg);
+					echo system_message('success',$msg);
 
 					$saved_user = get_user_by_id($user_id);
 					/** Record the action log */
-					$new_log_action = new LogActions();
+					$logger = new ProjectSend\Classes\ActionsLog;
 					$log_action_args = array(
 											'action' => 13,
 											'owner_id' => CURRENT_USER_ID,
@@ -176,11 +159,11 @@ include('header.php');
 											'affected_account_name' => $saved_user['username'],
 											'get_user_real_name' => true
 										);
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				break;
 				case 0:
 					$msg = __('There was an error. Please try again.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 				break;
 			}
 		}
@@ -193,30 +176,32 @@ include('header.php');
 				/**
 				 * If the form was submited with errors, show them here.
 				 */
-				$valid_me->list_errors();
+                if (isset($validation['errors'])) {
+                    echo $validation['errors'];
+                }
 			?>
 			
 			<?php
 				$direct_access_error = __('This page is not intended to be accessed directly.','cftp_admin');
 				if ($page_status === 0) {
 					$msg = __('No user was selected.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					echo '<p>'.$direct_access_error.'</p>';
 				}
 				else if ($page_status === 2) {
 					$msg = __('There is no user with that ID number.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					echo '<p>'.$direct_access_error.'</p>';
 				}
 				else if ($page_status === 3) {
 					$msg = __("Your account type doesn't allow you to access this feature.",'cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 				}
 				else {
 					/**
 					 * Include the form.
 					 */
-					include('users-form.php');
+					include_once FORMS_DIR . DS . 'users.php';
 				}
 			?>
 
@@ -225,4 +210,4 @@ include('header.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

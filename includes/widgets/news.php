@@ -1,6 +1,6 @@
 <?php
 	if ( isset( $_GET['ajax_call'] ) ) {
-		require_once('../../sys.includes.php');
+		require_once('../../bootstrap.php');
 	}
 
 	$allowed_news = array(9,8,7);

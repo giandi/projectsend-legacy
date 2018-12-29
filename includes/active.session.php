@@ -66,9 +66,6 @@ define('CURRENT_USER_NAME',$global_account['name']);
 define('CURRENT_USER_EMAIL',$global_account['email']);
 define('CURRENT_USER_LEVEL',$global_account['level']);
 
-$global_id = $global_account['id'];
-$global_name = $global_account['name'];
-
 /**
  * Check if account has a custom value for upload max file size
  */

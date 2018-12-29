@@ -9,19 +9,12 @@
  * @subpackage	Classes
  */
 
-/**
- * Prepare the error message mark up and content
- */
-$validation_errors_title = __('The following errors were found','cftp_admin');
-$before_error = '<div class="alert alert-danger alert-block"><a href="#" class="close" data-dismiss="alert">&times;</a><p class="alert-title">'.$validation_errors_title.':</p><ol>';
-$after_error = '</ol></div>';
+namespace ProjectSend\Classes;
 
-class Validate_Form
+class Validation
 {
-
-	var $error_msg;
-	var $error_complete;
-	var $return_val = true;
+    private $dbh;
+    private $errors = [];
 
 	public function __construct() {
 		global $dbh;
@@ -29,15 +22,19 @@ class Validate_Form
 		$this->allowed_upper	= range('A','Z');
 		$this->allowed_lower	= range('a','z');
 		$this->allowed_numbers	= array('0','1','2','3','4','5','6','7','8','9');
-		$this->allowed_symbols	= array('`','!','"','?','$','%','^','&','*','(',')','_','-','+','=','{','[','}',']',':',';','@','~','#','|','<',',','>','.',"'","/",'\\');
-	}
+        $this->allowed_symbols	= array('`','!','"','?','$','%','^','&','*','(',')','_','-','+','=','{','[','}',']',':',';','@','~','#','|','<',',','>','.',"'","/",'\\');
+    }
+    
+    private function addError($error)
+    {
+        $this->errors[] = $error;
+    }
 
 	/** Check if the field is complete */
 	private function is_complete($field, $err)
 	{
 		if (strlen(trim($field)) == 0) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -45,8 +42,7 @@ class Validate_Form
 	private function is_email($field, $err)
 	{
 		if (!filter_var($field, FILTER_VALIDATE_EMAIL)) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -54,8 +50,7 @@ class Validate_Form
 	private function is_alpha($field, $err)
 	{
 		if(preg_match('/[^0-9A-Za-z]/', $field)) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -63,8 +58,7 @@ class Validate_Form
 	private function is_number($field, $err)
 	{
 		if(preg_match('/[^0-9]/', $field)) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -72,8 +66,7 @@ class Validate_Form
 	private function is_alpha_or_dot($field, $err)
 	{
 		if(preg_match('/[^0-9A-Za-z.]/', $field)) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -89,9 +82,8 @@ class Validate_Form
 				$char_errors++;
 			}
 		}
-		if($char_errors > 0) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+		if ($char_errors > 0) {
+			$this->addError($err);
 		}
 	}
 
@@ -145,9 +137,8 @@ class Validate_Form
 				}
 			}
 
-			if($char_errors > 0) {
-				$this->error_msg .= '<li>'.$err.'</li>';
-				$this->return_val = false;
+			if ($char_errors > 0) {
+				$this->addError($err);
 			}
 		}
 	}
@@ -156,8 +147,7 @@ class Validate_Form
 	private function is_length($field, $err, $min, $max)
 	{
 		if(strlen($field) < $min || strlen($field) > $max){
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -165,8 +155,7 @@ class Validate_Form
 	function is_pass_match($err, $pass1, $pass2)
 	{
 		if($pass1 != $pass2) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -184,8 +173,7 @@ class Validate_Form
 						);
 
 		if ( $this->statement->rowCount() > 0 ) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -213,8 +201,7 @@ class Validate_Form
 		$this->statement = $this->dbh->prepare( $this->sql_users );
 		$this->statement->execute( $this->params );
 		if ( $this->statement->rowCount() > 0 ) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -222,8 +209,7 @@ class Validate_Form
 	private function recaptcha_verify($field, $err)
 	{
 		if( !strstr($field, "true" ) ) {
-			$this->error_msg .= '<li>'.$err.'</li>';
-			$this->return_val = false;
+			$this->addError($err);
 		}
 	}
 
@@ -269,7 +255,16 @@ class Validate_Form
 				$this->recaptcha_verify($field, $err);
 			break;
 		}
-	}
+    }
+    
+    public function passed()
+    {
+        if (!empty($this->errors)) {
+            return false;
+        }
+
+        return true;
+    }
 
 	/**
 	 * If errors were found, concatenate the container div (defined above) and the
@@ -277,19 +272,24 @@ class Validate_Form
 	 */
 	function list_errors()
 	{
-		if (!empty($this->error_msg)) {
-			/** Create the message to be returned */
-			$this->error_msg = $GLOBALS['before_error'].$this->error_msg.$GLOBALS['after_error'];
-			echo $this->error_msg;
-			$this->return_val = false;
-			/** Reset the errors list */
-			$this->error_msg = '';
-		}
-		else {
-			$this->return_val = true;
+        $this->validation_errors_title = __('The following errors were found','cftp_admin');
+        $this->before_error = '<div class="alert alert-danger alert-block">
+                            <a href="#" class="close" data-dismiss="alert">&times;</a>
+                            <p class="alert-title">'.$this->validation_errors_title.':</p>
+                            <ol>';
+        $this->after_error = '</ol>
+                        </div>';
+
+		if (!empty($this->errors)) {
+            $this->return = $this->before_error;
+            foreach ($this->errors as $error) {
+                $this->return .= "<li>".$error."</li>";
+            }
+            $this->return .= $this->after_error;
+
+            $this->errors = [];
+            
+            return $this->return;
 		}
 	}
-	
 }
-
-$valid_me = new Validate_Form();

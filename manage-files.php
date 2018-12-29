@@ -11,7 +11,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9,8,7,0);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'files';
 
@@ -134,7 +134,7 @@ include('header.php');
 							$hide_file = $this_file->change_files_hide_status('1', $work_file, $_GET['modify_type'], $_GET['modify_id']);
 						}
 						$msg = __('The selected files were marked as hidden.','cftp_admin');
-						echo system_message('ok',$msg);
+						echo system_message('success',$msg);
 						$log_action_number = 21;
 						break;
 
@@ -148,7 +148,7 @@ include('header.php');
 							$show_file = $this_file->change_files_hide_status('0', $work_file, $_GET['modify_type'], $_GET['modify_id']);
 						}
 						$msg = __('The selected files were marked as visible.','cftp_admin');
-						echo system_message('ok',$msg);
+						echo system_message('success',$msg);
 						$log_action_number = 22;
 						break;
 
@@ -161,7 +161,7 @@ include('header.php');
 							$unassign_file = $this_file->unassign_file($work_file, $_GET['modify_type'], $_GET['modify_id']);
 						}
 						$msg = __('The selected files were unassigned from this client.','cftp_admin');
-						echo system_message('ok',$msg);
+						echo system_message('success',$msg);
 						if ($search_on == 'group_id') {
 							$log_action_number = 11;
 						}
@@ -190,7 +190,7 @@ include('header.php');
 
 						if ( $delete_results['ok'] > 0 ) {
 							$msg = __('The selected files were deleted.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 							$log_action_number = 12;
 						}
 						if ( $delete_results['errors'] > 0 ) {
@@ -202,7 +202,7 @@ include('header.php');
 
 				/** Record the action log */
 				foreach ($all_files as $work_file_id => $work_file) {
-					$new_log_action = new LogActions();
+					$logger = new \ProjectSend\Classes\ActionsLog();
 					$log_action_args = array(
 											'action' => $log_action_number,
 											'owner_id' => CURRENT_USER_ID,
@@ -213,7 +213,7 @@ include('header.php');
 						$log_action_args['affected_account_name'] = $name_for_actions;
 						$log_action_args['get_user_real_name'] = true;
 					}
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				}
 			}
 			else {
@@ -547,7 +547,7 @@ include('header.php');
 												'id'		=> 'files_tbl',
 												'class'		=> 'footable table',
 											);
-					$table = new generateTable( $table_attributes );
+					$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 					
 					/**
 					 * Set the conditions to true or false once here to

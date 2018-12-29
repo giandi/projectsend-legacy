@@ -190,7 +190,7 @@ class PSend_Upload_File
 			elseif ($this->uploader_type == 'client') {
 				$this->action_type = 6;
 			}
-			$new_log_action = new LogActions();
+			$logger = new \ProjectSend\Classes\ActionsLog();
 			$log_action_args = array(
 									'action' => $this->action_type,
 									'owner_id' => $this->uploader_id,
@@ -198,7 +198,7 @@ class PSend_Upload_File
 									'affected_file_name' => $this->name,
 									'affected_account_name' => $this->uploader
 								);
-			$new_record_action = $new_log_action->log_action_save($log_action_args);
+			$new_record_action = $logger->add_entry($log_action_args);
 		}
 		else {
 			$this->statement = $this->dbh->prepare("SELECT id, public_allow, public_token FROM " . TABLE_FILES . " WHERE url = :url");
@@ -285,7 +285,7 @@ class PSend_Upload_File
 				
 				if ($this->uploader_type == 'user') {
 					/** Record the action log */
-					$new_log_action = new LogActions();
+					$logger = new \ProjectSend\Classes\ActionsLog();
 					$log_action_args = array(
 											'action' => $this->action_number,
 											'owner_id' => $this->uploader_id,
@@ -294,7 +294,7 @@ class PSend_Upload_File
 											'affected_account' => $this->assignment,
 											'affected_account_name' => $this->account_name
 										);
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				}
 			}
 		}
@@ -487,7 +487,7 @@ class PSend_Upload_File
 
 			/** Record the action log */
 			foreach ($this->clients as $this->deleted_client) {
-				$new_log_action = new LogActions();
+				$logger = new \ProjectSend\Classes\ActionsLog();
 				$log_action_args = array(
 										'action' => 10,
 										'owner_id' => $this->owner_id,
@@ -496,7 +496,7 @@ class PSend_Upload_File
 										'affected_account' => $this->deleted_client,
 										'affected_account_name' => $this->clients_names[$this->deleted_client]
 									);
-				$new_record_action = $new_log_action->log_action_save($log_action_args);
+				$new_record_action = $logger->add_entry($log_action_args);
 			}
 		}
 		/**
@@ -524,7 +524,7 @@ class PSend_Upload_File
 
 			/** Record the action log */
 			foreach ($this->groups as $this->deleted_group) {
-				$new_log_action = new LogActions();
+				$logger = new \ProjectSend\Classes\ActionsLog();
 				$log_action_args = array(
 										'action' => 11,
 										'owner_id' => $this->owner_id,
@@ -533,7 +533,7 @@ class PSend_Upload_File
 										'affected_account' => $this->deleted_group,
 										'affected_account_name' => $this->groups_names[$this->deleted_group]
 									);
-				$new_record_action = $new_log_action->log_action_save($log_action_args);
+				$new_record_action = $logger->add_entry($log_action_args);
 			}
 		}
 	}

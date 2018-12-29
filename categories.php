@@ -6,22 +6,14 @@
  * @package		ProjectSend
  * @subpackage	Files
  */
-$footable_min = true; // delete this line after finishing pagination on every table
-$load_scripts	= array(
-						'footable',
-					); 
-
 $allowed_levels = array(9,8,7);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'files';
 
 $page_title = __('Categories administration','cftp_admin');
 
-$current_level = get_current_user_level();
-
-include('header.php');
-
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
 <script type="text/javascript">
@@ -29,7 +21,7 @@ include('header.php');
 		$("#process_category").submit(function() {
 			clean_form( this );
 
-			is_complete( this.category_name, '<?php echo $validation_no_name; ?>' );
+			is_complete( this.category_name, '<?php echo $json_strings['validation']['no_name']; ?>' );
 
 			// show the errors or continue if everything is ok
 			if (show_form_errors() == false) { return false; }
@@ -46,11 +38,11 @@ if ( !empty( $_GET['status'] ) ) {
 	switch ( $result_status ) {
 		case 'added':
 				$msg_text	= __('The category was successfully created.','cftp_admin');
-				$msg_type	= 'ok';
+				$msg_type	= 'success';
 			break;
 		case 'edited':
 				$msg_text	= __('The category was successfully edited.','cftp_admin');
-				$msg_type	= 'ok';
+				$msg_type	= 'success';
 			break;
 	}
 
@@ -65,7 +57,6 @@ if ( isset( $_GET['action'] ) ) {
 	if ( $_GET['action'] != 'none' ) {
 		/** Continue only if 1 or more categories were selected. */
 		if ( !empty($_GET['batch'] ) ) {
-	
 			/**
 			 * Make a list of categories to avoid individual queries.
 			 */
@@ -75,8 +66,13 @@ if ( isset( $_GET['action'] ) ) {
 													array(
 														'id'		=> $selected_categories,
 													)
-												);
-			foreach ( $get_categories_delete['categories'] as $delete_cat ) {
+                                                );
+            if (count($get_categories_delete) < 1 ) {
+                $msg = __('Please select at least one category.','cftp_admin');
+                echo system_message('danger',$msg);
+            }
+
+            foreach ( $get_categories_delete['categories'] as $delete_cat ) {
 				$all_categories[$delete_cat['id']] = $delete_cat['name'];
 			}
 	
@@ -86,29 +82,25 @@ if ( isset( $_GET['action'] ) ) {
 			switch($_GET['action']) {
 				case 'delete':
 					foreach ($selected_categories as $category) {
-						$this_category		= new CategoriesActions();
-						$delete_category	= $this_category->delete_category($category);
+						$this_category		= new \ProjectSend\Classes\CategoriesActions;
+						$delete_category	= $this_category->delete($category);
 					}
 					$msg = __('The selected categories were deleted.','cftp_admin');
-					echo system_message('ok',$msg);
+					echo system_message('success',$msg);
 					$log_action_number = 36;
 					break;
 			}
 	
 			/** Record the action log */
 			foreach ($selected_categories as $category) {
-				$new_log_action = new LogActions();
+                $logger = new \ProjectSend\Classes\ActionsLog;
 				$log_action_args = array(
 										'action'				=> $log_action_number,
 										'owner_id'				=> CURRENT_USER_ID,
 										'affected_account_name'	=> $all_categories[$category]
 									);
-				$new_record_action = $new_log_action->log_action_save($log_action_args);
+				$new_record_action = $logger->add_entry($log_action_args);
 			}
-		}
-		else {
-			$msg = __('Please select at least one category.','cftp_admin');
-			echo system_message('error',$msg);
 		}
 	}
 }
@@ -181,7 +173,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 	$category_parent		= $_POST['category_parent'];
 	$category_description	= $_POST['category_description'];
 
-	$category_object = new CategoriesActions();
+	$category_object = new \ProjectSend\Classes\CategoriesActions;
 
 	$arguments = array(
 						'name'			=> $category_name,
@@ -189,7 +181,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 						'description'	=> $category_description,
 					);
 
-	$validate = $category_object->validate_category( $arguments );
+	$validation = $category_object->validate( $arguments );
 
 	switch ( $form_information['type'] ) {
 		case 'new_category':
@@ -203,20 +195,20 @@ if ( isset( $_POST['btn_process'] ) ) {
 			break;
 	}
 
-	if ( $validate === 1 ) {
-		$process = $category_object->save_category( $arguments );
+	if ($validation['passed'] == true) {
+		$process = $category_object->save( $arguments );
 		if ( $process['query'] === 1 ) {
 			$redirect = true;
 			$status = $redirect_status;
 		}
 		else {
 			$msg = __('There was a problem saving to the database.','cftp_admin');
-			echo system_message('error', $msg);
+			echo system_message('danger', $msg);
 		}
 	}
 	else {
 		$msg = __('Please complete all the required fields.','cftp_admin');
-		echo system_message('error', $msg);
+		echo system_message('danger', $msg);
 	}
 
 	/** Redirect so the actions are reflected immediatly */
@@ -282,7 +274,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 				else {
 					$no_results_message = __('There are no categories yet.','cftp_admin');
 				}
-				echo system_message('error', $no_results_message);
+				echo system_message('danger', $no_results_message);
 			}
 
 			/**
@@ -292,7 +284,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 										'id'		=> 'categories_tbl',
 										'class'		=> 'footable table',
 									);
-			$table = new generateTable( $table_attributes );
+			$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 
 			$thead_columns		= array(
 										array(
@@ -420,7 +412,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 			 * PAGINATION
 			 */
 			$pagination_args = array(
-									'link'		=> 'categories.php',
+									'link'		=> basename($_SERVER['SCRIPT_FILENAME']),
 									'current'	=> $params['page'],
 									'pages'		=> ceil( $get_categories['count'] / RESULTS_PER_PAGE ),
 								);
@@ -430,20 +422,8 @@ if ( isset( $_POST['btn_process'] ) ) {
 	</form>
 </div>
 <div class="col-xs-12 col-sm-12 col-md-4">
-	<form action="categories.php" class="form-horizontal" name="process_category" id="process_category" method="post">
-        <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
-		<input type="hidden" name="processing" id="processing" value="1">
-		<?php
-			if ( !empty( $action ) && $action == 'edit' ) {
-		?>
-				<input type="hidden" name="editing_id" id="editing_id" value="<?php echo $editing; ?>">
-		<?php
-			}
-		?>
-
-		<?php include_once( 'categories-form.php' ); ?>
-	</form>
+    <?php include_once FORMS_DIR . DS . 'categories.php'; ?>
 </div>
 
 <?php
-	include('footer.php');
+    include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

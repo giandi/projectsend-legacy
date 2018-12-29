@@ -6,17 +6,22 @@
  * @subpackage	Classes
  */
 
+namespace ProjectSend\Classes;
+use \PDO;
+
 class MembersActions
 {
 
 	var $client	= '';
 	var $groups	= '';
+    private $dbh;
 
-	function __construct() {
-		global $dbh;
-		$this->dbh = $dbh;
-	}
-	
+    public function __construct()
+    {
+        global $dbh;
+        $this->dbh = $dbh;
+    }
+
 	function group_add_members($arguments)
 	{
 		$this->client_ids	= is_array( $arguments['client_id'] ) ? $arguments['client_id'] : array( $arguments['client_id'] );
@@ -250,7 +255,7 @@ class MembersActions
 	function group_request_membership($arguments)
 	{
 		if ( in_array( CURRENT_USER_LEVEL, array(9,8) ) || ( defined('REGISTERING') ) || ( defined('EDITING_SELF_ACCOUNT') ) ) {
-			if ( CLIENTS_CAN_SELECT_GROUP == 'public' || CLIENTS_CAN_SELECT_GROUP == 'all' ) {
+			if (CLIENTS_CAN_SELECT_GROUP == 'public' || CLIENTS_CAN_SELECT_GROUP == 'all') {
 				$this->client_id	= $arguments['client_id'];
 				$this->group_ids	= is_array( $arguments['group_ids'] ) ? $arguments['group_ids'] : array( $arguments['group_ids'] );
 				$this->request_by	= $arguments['request_by'];
@@ -506,7 +511,7 @@ class MembersActions
 			 */
 			if ( !empty( $this->group_ids ) ) {
 				$this->client_info = get_client_by_id($this->client_id);
-				$notify_admin = new PSend_Email();
+				$notify_admin = new EmailsPrepare();
 
 				$email_arguments = array(
 												'type'			=> 'client_edited',
@@ -516,7 +521,7 @@ class MembersActions
 												'memberships'	=> $this->group_ids
 											);
 
-				$notify_admin_status = $notify_admin->psend_send_email($email_arguments);
+				$notify_admin_status = $notify_admin->send($email_arguments);
 			}
 		}
 	}

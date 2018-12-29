@@ -6,12 +6,11 @@
  * @subpackage	Classes
  */
 
-class generateTable {
+namespace ProjectSend\Classes;
 
+class TableGenerate
+{
 	function __construct( $attributes ) {
-		global $dbh;
-		$this->dbh = $dbh;
-
 		$this->contents = self::open( $attributes );
 
 		$this->current_row = 1;

@@ -13,7 +13,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9,8);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'groups';
 $this_page = 'clients-membership-requests.php';
@@ -56,11 +56,11 @@ include('header.php');
 		switch ($_GET['action']) {
 			case 'apply':
 				$msg = __('The selected actions were applied.','cftp_admin');
-				echo system_message('ok',$msg);
+				echo system_message('success',$msg);
 				break;
 			case 'delete':
 				$msg = __('The selected requests were deleted.','cftp_admin');
-				echo system_message('ok',$msg);
+				echo system_message('success',$msg);
 				break;
 		}
 	}
@@ -121,7 +121,7 @@ include('header.php');
 						$processed_requests = $process_requests['memberships'];
 						$client_information = get_client_by_id( $client['id'] );
 
-						$notify_client = new PSend_Email();
+						$notify_client = new \ProjectSend\Classes\Emails;
 						$email_arguments = array(
 														'type'			=> $email_type,
 														'username'		=> $client_information['username'],
@@ -155,13 +155,13 @@ include('header.php');
 			/** Record the action log */
 			if ( !empty( $log_action_number ) ) {
 				foreach ($selected_clients_ids as $client) {
-					$new_log_action = new LogActions();
+					$logger = new \ProjectSend\Classes\ActionsLog();
 					$log_action_args = array(
 											'action' => $log_action_number,
 											'owner_id' => CURRENT_USER_ID,
 											'affected_account_name' => $all_users[$client]
 										);
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				}
 			}
 
@@ -340,7 +340,7 @@ include('header.php');
 												'id'		=> 'clients_tbl',
 												'class'		=> 'footable table',
 											);
-					$table = new generateTable( $table_attributes );
+					$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 	
 					$thead_columns		= array(
 												array(

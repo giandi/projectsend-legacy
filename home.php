@@ -10,7 +10,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9,8,7);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 $page_title = __('Dashboard', 'cftp_admin');
 
 $active_nav = 'dashboard';

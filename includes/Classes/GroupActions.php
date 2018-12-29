@@ -7,24 +7,29 @@
  * @subpackage	Classes
  */
 
+namespace ProjectSend\Classes;
+use \PDO;
+
 class GroupActions
 {
 
 	var $group = '';
+    private $dbh;
 
-	function __construct() {
-		global $dbh;
-		$this->dbh = $dbh;
-	}
+    public function __construct()
+    {
+        global $dbh;
+        $this->dbh = $dbh;
+    }
 
 	/**
 	 * Validate the information from the form.
 	 */
-	function validate_group($arguments)
+	function validate($arguments)
 	{
-		require(ROOT_DIR.'/includes/vars.php');
+        $validation = new \ProjectSend\Classes\Validation;
 
-		global $valid_me;
+		global $json_strings;
 		$this->state = array();
 
 		$this->id = $arguments['id'];
@@ -34,20 +39,27 @@ class GroupActions
 		 * These validations are done both when creating a new group and
 		 * when editing an existing one.
 		 */
-		$valid_me->validate('completed',$this->name,$validation_no_name);
+		$validation->validate('completed',$this->name,$json_strings['validation']['no_name']);
 
-		if ($valid_me->return_val) {
-			return 1;
+		if ($validation->passed()) {
+            $results = [
+                'passed' => true
+            ];
 		}
 		else {
-			return 0;
-		}
+            $results = [
+                'passed' => false,
+                'errors' => $validation->list_errors(),
+            ];
+        }
+        
+        return $results;
 	}
 
 	/**
 	 * Create a new group.
 	 */
-	function create_group($arguments)
+	function create($arguments)
 	{
 		$this->state = array();
 
@@ -101,7 +113,7 @@ class GroupActions
 	/**
 	 * Edit an existing group.
 	 */
-	function edit_group($arguments)
+	function edit($arguments)
 	{
 		$this->state = array();
 
@@ -154,18 +166,18 @@ class GroupActions
 	/**
 	 * Delete an existing group.
 	 */
-	function delete_group($group)
+	function delete($group)
 	{
 		$this->check_level = array(9,8);
 		if (isset($group)) {
-			/** Do a permissions check */
+			// Do a permissions check
 			if (isset($this->check_level) && current_role_in($this->check_level)) {
 				$this->sql = $this->dbh->prepare('DELETE FROM ' . TABLE_GROUPS . ' WHERE id=:id');
 				$this->sql->bindParam(':id', $group, PDO::PARAM_INT);
 				$this->sql->execute();
 			}
 		}
-	}
+    }
 
 	/**
 	 * Return an array of existing groups

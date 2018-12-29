@@ -7,7 +7,7 @@
  *
  */
 $allowed_levels = array(9,8,7,0);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $page_title = __('Register new account','cftp_admin');
 
@@ -22,7 +22,7 @@ include('header-unlogged.php');
 			$recaptcha_request		= file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptcha_secret_key}&response={$recaptcha_response}&remoteip={$recaptcha_user_ip}");
 		}
 
-		$new_client = new ClientActions();
+		$new_client = new \ProjectSend\Classes\ClientActions();
 	
 		/**
 		 * Clean the posted form values to be used on the clients actions,
@@ -100,7 +100,7 @@ include('header-unlogged.php');
 			/**
 			 * Prepare and send an email to administrator(s)
 			 */
-			$notify_admin = new PSend_Email();
+			$notify_admin = new \ProjectSend\Classes\Emails;
 			$email_arguments = array(
 											'type'			=> 'new_client_self',
 											'address'		=> ADMIN_EMAIL_ADDRESS,
@@ -146,7 +146,7 @@ include('header-unlogged.php');
 						switch ($new_response['actions']) {
 							case 1:
 								$msg = __('Account added correctly.','cftp_admin');
-								echo system_message('ok',$msg);
+								echo system_message('success',$msg);
 	
 								if (CLIENTS_AUTO_APPROVE == 0) {
 									$msg = __('Please remember that an administrator needs to approve your account before you can log in.','cftp_admin');
@@ -157,14 +157,14 @@ include('header-unlogged.php');
 								echo system_message('info',$msg);
 	
 								/** Record the action log */
-								$new_log_action = new LogActions();
+								$logger = new \ProjectSend\Classes\ActionsLog();
 								$log_action_args = array(
 														'action' => 4,
 														'owner_id' => $new_response['new_id'],
 														'affected_account' => $new_response['new_id'],
 														'affected_account_name' => $add_client_data_name
 													);
-								$new_record_action = $new_log_action->log_action_save($log_action_args);
+								$new_record_action = $logger->add_entry($log_action_args);
 							break;
 							case 0:
 								$msg = __('There was an error. Please try again.','cftp_admin');
@@ -188,7 +188,7 @@ include('header-unlogged.php');
 						switch ($new_response['email']) {
 							case 1:
 								$msg = __('An e-mail notification with login information was sent to the specified address.','cftp_admin');
-								echo system_message('ok',$msg);
+								echo system_message('success',$msg);
 							break;
 							case 0:
 								$msg = __("E-mail notification couldn't be sent.",'cftp_admin');

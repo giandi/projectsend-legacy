@@ -6,7 +6,9 @@
  * @subpackage	Classes
  */
 
-class generateForm {
+namespace ProjectSend\Classes;
+
+class FormGenerate {
 	
 	private $open;
 	public $new_password_fields;

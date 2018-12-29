@@ -8,7 +8,7 @@
  */
 
 /** This file MUST be included by another one */
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 prevent_direct_access();
 
 $get_file_info = array();
@@ -192,7 +192,7 @@ if (!empty($found_notifications)) {
 
 			$address = $mail_by_user[$mail_username];
 			/** Create the object and send the email */
-			$notify_client = new PSend_Email();
+			$notify_client = new \ProjectSend\Classes\Emails;
 			$email_arguments = array(
 										'type' => 'new_files_for_client',
 										'address' => $address,
@@ -236,7 +236,7 @@ if (!empty($found_notifications)) {
 	
 					$address = $mail_by_user[$mail_username];
 					/** Create the object and send the email */
-					$notify_admin = new PSend_Email();
+					$notify_admin = new \ProjectSend\Classes\Emails;
 					$email_arguments = array(
 												'type' => 'new_file_by_client',
 												'address' => $address,
@@ -275,7 +275,7 @@ if (!empty($found_notifications)) {
 		$statement->execute();
 
 		$msg = __('E-mail notifications have been sent.','cftp_admin');
-		echo system_message('ok',$msg);
+		echo system_message('success',$msg);
 	}
 
 	/**
@@ -309,7 +309,7 @@ if (!empty($found_notifications)) {
 			 * creator's account. Show the ok message instead.
 			 */
 			$msg = __('E-mail notifications have been sent.','cftp_admin');
-			echo system_message('ok',$msg);
+			echo system_message('success',$msg);
 		}
 		else {
 			$msg = __('E-mail notifications for inactive clients were not sent.','cftp_admin');

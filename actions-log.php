@@ -12,7 +12,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'tools';
 
@@ -42,7 +42,7 @@ include('header.php');
 							$statement->execute( $params );
 						
 							$msg = __('The selected activities were deleted.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 					}
 					else {
 						$msg = __('Please select at least one activity.','cftp_admin');
@@ -58,7 +58,7 @@ include('header.php');
 					$statement->execute( $params );
 
 					$msg = __('The log was cleared. Only data used for statistics remained. You can delete them manually if you want.','cftp_admin');
-					echo system_message('ok',$msg);
+					echo system_message('success',$msg);
 				break;
 			}
 	}
@@ -133,8 +133,9 @@ include('header.php');
 					<label for="activity" class="sr-only"><?php _e('Filter activities','cftp_admin'); ?></label>
 					<select name="activity" id="activity" class="form-control">
 						<option value="all"><?php _e('All activities','cftp_admin'); ?></option>
-							<?php
-								global $activities_references;
+                            <?php
+                                $logger = new \ProjectSend\Classes\ActionsLog;
+								$activities_references = $logger->getActivitiesReferences();
 								foreach ( $activities_references as $val => $text ) {
 							?>
 									<option value="<?php echo $val; ?>" <?php if ( isset( $_GET['activity'] ) && $_GET['activity'] == $val ) { echo 'selected="selected"'; } ?>><?php echo $text; ?></option>
@@ -207,7 +208,7 @@ include('header.php');
 										'id'		=> 'activities_tbl',
 										'class'		=> 'footable table',
 									);
-			$table = new generateTable( $table_attributes );
+			$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 
 			$thead_columns		= array(
 										array(

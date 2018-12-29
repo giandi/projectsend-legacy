@@ -14,7 +14,7 @@ $load_scripts	= array(
 					);
 
 $allowed_levels = array(9,8,7,0);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 //Add a session check here
 if(!check_for_session()) {
@@ -296,7 +296,7 @@ $current_level = get_current_user_level();
 								}
 							}
 
-							$new_log_action = new LogActions();
+							$logger = new \ProjectSend\Classes\ActionsLog();
 							$log_action_args = array(
 													'action' => $action_log_number,
 													'owner_id' => CURRENT_USER_ID,
@@ -304,10 +304,10 @@ $current_level = get_current_user_level();
 													'affected_file' => $process_file['new_file_id'],
 													'affected_file_name' => $file['name']
 												);
-							$new_record_action = $new_log_action->log_action_save($log_action_args);
+							$new_record_action = $logger->add_entry($log_action_args);
 
 							$msg = __('The file has been edited succesfuly.','cftp_admin');
-							echo system_message('ok',$msg);
+							echo system_message('success',$msg);
 
 							include(ROOT_DIR.'/upload-send-notifications.php');
 						}

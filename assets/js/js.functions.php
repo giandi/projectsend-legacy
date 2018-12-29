@@ -8,7 +8,7 @@
  *
  */
     header("Content-Type: application/javascript");
-	require_once('../../sys.includes.php');
+	require_once('../../bootstrap.php');
 ?>
 $(document).ready(function(e) {
 	/***********************************************************************************

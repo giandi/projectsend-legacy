@@ -7,24 +7,29 @@
  * @subpackage	Classes
  */
 
+ namespace ProjectSend\Classes;
+ use \PDO;
+ 
 class UserActions
 {
 
 	var $user = '';
+    private $dbh;
 
-	function __construct() {
-		global $dbh;
-		$this->dbh = $dbh;
-	}
+    public function __construct()
+    {
+        global $dbh;
+        $this->dbh = $dbh;
+    }
 
 	/**
 	 * Validate the information from the form.
 	 */
-	function validate_user($arguments)
+	function validate($arguments)
 	{
-		require(ROOT_DIR.'/includes/vars.php');
+        $validation = new \ProjectSend\Classes\Validation;
 
-		global $valid_me;
+		global $json_strings;
 		$this->state = array();
 
 		$this->id = $arguments['id'];
@@ -32,8 +37,8 @@ class UserActions
 		$this->email = $arguments['email'];
 		$this->password = $arguments['password'];
 		//$this->password_repeat = $arguments['password_repeat'];
-		$this->role = $arguments['role'];
-		$this->notify_account = $arguments['notify_account'];
+		$this->role = $arguments['level'];
+		$this->notify_account = ( !empty( $arguments['notify_account'] ) ) ? $arguments['notify_account'] : 0;
 		$this->max_file_size = ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
 		$this->type = $arguments['type'];
 
@@ -41,11 +46,11 @@ class UserActions
 		 * These validations are done both when creating a new user and
 		 * when editing an existing one.
 		 */
-		$valid_me->validate('completed',$this->name,$validation_no_name);
-		$valid_me->validate('completed',$this->email,$validation_no_email);
-		$valid_me->validate('completed',$this->role,$validation_no_level);
-		$valid_me->validate('email',$this->email,$validation_invalid_mail);
-		$valid_me->validate('number',$this->max_file_size,$validation_file_size);
+		$validation->validate('completed',$this->name,$json_strings['validation']['no_name']);
+		$validation->validate('completed',$this->email,$json_strings['validation']['no_email']);
+		$validation->validate('completed',$this->role,$json_strings['validation']['no_role']);
+		$validation->validate('email',$this->email,$json_strings['validation']['invalid_email']);
+		$validation->validate('number',$this->max_file_size,$json_strings['validation']['file_size']);
 
 		/**
 		 * Validations for NEW USER submission only.
@@ -53,12 +58,12 @@ class UserActions
 		if ($this->type == 'new_user') {
 			$this->username = $arguments['username'];
 
-			$valid_me->validate('email_exists',$this->email,$add_user_mail_exists);
+			$validation->validate('email_exists',$this->email,$json_strings['validation']['email_exists']);
 			/** Username checks */
-			$valid_me->validate('user_exists',$this->username,$add_user_exists);
-			$valid_me->validate('completed',$this->username,$validation_no_user);
-			$valid_me->validate('alpha_dot',$this->username,$validation_alpha_user);
-			$valid_me->validate('length',$this->username,$validation_length_user,MIN_USER_CHARS,MAX_USER_CHARS);
+			$validation->validate('user_exists',$this->username,$json_strings['validation']['user_exists']);
+			$validation->validate('completed',$this->username,$json_strings['validation']['no_user']);
+			$validation->validate('alpha_dot',$this->username,$json_strings['validation']['alpha_user']);
+			$validation->validate('length',$this->username,$json_strings['validation']['length_user'],MIN_USER_CHARS,MAX_USER_CHARS);
 
 			$this->validate_password = true;
 		}
@@ -77,44 +82,50 @@ class UserActions
 			 * Check if the email is currently assigned to this users's id.
 			 * If not, then check if it exists.
 			 */
-			$valid_me->validate('email_exists',$this->email,$add_user_mail_exists,'','','','','',$this->id);
+			$validation->validate('email_exists',$this->email,$json_strings['validation']['email_exists'],'','','','','',$this->id);
 		}
 
 		/** Password checks */
 		if (isset($this->validate_password) && $this->validate_password === true) {
-			$valid_me->validate('completed',$this->password,$validation_no_pass);
-			$valid_me->validate('password',$this->password,$validation_valid_pass.' '.$validation_valid_chars);
-			$valid_me->validate('pass_rules',$this->password,$validation_rules_pass);
-			$valid_me->validate('length',$this->password,$validation_length_pass,MIN_PASS_CHARS,MAX_PASS_CHARS);
-			//$valid_me->validate('pass_match','',$validation_match_pass,'','',$this->password,$this->password_repeat);
+			$validation->validate('completed',$this->password,$json_strings['validation']['no_pass']);
+			$validation->validate('password',$this->password,$json_strings['validation']['valid_pass'] . " " . addslashes($json_strings['validation']['valid_chars']));
+			$validation->validate('pass_rules',$this->password,$json_strings['validation']['rules_pass']);
+			$validation->validate('length',$this->password,$json_strings['validation']['length_pass'],MIN_PASS_CHARS,MAX_PASS_CHARS);
 		}
 
-		if ($valid_me->return_val) {
-			return 1;
+		if ($validation->passed()) {
+            $results = [
+                'passed' => true
+            ];
 		}
 		else {
-			return 0;
-		}
+            $results = [
+                'passed' => false,
+                'errors' => $validation->list_errors(),
+            ];
+        }
+        
+        return $results;
 	}
 
 	/**
 	 * Create a new user.
 	 */
-	function create_user($arguments)
+	function create($arguments)
 	{
 		global $hasher;
 		$this->state = array();
 
 		/** Define the account information */
-		$this->username		    = encode_html($arguments['username']);
-		$this->password		    = $arguments['password'];
-		$this->name				= encode_html($arguments['name']);
-		$this->email			= encode_html($arguments['email']);
-		$this->role				= $arguments['role'];
-		$this->active			= $arguments['active'];
-		$this->notify_account   = ( $arguments['notify_account'] == '1' ) ? 1 : 0;
-		$this->max_file_size	= ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
-        $this->enc_password		= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
+		$this->username = encode_html($arguments['username']);
+		$this->password = $arguments['password'];
+		$this->name = encode_html($arguments['name']);
+		$this->email = encode_html($arguments['email']);
+		$this->role = $arguments['level'];
+		$this->active = $arguments['active'];
+		$this->notify_account = ( $arguments['notify_account'] == '1' ) ? 1 : 0;
+		$this->max_file_size = ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
+		$this->enc_password = password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
 
 		if (strlen($this->enc_password) >= 20) {
 
@@ -138,7 +149,7 @@ class UserActions
 				$this->state['new_id'] = $this->dbh->lastInsertId();
 
 				/** Send account data by email */
-				$this->notify_user = new PSend_Email();
+				$this->notify_user = new \ProjectSend\Classes\Emails;
 				$this->email_arguments = array(
 												'type'		=> 'new_user',
 												'address'	=> $this->email,
@@ -146,7 +157,7 @@ class UserActions
 												'password'	=> $this->password
 											);
 				if ($this->notify_account == 1) {
-					$this->notify_send = $this->notify_user->psend_send_email($this->email_arguments);
+					$this->notify_send = $this->notify_user->send($this->email_arguments);
 
 					if ($this->notify_send == 1){
 						$this->state['email'] = 1;
@@ -173,20 +184,20 @@ class UserActions
 	/**
 	 * Edit an existing user.
 	 */
-	function edit_user($arguments)
+	function edit($arguments)
 	{
 		global $hasher;
 		$this->state = array();
 
 		/** Define the account information */
-		$this->id				= $arguments['id'];
-		$this->name				= encode_html($arguments['name']);
-		$this->email			= encode_html($arguments['email']);
-		$this->role				= $arguments['role'];
-		$this->active			= ( $arguments['active'] == '1' ) ? 1 : 0;
-		$this->password		    = $arguments['password'];
-		$this->max_file_size	= ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
-		$this->enc_password 	= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
+		$this->id = $arguments['id'];
+		$this->name = encode_html($arguments['name']);
+		$this->email = encode_html($arguments['email']);
+		$this->role = $arguments['role'];
+		$this->active = ( $arguments['active'] == '1' ) ? 1 : 0;
+		$this->password = $arguments['password'];
+		$this->max_file_size = ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
+		$this->enc_password	= password_hash($this->password, PASSWORD_DEFAULT, [ 'cost' => HASH_COST_LOG2 ]);
 
 		if (strlen($this->enc_password) >= 20) {
 
@@ -239,7 +250,7 @@ class UserActions
 	/**
 	 * Delete an existing user.
 	 */
-	function delete_user($user_id)
+	function delete($user_id)
 	{
 		$this->check_level = array(9);
 		if (isset($user_id)) {
@@ -255,7 +266,7 @@ class UserActions
 	/**
 	 * Mark the user as active or inactive.
 	 */
-	function change_user_active_status($user_id,$change_to)
+	function setActiveStatus($user_id,$change_to)
 	{
 		$this->check_level = array(9);
 		if (isset($user_id)) {

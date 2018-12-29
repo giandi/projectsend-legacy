@@ -11,7 +11,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9,8,7);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'files';
 
@@ -127,7 +127,7 @@ include('header.php');
 													'id'		=> 'download_info_tbl',
 													'class'		=> 'footable table',
 												);
-						$table = new generateTable( $table_attributes );
+						$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 
 						$thead_columns		= array(
 													array(

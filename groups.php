@@ -12,7 +12,7 @@ $load_scripts	= array(
 					); 
 
 $allowed_levels = array(9,8);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 
 $active_nav = 'groups';
 
@@ -84,23 +84,23 @@ include('header.php');
 					$deleted_groups = 0;
 
 					foreach ($selected_groups as $groups) {
-						$this_group = new GroupActions();
-						$delete_group = $this_group->delete_group($groups);
+						$this_group = new \ProjectSend\Classes\GroupActions;
+						$delete_group = $this_group->delete($groups);
 						$deleted_groups++;
 
 						/** Record the action log */
-						$new_log_action = new LogActions();
+						$logger = new \ProjectSend\Classes\ActionsLog;
 						$log_action_args = array(
 												'action' => 18,
 												'owner_id' => CURRENT_USER_ID,
 												'affected_account_name' => $all_groups[$groups]
 											);
-						$new_record_action = $new_log_action->log_action_save($log_action_args);		
+						$new_record_action = $logger->add_entry($log_action_args);		
 					}
 					
 					if ($deleted_groups > 0) {
 						$msg = __('The selected groups were deleted.','cftp_admin');
-						echo system_message('ok',$msg);
+						echo system_message('success',$msg);
 					}
 				break;
 			}
@@ -273,7 +273,7 @@ include('header.php');
 											'id'		=> 'groups_tbl',
 											'class'		=> 'footable table',
 										);
-				$table = new generateTable( $table_attributes );
+				$table = new \ProjectSend\Classes\TableGenerate( $table_attributes );
 
 				$thead_columns		= array(
 											array(

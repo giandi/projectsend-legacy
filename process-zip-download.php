@@ -5,7 +5,7 @@
  * @package		ProjectSend
  */
 $allowed_levels = array(9,8,7,0);
-require_once('sys.includes.php');
+require_once('bootstrap.php');
 require_once('header.php');
 
 $zip_file = tempnam("tmp", "zip");
@@ -107,13 +107,13 @@ $zip->close();
 
 if ($added_files > 0) {
 	/** Record the action log */
-	$new_log_action = new LogActions();
+	$logger = new \ProjectSend\Classes\ActionsLog();
 	$log_action_args = array(
 							'action' => 9,
 							'owner_id' => CURRENT_USER_ID,
 							'affected_account_name' => $current_username
 						);
-	$new_record_action = $new_log_action->log_action_save($log_action_args);
+	$new_record_action = $logger->add_entry($log_action_args);
 
 	if (file_exists($zip_file)) {
 		setCookie("download_started", 1, time() + 20, '/', "", false, false);

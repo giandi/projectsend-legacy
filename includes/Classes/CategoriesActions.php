@@ -7,24 +7,30 @@
  * @subpackage	Classes
  */
 
+namespace ProjectSend\Classes;
+use \PDO;
+
 class CategoriesActions
 {
 
-	var $ategory = '';
+	var $category = '';
 
-	function __construct() {
-		global $dbh;
-		$this->dbh = $dbh;
-	}
+    private $dbh;
+
+    public function __construct()
+    {
+        global $dbh;
+        $this->dbh = $dbh;
+    }
 
 	/**
 	 * Validate the information from the form.
 	 */
-	function validate_category($arguments)
+	function validate($arguments)
 	{
-		require(ROOT_DIR.'/includes/vars.php');
+        $validation = new \ProjectSend\Classes\Validation;
 
-		global $valid_me;
+		global $json_strings;
 		$this->state = array();
 
 		$this->name			= $arguments['name'];
@@ -35,21 +41,28 @@ class CategoriesActions
 		 * These validations are done both when creating a new client and
 		 * when editing an existing one.
 		 */
-		$valid_me->validate('completed',$this->name,$validation_no_name);
+		$validation->validate('completed',$this->name,$json_strings['validation']['no_name']);
 
-		if ($valid_me->return_val) {
-			return 1;
+		if ($validation->passed()) {
+            $results = [
+                'passed' => true
+            ];
 		}
 		else {
-			return 0;
-		}
+            $results = [
+                'passed' => false,
+                'errors' => $validation->list_errors(),
+            ];
+        }
+        
+        return $results;
 	}
 
 
 	/**
 	 * Save or create, according the the ACTION parameter
 	 */
-	function save_category($arguments)
+	function save($arguments)
 	{
 		$this->state = array();
 
@@ -90,14 +103,14 @@ class CategoriesActions
 
 
 					/** Record the action log */
-					$new_log_action = new LogActions();
+					$logger = new \ProjectSend\Classes\ActionsLog;
 					$log_action_args = array(
 											'action'				=> 34,
 											'owner_id'				=> CURRENT_USER_ID,
 											'affected_account'		=> $this->state['new_id'],
 											'affected_account_name'	=> $this->name
 										);
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				}
 				else {
 					/** Query couldn't be executed */
@@ -135,14 +148,14 @@ class CategoriesActions
 					$this->state['query'] = 1;
 
 					/** Record the action log */
-					$new_log_action = new LogActions();
+					$logger = new \ProjectSend\Classes\ActionsLog;
 					$log_action_args = array(
 											'action'				=> 35,
 											'owner_id'				=> CURRENT_USER_ID,
 											'affected_account'		=> $arguments['id'],
 											'affected_account_name'	=> $this->name
 										);
-					$new_record_action = $new_log_action->log_action_save($log_action_args);
+					$new_record_action = $logger->add_entry($log_action_args);
 				}
 				else {
 					$this->state['query'] = 0;
@@ -157,7 +170,7 @@ class CategoriesActions
 	/**
 	 * Delete an existing category.
 	 */
-	function delete_category($cat_id) {
+	function delete($cat_id) {
 		$this->check_level = array(9,8,7);
 		if (isset($cat_id)) {
 			/** Do a permissions check */

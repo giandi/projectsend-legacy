@@ -564,13 +564,13 @@ if (current_role_in($allowed_update)) {
 		$statement->execute();
 
 		/** Record the action log */
-		$new_log_action = new LogActions();
+		$logger = new \ProjectSend\Classes\ActionsLog();
 		$log_action_args = array(
 								'action' => 30,
 								'owner_id' => CURRENT_USER_ID,
 								'affected_account_name' => $current_version
 							);
-		$new_record_action = $new_log_action->log_action_save($log_action_args);
+		$new_record_action = $logger->add_entry($log_action_args);
 
 
 		/**
