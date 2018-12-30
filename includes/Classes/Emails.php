@@ -26,6 +26,15 @@ class Emails
     private $dbh;
     private $header;
     private $footer;
+    private $strings_file_by_user;
+    private $strings_file_by_client;
+    private $strings_new_client;
+    private $strings_new_client_self;
+    private $strings_account_approved;
+    private $strings_account_denied;
+    private $strings_new_user;
+    private $strings_pass_reset;
+    private $strings_client_edited;
 
     function __construct()
     {
@@ -34,10 +43,10 @@ class Emails
 
 		/** Define the messages texts */
 		$this->header = file_get_contents(EMAIL_TEMPLATES_DIR . DS . EMAIL_TEMPLATE_HEADER);
-		$this->footer = file_get_contents(EMAIL_TEMPLATES_DIR . DS . EMAIL_TEMPLATE_FOOTER);
-
+        $this->footer = file_get_contents(EMAIL_TEMPLATES_DIR . DS . EMAIL_TEMPLATE_FOOTER);
+        
 		/** Strings for the "New file uploaded" BY A SYSTEM USER e-mail */
-		$email_strings_file_by_user = array(
+		$this->strings_file_by_user = array(
 			'subject'	=> ( defined('EMAIL_NEW_FILE_BY_USER_SUBJECT_CUSTOMIZE' ) && EMAIL_NEW_FILE_BY_USER_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_NEW_FILE_BY_USER_SUBJECT' ) ) ? EMAIL_NEW_FILE_BY_USER_SUBJECT : __('New files uploaded for you','cftp_admin'),
 			'body'		=> __('The following files are now available for you to download.','cftp_admin'),
 			'body2'		=> __("If you prefer not to be notified about new files, please go to My Account and deactivate the notifications checkbox.",'cftp_admin'),
@@ -46,7 +55,7 @@ class Emails
 		);
 
 		/** Strings for the "New file uploaded" BY A CLIENT e-mail */
-		$email_strings_file_by_client = array(
+		$this->strings_file_by_client = array(
 			'subject'	=> ( defined('EMAIL_NEW_FILE_BY_CLIENT_SUBJECT_CUSTOMIZE' ) && EMAIL_NEW_FILE_BY_CLIENT_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_NEW_FILE_BY_CLIENT_SUBJECT' ) ) ? EMAIL_NEW_FILE_BY_CLIENT_SUBJECT : __('New files uploaded by clients','cftp_admin'),
 			'body'		=> __('New files has been uploaded by the following clients','cftp_admin'),
 			'body2'		=> __("You can manage these files",'cftp_admin'),
@@ -55,7 +64,7 @@ class Emails
 
 
 		/** Strings for the "New client created" e-mail */
-		$email_strings_new_client = array(
+		$this->strings_new_client = array(
 			'subject'		=> ( defined('EMAIL_NEW_CLIENT_BY_USER_SUBJECT_CUSTOMIZE' ) && EMAIL_NEW_CLIENT_BY_USER_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_NEW_CLIENT_BY_USER_SUBJECT' ) ) ? EMAIL_NEW_CLIENT_BY_USER_SUBJECT : __('Welcome to ProjectSend','cftp_admin'),
 			'body'			=> __('A new account was created for you. From now on, you can access the files that have been uploaded under your account using the following credentials:','cftp_admin'),
 			'body2'			=> __('You can log in following this link','cftp_admin'),
@@ -68,7 +77,7 @@ class Emails
 		* Strings for the "New client" e-mail to the admin
 		* on self registration.
 		*/
-		$email_strings_new_client_self = array(
+		$this->strings_new_client_self = array(
 			'subject'		=> ( defined('EMAIL_NEW_CLIENT_BY_SELF_SUBJECT_CUSTOMIZE' ) && EMAIL_NEW_CLIENT_BY_SELF_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_NEW_CLIENT_BY_SELF_SUBJECT' ) ) ? EMAIL_NEW_CLIENT_BY_SELF_SUBJECT : __('A new client has registered.','cftp_admin'),
 			'body'			=> __('A new account was created using the self registration form on your site. Registration information:','cftp_admin'),
 			'label_name'	=> __('Full name','cftp_admin'),
@@ -76,17 +85,17 @@ class Emails
 			'label_request'	=> __('Additionally, the client requests access to the following group(s)','cftp_admin')
 		);
 		if ( defined('CLIENTS_AUTO_APPROVE') && CLIENTS_AUTO_APPROVE == '0') {
-			$email_strings_new_client_self['body2'] = __('Please log in to process the request.','cftp_admin');
-			$email_strings_new_client_self['body3'] = __('Remember, your new client will not be able to log in until an administrator has approved their account.','cftp_admin');
+			$this->strings_new_client_self['body2'] = __('Please log in to process the request.','cftp_admin');
+			$this->strings_new_client_self['body3'] = __('Remember, your new client will not be able to log in until an administrator has approved their account.','cftp_admin');
 		}
 		else {
-			$email_strings_new_client_self['body2'] = __('Auto-approvals of new accounts are currently enabled.','cftp_admin');
-			$email_strings_new_client_self['body3'] = __('You can log in to manually deactivate it.','cftp_admin');
+			$this->strings_new_client_self['body2'] = __('Auto-approvals of new accounts are currently enabled.','cftp_admin');
+			$this->strings_new_client_self['body3'] = __('You can log in to manually deactivate it.','cftp_admin');
 		}
 
 
 		/** Strings for the "Account approved" e-mail */
-		$email_strings_account_approved = array(
+		$this->strings_account_approved = array(
 			'subject'			=> ( defined('EMAIL_ACCOUNT_APPROVE_SUBJECT_CUSTOMIZE' ) && EMAIL_ACCOUNT_APPROVE_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_ACCOUNT_APPROVE_SUBJECT' ) ) ? EMAIL_ACCOUNT_APPROVE_SUBJECT : __('You account has been approved','cftp_admin'),
 			'body'				=> __('Your account has been approved.','cftp_admin'),
 			'title_memberships'	=> __('Additionally, your group membership requests have been processed.','cftp_admin'),
@@ -97,14 +106,14 @@ class Emails
 		);
 
 		/** Strings for the "Account denied" e-mail */
-		$email_strings_account_denied = array(
+		$this->strings_account_denied = array(
 			'subject'		=> ( defined('EMAIL_ACCOUNT_DENY_SUBJECT_CUSTOMIZE' ) && EMAIL_ACCOUNT_DENY_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_ACCOUNT_DENY_SUBJECT' ) ) ? EMAIL_ACCOUNT_DENY_SUBJECT : __('You account has been denied','cftp_admin'),
 			'body'			=> __('Your account request has been denied.','cftp_admin'),
 			'body2'			=> __('Please contact the administrator if you need further assistance.','cftp_admin')
 		);
 
 		/** Strings for the "New system user created" e-mail */
-		$email_strings_new_user = array(
+		$this->strings_new_user = array(
 			'subject'		=> ( defined('EMAIL_NEW_USER_SUBJECT_CUSTOMIZE' ) && EMAIL_NEW_USER_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_NEW_USER_SUBJECT' ) ) ? EMAIL_NEW_USER_SUBJECT : __('Welcome to ProjectSend','cftp_admin'),
 			'body'			=> __('A new account was created for you. From now on, you can access the system administrator using the following credentials:','cftp_admin'),
 			'body2'			=> __('Access the system panel here','cftp_admin'),
@@ -115,7 +124,7 @@ class Emails
 
 
 		/** Strings for the "Reset password" e-mail */
-		$email_strings_pass_reset = array(
+		$this->strings_pass_reset = array(
 			'subject'		=> ( defined('EMAIL_PASS_RESET_SUBJECT_CUSTOMIZE' ) && EMAIL_PASS_RESET_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_PASS_RESET_SUBJECT' ) ) ? EMAIL_PASS_RESET_SUBJECT : __('Password reset instructions','cftp_admin'),
 			'body'			=> __('A request has been received to reset the password for the following account:','cftp_admin'),
 			'body2'			=> __('To continue, please visit the following link','cftp_admin'),
@@ -127,7 +136,7 @@ class Emails
 		/**
 		* Strings for the "Review client group requests" e-mail to the admin
 		*/
-		$email_strings_client_edited = array(
+		$this->strings_client_edited = array(
 			'subject'			=> ( defined('EMAIL_CLIENT_EDITED_SUBJECT_CUSTOMIZE' ) && EMAIL_CLIENT_EDITED_SUBJECT_CUSTOMIZE == 1 && defined( 'EMAIL_CLIENT_EDITED_SUBJECT' ) ) ? EMAIL_CLIENT_EDITED_SUBJECT : __('A client has changed memberships requests.','cftp_admin'),
 			'body'				=> __('A client on you site has just changed his groups membership requests and needs your approval.','cftp_admin'),
 			'label_name'		=> __('Full name','cftp_admin'),
@@ -233,17 +242,16 @@ class Emails
 	 */
 	private function email_new_client($username,$password)
 	{
-		global $email_strings_new_client;
-		$this->email_body = $this->email_prepare_body('new_client');
+        $this->email_body = $this->email_prepare_body('new_client');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%BODY2%','%BODY3%','%LBLUSER%','%LBLPASS%','%USERNAME%','%PASSWORD%','%URI%'),
 									array(
-											$email_strings_new_client['subject'],
-											$email_strings_new_client['body'],
-											$email_strings_new_client['body2'],
-											$email_strings_new_client['body3'],
-											$email_strings_new_client['label_user'],
-											$email_strings_new_client['label_pass'],
+											$this->strings_new_client['subject'],
+											$this->strings_new_client['body'],
+											$this->strings_new_client['body2'],
+											$this->strings_new_client['body3'],
+											$this->strings_new_client['label_user'],
+											$this->strings_new_client['label_pass'],
 											$username,
 											$password,
 											BASE_URI
@@ -251,7 +259,7 @@ class Emails
 									$this->email_body
 								);
 		return array(
-					'subject' => $email_strings_new_client['subject'],
+					'subject' => $this->strings_new_client['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -262,17 +270,16 @@ class Emails
 	 */
 	private function email_new_client_self($username,$fullname,$memberships_requests)
 	{
-		global $email_strings_new_client_self;
 		$this->email_body = $this->email_prepare_body('new_client_self');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%BODY2%','%BODY3%','%LBLNAME%','%LBLUSER%','%FULLNAME%','%USERNAME%','%URI%'),
 									array(
-										$email_strings_new_client_self['subject'],
-										$email_strings_new_client_self['body'],
-										$email_strings_new_client_self['body2'],
-										$email_strings_new_client_self['body3'],
-										$email_strings_new_client_self['label_name'],
-										$email_strings_new_client_self['label_user'],
+										$this->strings_new_client_self['subject'],
+										$this->strings_new_client_self['body'],
+										$this->strings_new_client_self['body2'],
+										$this->strings_new_client_self['body3'],
+										$this->strings_new_client_self['label_name'],
+										$this->strings_new_client_self['label_user'],
 										$fullname,$username,BASE_URI
 										),
 									$this->email_body
@@ -294,14 +301,14 @@ class Emails
 			$this->email_body = str_replace(
 									array('%LABEL_REQUESTS%', '%GROUPS_REQUESTS%'),
 									array(
-										$email_strings_new_client_self['label_request'],
+										$this->strings_new_client_self['label_request'],
 										$this->groups_list
 									),
 								$this->email_body
 							);
 		}
 		return array(
-					'subject' => $email_strings_new_client_self['subject'],
+					'subject' => $this->strings_new_client_self['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -312,7 +319,6 @@ class Emails
 	 */
 	private function email_account_approve($username,$name,$memberships_requests)
 	{
-		global $email_strings_account_approved;
 		$requests_title_replace = false;
 
 		$this->groups = new GroupActions();
@@ -321,7 +327,7 @@ class Emails
 
 		if ( !empty( $memberships_requests['approved'] ) ) {
 			$requests_title_replace = true;
-			$approved_title = '<p>'.$email_strings_account_approved['title_approved'].'</p>';
+			$approved_title = '<p>'.$this->strings_account_approved['title_approved'].'</p>';
 			// Make the list
 			$approved_list = '<ul>';
 			foreach ( $memberships_requests['approved'] as $group_id ) {
@@ -335,7 +341,7 @@ class Emails
 		}
 		if ( !empty( $memberships_requests['denied'] ) ) {
 			$requests_title_replace = true;
-			$denied_title = '<p>'.$email_strings_account_approved['title_denied'].'</p>';
+			$denied_title = '<p>'.$this->strings_account_approved['title_denied'].'</p>';
 			// Make the list
 			$denied_list = '<ul>';
 			foreach ( $memberships_requests['denied'] as $group_id ) {
@@ -348,27 +354,27 @@ class Emails
 			$denied_title = '';
 		}
 
-		$requests_title = ( $requests_title_replace == true ) ? '<p>'.$email_strings_account_approved['title_approved'].'</p>' : '';
+		$requests_title = ( $requests_title_replace == true ) ? '<p>'.$this->strings_account_approved['title_approved'].'</p>' : '';
 
 		$this->email_body = $this->email_prepare_body('account_approve');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%', '%REQUESTS_TITLE%', '%APPROVED_TITLE%','%GROUPS_APPROVED%','%DENIED_TITLE%','%GROUPS_DENIED%','%BODY2%','%BODY3%','%URI%'),
 									array(
-										$email_strings_account_approved['subject'],
-										$email_strings_account_approved['body'],
-										'<p>'.$email_strings_account_approved['title_memberships'].'</p>',
+										$this->strings_account_approved['subject'],
+										$this->strings_account_approved['body'],
+										'<p>'.$this->strings_account_approved['title_memberships'].'</p>',
 										$approved_title,
 										$approved_list,
 										$denied_title,
 										$denied_list,
-										$email_strings_account_approved['body2'],
-										$email_strings_account_approved['body3'],
+										$this->strings_account_approved['body2'],
+										$this->strings_account_approved['body3'],
 										BASE_URI
 									),
 									$this->email_body
 								);
 		return array(
-					'subject' => $email_strings_account_approved['subject'],
+					'subject' => $this->strings_account_approved['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -378,19 +384,18 @@ class Emails
 	 */
 	private function email_account_deny($username,$name)
 	{
-		global $email_strings_account_denied;
 		$this->email_body = $this->email_prepare_body('account_deny');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%BODY2%'),
 									array(
-										$email_strings_account_denied['subject'],
-										$email_strings_account_denied['body'],
-										$email_strings_account_denied['body2'],
+										$this->strings_account_denied['subject'],
+										$this->strings_account_denied['body'],
+										$this->strings_account_denied['body2'],
 									),
 									$this->email_body
 								);
 		return array(
-					'subject' => $email_strings_account_denied['subject'],
+					'subject' => $this->strings_account_denied['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -401,17 +406,16 @@ class Emails
 	 */
 	private function email_new_user($username,$password)
 	{
-		global $email_strings_new_user;
 		$this->email_body = $this->email_prepare_body('new_user');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%BODY2%','%BODY3%','%LBLUSER%','%LBLPASS%','%USERNAME%','%PASSWORD%','%URI%'),
 									array(
-										$email_strings_new_user['subject'],
-										$email_strings_new_user['body'],
-										$email_strings_new_user['body2'],
-										$email_strings_new_user['body3'],
-										$email_strings_new_user['label_user'],
-										$email_strings_new_user['label_pass'],
+										$this->strings_new_user['subject'],
+										$this->strings_new_user['body'],
+										$this->strings_new_user['body2'],
+										$this->strings_new_user['body3'],
+										$this->strings_new_user['label_user'],
+										$this->strings_new_user['label_pass'],
 										$username,
 										$password,
 										BASE_URI
@@ -419,7 +423,7 @@ class Emails
 									$this->email_body
 								);
 		return array(
-					'subject' => $email_strings_new_user['subject'],
+					'subject' => $this->strings_new_user['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -431,23 +435,22 @@ class Emails
 	 */
 	private function email_new_files_by_user($files_list)
 	{
-		global $email_strings_file_by_user;
 		$this->email_body = $this->email_prepare_body('new_file_by_user');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%FILES%','%BODY2%','%BODY3%','%BODY4%','%URI%'),
 									array(
-										$email_strings_file_by_user['subject'],
-										$email_strings_file_by_user['body'],
+										$this->strings_file_by_user['subject'],
+										$this->strings_file_by_user['body'],
 										$files_list,
-										$email_strings_file_by_user['body2'],
-										$email_strings_file_by_user['body3'],
-										$email_strings_file_by_user['body4'],
+										$this->strings_file_by_user['body2'],
+										$this->strings_file_by_user['body3'],
+										$this->strings_file_by_user['body4'],
 										BASE_URI
 									),
 									$this->email_body
 								);
 		return array(
-					'subject' => $email_strings_file_by_user['subject'],
+					'subject' => $this->strings_file_by_user['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -459,22 +462,21 @@ class Emails
 	 */
 	private function email_new_files_by_client($files_list)
 	{
-		global $email_strings_file_by_client;
 		$this->email_body = $this->email_prepare_body('new_files_by_client');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%FILES%','%BODY2%','%BODY3%','%URI%'),
 									array(
-										$email_strings_file_by_client['subject'],
-										$email_strings_file_by_client['body'],
+										$this->strings_file_by_client['subject'],
+										$this->strings_file_by_client['body'],
 										$files_list,
-										$email_strings_file_by_client['body2'],
-										$email_strings_file_by_client['body3'],
+										$this->strings_file_by_client['body2'],
+										$this->strings_file_by_client['body3'],
 										BASE_URI
 									),
 									$this->email_body
 								);
 		return array(
-					'subject' => $email_strings_file_by_client['subject'],
+					'subject' => $this->strings_file_by_client['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -486,24 +488,23 @@ class Emails
 	 */
 	private function email_password_reset($username, $token)
 	{
-		global $email_strings_pass_reset;
 		$this->email_body = $this->email_prepare_body('password_reset');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%BODY2%','%BODY3%','%BODY4%','%LBLUSER%','%USERNAME%','%URI%'),
 									array(
-										$email_strings_pass_reset['subject'],
-										$email_strings_pass_reset['body'],
-										$email_strings_pass_reset['body2'],
-										$email_strings_pass_reset['body3'],
-										$email_strings_pass_reset['body4'],
-										$email_strings_pass_reset['label_user'],
+										$this->strings_pass_reset['subject'],
+										$this->strings_pass_reset['body'],
+										$this->strings_pass_reset['body2'],
+										$this->strings_pass_reset['body3'],
+										$this->strings_pass_reset['body4'],
+										$this->strings_pass_reset['label_user'],
 										$username,
 										BASE_URI.'reset-password.php?token=' . $token . '&user=' . $username,
 									),
 									$this->email_body
 								);
 		return array(
-					'subject' => $email_strings_pass_reset['subject'],
+					'subject' => $this->strings_pass_reset['subject'],
 					'body' => $this->email_body
 				);
 	}
@@ -514,16 +515,15 @@ class Emails
 	 */
 	private function email_client_edited($username,$fullname,$memberships_requests)
 	{
-		global $email_strings_client_edited;
 		$this->email_body = $this->email_prepare_body('client_edited');
 		$this->email_body = str_replace(
 									array('%SUBJECT%','%BODY1%','%BODY2%','%LBLNAME%','%LBLUSER%','%FULLNAME%','%USERNAME%','%URI%'),
 									array(
-										$email_strings_client_edited['subject'],
-										$email_strings_client_edited['body'],
-										$email_strings_client_edited['body2'],
-										$email_strings_client_edited['label_name'],
-										$email_strings_client_edited['label_user'],
+										$this->strings_client_edited['subject'],
+										$this->strings_client_edited['body'],
+										$this->strings_client_edited['body2'],
+										$this->strings_client_edited['label_name'],
+										$this->strings_client_edited['label_user'],
 										$fullname,$username,BASE_URI
 										),
 									$this->email_body
@@ -545,14 +545,14 @@ class Emails
 			$this->email_body = str_replace(
 									array('%LABEL_REQUESTS%', '%GROUPS_REQUESTS%'),
 									array(
-										$email_strings_client_edited['label_request'],
+										$this->strings_client_edited['label_request'],
 										$this->groups_list
 									),
 								$this->email_body
 							);
 		}
 		return array(
-					'subject' => $email_strings_client_edited['subject'],
+					'subject' => $this->strings_client_edited['subject'],
 					'body' => $this->email_body
 				);
 	}
