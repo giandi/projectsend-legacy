@@ -81,16 +81,16 @@ if ($_POST) {
 	 */
 
     $user_arguments = array(
-        'id'	    		=> $user_id,
-        'username'          => $user_arguments['username'],
-        'name'	    		=> encode_html($_POST['name']),
-        'email'		    	=> encode_html($_POST['email']),
-        'role'              => $user_arguments['level'],
-        'max_file_size'     => $user_arguments['max_file_size'],
-        'active'            => $user_arguments['active'],
-        'type'		    	=> 'edit_user',
+        'id' => $user_id,
+        'username' => $user_arguments['username'],
+        'name' => encode_html($_POST['name']),
+        'email' => encode_html($_POST['email']),
+        'level' => $user_arguments['level'],
+        'max_file_size' => $user_arguments['max_file_size'],
+        'active' => $user_arguments['active'],
+        'type' => 'edit_user',
     );
-    
+
     if ( $ignore_size == false ) {
 		$user_arguments['max_file_size'] = (isset($_POST["max_file_size"])) ? $_POST["max_file_size"] : '';
 	}
@@ -106,23 +106,24 @@ if ($_POST) {
 	 * Edit level only when user is not Uploader (level 7) or when
 	 * editing other's account (not own).
 	 */	
-	$can_edit_level_and_active = true;
-	if (CURRENT_USER_LEVEL == 7) {
+    $can_edit_level_and_active = true;
+    if (CURRENT_USER_LEVEL == 7) {
 		$can_edit_level_and_active = false;
 	}
 	else {
 		if (CURRENT_USER_USERNAME == $user_arguments['username']) {
-			$can_edit_level_and_active = false;
+            $can_edit_level_and_active = false;
 		}
 	}
-	if ($can_edit_level_and_active === true) {
+
+    if ($can_edit_level_and_active === true) {
         $user_arguments['level'] = (isset($_POST['level'])) ? $_POST['level'] : $user_arguments['level'];
         $user_arguments['active'] = (isset($_POST["active"])) ? 1 : 0;
     }
 
 	/** Validate the information from the posted form. */
 	$validation = $edit_user->validate($user_arguments);
-	
+
 	/** Create the user if validation is correct. */
 	if ($validation['passed'] == true) {
 		$edit_response = $edit_user->edit($user_arguments);

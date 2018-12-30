@@ -193,7 +193,7 @@ class UserActions
 		$this->id = $arguments['id'];
 		$this->name = encode_html($arguments['name']);
 		$this->email = encode_html($arguments['email']);
-		$this->role = $arguments['role'];
+		$this->role = $arguments['level'];
 		$this->active = ( $arguments['active'] == '1' ) ? 1 : 0;
 		$this->password = $arguments['password'];
 		$this->max_file_size = ( !empty( $arguments['max_file_size'] ) ) ? $arguments['max_file_size'] : 0;
