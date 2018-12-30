@@ -195,7 +195,7 @@ include('header.php');
 						}
 						if ( $delete_results['errors'] > 0 ) {
 							$msg = __('Some files could not be deleted.','cftp_admin');
-							echo system_message('error',$msg);
+							echo system_message('danger',$msg);
 						}
 						break;
 				}
@@ -218,7 +218,7 @@ include('header.php');
 			}
 			else {
 				$msg = __('Please select at least one file.','cftp_admin');
-				echo system_message('error',$msg);
+				echo system_message('danger',$msg);
 			}
 		}
 		
@@ -536,7 +536,7 @@ include('header.php');
 					else {
 						$no_results_message = __('There are no files for this client.','cftp_admin');
 					}
-					echo system_message('error',$no_results_message);
+					echo system_message('danger',$no_results_message);
 				}
 
 				if ( $count_for_pagination > 0 ) {

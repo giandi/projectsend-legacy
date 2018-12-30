@@ -195,7 +195,7 @@ class MembersActions
 			 */
 			$this->new_groups = array_diff($this->group_ids, $this->found_groups);
 			if ( !empty( $this->new_groups) ) {
-				$this->new_groups_add	= new MembersActions;
+				$this->new_groups_add	= new \ProjectSend\Classes\MembersActions;
 				$this->add_arguments	= array(
 												'client_id'	=> $this->client_id,
 												'group_ids'	=> $this->new_groups,
@@ -228,7 +228,7 @@ class MembersActions
 							);
 		
 		if ( $this->requests_count > 0 ) {
-			$this->groups		= new GroupActions;
+			$this->groups		= new \ProjectSend\Classes\GroupActions;
 			$this->arguments	= array();
 
 			$this->arguments = array();
@@ -295,7 +295,7 @@ class MembersActions
 					 * Make a list of public groups in case clients can only request
 					 * membership to those
 					 */
-					$this->memberships	= new GroupActions;
+					$this->memberships	= new \ProjectSend\Classes\GroupActions;
 					$this->arguments = array(
 											'public'	=> true,
 										);
@@ -462,8 +462,6 @@ class MembersActions
 			$this->get_requests	= self::get_membership_requests( $this->get_requests_arguments );
 			$this->on_database = $this->get_requests[$this->client_id]['group_ids'];
 
-
-
 			/**
 			 * On database but not on array:
 			 * delete it from requests table
@@ -511,7 +509,7 @@ class MembersActions
 			 */
 			if ( !empty( $this->group_ids ) ) {
 				$this->client_info = get_client_by_id($this->client_id);
-				$notify_admin = new EmailsPrepare();
+				$notify_admin = new \ProjectSend\Classes\Emails;
 
 				$email_arguments = array(
 												'type'			=> 'client_edited',

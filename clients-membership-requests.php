@@ -98,7 +98,7 @@ include('header.php');
 					$selected_clients = $_POST['accounts'];
 					foreach ( $selected_clients as $client ) {
 						$email_type = 'client_memberships_process';
-						$process_memberships	= new MembersActions();
+						$process_memberships	= new \ProjectSend\Classes\MembersActions;
 
 						/**
 						 * 1 - Process memberships requests
@@ -136,7 +136,7 @@ include('header.php');
 					break;
 				case 'delete':
 					foreach ($selected_clients as $client) {
-						$process_memberships	= new MembersActions();
+						$process_memberships	= new \ProjectSend\Classes\MembersActions;
 
 						$memberships_arguments = array(
 														'client_id'	=> $client['id'],
@@ -155,7 +155,7 @@ include('header.php');
 			/** Record the action log */
 			if ( !empty( $log_action_number ) ) {
 				foreach ($selected_clients_ids as $client) {
-					$logger = new \ProjectSend\Classes\ActionsLog();
+					$logger = new \ProjectSend\Classes\ActionsLog;
 					$log_action_args = array(
 											'action' => $log_action_number,
 											'owner_id' => CURRENT_USER_ID,
@@ -177,7 +177,7 @@ include('header.php');
 		}
 		else {
 			$msg = __('Please select at least one client.','cftp_admin');
-			echo system_message('error',$msg);
+			echo system_message('danger',$msg);
 		}
 	}
 
@@ -314,11 +314,11 @@ include('header.php');
 					else {
 						$no_results_message = __('There are no requests at the moment','cftp_admin');
 					}
-					echo system_message('error',$no_results_message);
+					echo system_message('danger',$no_results_message);
 				}
 
 				if ($count > 0) {
-					$get_groups	= new GroupActions();
+					$get_groups	= new \ProjectSend\Classes\GroupActions;
 					$arguments	= array();
 					$all_groups	= $get_groups->getGroups($arguments);
 
@@ -326,7 +326,7 @@ include('header.php');
 					/**
 					 * Pre-populate a membership requests array
 					 */
-					$get_requests	= new MembersActions();
+					$get_requests	= new \ProjectSend\Classes\MembersActions;
 					$arguments		= array();
 					if ( $current_filter == 'denied' ) {
 						$arguments['denied'] = 1;

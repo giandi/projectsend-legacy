@@ -212,7 +212,7 @@ include_once('../header-unlogged.php');
 									$msg .= '<p>';
 									$msg .= $error_str;
 									$msg .= '</p>';
-									echo system_message('error',$msg);
+									echo system_message('danger',$msg);
 								break;
 							}
 						}

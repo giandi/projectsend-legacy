@@ -225,7 +225,7 @@ include('header-unlogged.php');
 							break;
 					}
 	
-					echo system_message('error',$login_err_message,'login_error');
+					echo system_message('danger',$login_err_message,'login_error');
 				}
 
 				/**
@@ -240,7 +240,7 @@ include('header-unlogged.php');
 						case 0:
 							$msg = __("E-mail couldn't be sent.",'cftp_admin');
 							$msg .= ' ' . __("If the problem persists, please contact an administrator.",'cftp_admin');
-							echo system_message('error',$msg);
+							echo system_message('danger',$msg);
 						break;
 					}
 				}
@@ -257,7 +257,7 @@ include('header-unlogged.php');
 						case 0:
 							$msg = __("Your new password couldn't be set.",'cftp_admin');
 							$msg .= ' ' . __("If the problem persists, please contact an administrator.",'cftp_admin');
-							echo system_message('error',$msg);
+							echo system_message('danger',$msg);
 						break;
 					}
 				}

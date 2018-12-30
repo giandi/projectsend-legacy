@@ -201,7 +201,7 @@ include('header.php');
 		}
 		else {
 			$msg = __('Please select at least one client.','cftp_admin');
-			echo system_message('error',$msg);
+			echo system_message('danger',$msg);
 		}
 	}
 
@@ -339,7 +339,7 @@ include('header.php');
 					else {
 						$no_results_message = __('There are no requests at the moment','cftp_admin');
 					}
-					echo system_message('error',$no_results_message);
+					echo system_message('danger',$no_results_message);
 				}
 
 				if ($count > 0) {

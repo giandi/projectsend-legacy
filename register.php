@@ -127,7 +127,7 @@ include('header-unlogged.php');
 			<?php
 				if (CLIENTS_CAN_REGISTER == '0') {
 					$msg = __('Client self registration is not allowed. If you need an account, please contact a system administrator.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 				}
 				else {
 					/**
@@ -169,17 +169,17 @@ include('header-unlogged.php');
 							case 0:
 								$msg = __('There was an error. Please try again.','cftp_admin');
 								$msg .= $error_msg;
-								echo system_message('error',$msg);
+								echo system_message('danger',$msg);
 							break;
 							case 2:
 								$msg = __('A folder for this account could not be created. Probably because of a server configuration.','cftp_admin');
 								$msg .= $error_msg;
-								echo system_message('error',$msg);
+								echo system_message('danger',$msg);
 							break;
 							case 3:
 								$msg = __('The account could not be created. A folder with this name already exists.','cftp_admin');
 								$msg .= $error_msg;
-								echo system_message('error',$msg);
+								echo system_message('danger',$msg);
 							break;
 						}
 						/**
@@ -192,7 +192,7 @@ include('header-unlogged.php');
 							break;
 							case 0:
 								$msg = __("E-mail notification couldn't be sent.",'cftp_admin');
-								echo system_message('error',$msg);
+								echo system_message('danger',$msg);
 							break;
 						}
 					}

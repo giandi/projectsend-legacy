@@ -146,7 +146,7 @@ include('header-unlogged.php');
 							break;
 					}
 	
-					echo system_message('error',$login_err_message,'login_error');
+					echo system_message('danger',$login_err_message,'login_error');
 				}
 				
 				if (isset($download_link)) {

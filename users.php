@@ -80,7 +80,7 @@ include('header.php');
 						}
 						else {
 							$msg = __('You cannot deactivate your own account.','cftp_admin');
-							echo system_message('error',$msg);
+							echo system_message('danger',$msg);
 						}
 					}
 
@@ -103,7 +103,7 @@ include('header.php');
 						}
 						else {
 							$msg = __('You cannot delete your own account.','cftp_admin');
-							echo system_message('error',$msg);
+							echo system_message('danger',$msg);
 						}
 					}
 					
@@ -128,7 +128,7 @@ include('header.php');
 		}
 		else {
 			$msg = __('Please select at least one user.','cftp_admin');
-			echo system_message('error',$msg);
+			echo system_message('danger',$msg);
 		}
 	}
 
@@ -281,7 +281,7 @@ include('header.php');
 						$no_results_message = __('The filters you selected returned no results.','cftp_admin');
 						break;
 				}
-				echo system_message('error',$no_results_message);
+				echo system_message('danger',$no_results_message);
 			}
 			
 			if ($count > 0) {

@@ -57,7 +57,7 @@ if ( isset($_GET['activate_template']) ) {
 					break;
 				case '2':
 					$msg = __('There was an error. Please try again.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					break;
 			}
 		}

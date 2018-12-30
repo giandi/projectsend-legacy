@@ -46,7 +46,7 @@ include('header.php');
 					}
 					else {
 						$msg = __('Please select at least one activity.','cftp_admin');
-						echo system_message('error',$msg);
+						echo system_message('danger',$msg);
 					}
 				break;
 				case 'log_clear':
@@ -196,7 +196,7 @@ include('header.php');
 				else {
 					$no_results_message = __('There are no activities recorded.','cftp_admin');
 				}
-				echo system_message('error',$no_results_message);
+				echo system_message('danger',$no_results_message);
 			}
 		?>
 

@@ -289,7 +289,7 @@ if (!empty($found_notifications)) {
 		$statement->execute();
 
 		$msg = __("One or more notifications couldn't be sent.",'cftp_admin');
-		echo system_message('error',$msg);
+		echo system_message('danger',$msg);
 	}
 
 	/**
@@ -313,7 +313,7 @@ if (!empty($found_notifications)) {
 		}
 		else {
 			$msg = __('E-mail notifications for inactive clients were not sent.','cftp_admin');
-			echo system_message('error',$msg);
+			echo system_message('danger',$msg);
 		}
 	}
 	

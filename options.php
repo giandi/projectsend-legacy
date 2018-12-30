@@ -208,11 +208,11 @@ $allowed_file_types = implode(',',$allowed_file_types);
 					break;
 				case '2':
 					$msg = __('There was an error. Please try again.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					break;
 				case '3':
 					$msg = __('Some fields were not completed. Options could not be saved.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					$show_options_form = 1;
 					break;
 			}
@@ -229,15 +229,15 @@ $allowed_file_types = implode(',',$allowed_file_types);
 					$msg .= ' '.ADMIN_UPLOADS_DIR.' ';
 					$msg .= __('directory to 755, or 777 as a last resource.','cftp_admin');
 					$msg .= __("If this doesn't solve the issue, try giving the same values to the directories above that one until it works.",'cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					break;
 				case '3':
 					$msg = __('The file you selected is not an allowed format.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					break;
 				case '4':
 					$msg = __('There was an error uploading the file. Please try again.','cftp_admin');
-					echo system_message('error',$msg);
+					echo system_message('danger',$msg);
 					break;
 			}
 		}
@@ -723,7 +723,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<?php
 									if ( isset( $php_allowed_warning ) && $php_allowed_warning == true ) {
 										$msg = __('Warning: php extension is allowed. This is a serious security problem. If you are not sure that you need it, please remove it from the list.','cftp_admin');
-										echo system_message('error',$msg);
+										echo system_message('danger',$msg);
 									}
 								?>
 

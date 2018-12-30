@@ -63,12 +63,12 @@ include('header.php');
 	<?php	
 		if ($page_status === 0) {
 			$msg = __('No file was selected.','cftp_admin');
-			echo system_message('error',$msg);
+			echo system_message('danger',$msg);
 			echo '<p>'.$direct_access_error.'</p>';
 		}
 		else if ($page_status === 2) {
 			$msg = __('There is no information with that file ID number.','cftp_admin');
-			echo system_message('error',$msg);
+			echo system_message('danger',$msg);
 			echo '<p>'.$direct_access_error.'</p>';
 		}
 		else {

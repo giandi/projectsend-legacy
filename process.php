@@ -166,7 +166,7 @@ class process {
 
 		$results = array(
 						'status'	=> 'error',
-						'message'	=> system_message('error',$this->login_err_message,'login_error'),
+						'message'	=> system_message('danger',$this->login_err_message,'login_error'),
 					);
 
 		/** Using an external form */

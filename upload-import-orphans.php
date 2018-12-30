@@ -285,7 +285,7 @@ include('header.php');
 					$no_results_message .= ' <span class="format_url"><strong>'.html_output(UPLOADED_FILES_DIR).'</strong></span>.';
 				}
 	
-				echo system_message('error',$no_results_message);
+				echo system_message('danger',$no_results_message);
 			}
 		?>
 	</form>
