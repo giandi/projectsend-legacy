@@ -10,6 +10,17 @@
  * @subpackage Core
  */
 session_start();
+
+/**
+ * Define the system name, and the information that will be used
+ * on the footer blocks.
+ *
+ */
+ define('SYSTEM_NAME','ProjectSend');
+ define('SYSTEM_URI','https://www.projectsend.org/');
+ define('SYSTEM_URI_LABEL','ProjectSend on github');
+ define('DONATIONS_URL','https://www.projectsend.org/donations/');
+ 
 /**
  * Current version.
  * Updated only when releasing a new downloadable complete version.
@@ -226,7 +237,6 @@ define('ADMIN_VIEWS_DIR', ROOT_DIR);
 define('EMAIL_TEMPLATES_DIR', ADMIN_VIEWS_DIR . DS . 'emails');
 define('TEMPLATES_DIR', ROOT_DIR . DS . 'templates');
 
-
 /* Branding */
 define('ADMIN_UPLOADS_DIR', UPLOADED_FILES_ROOT . DS . 'admin');
 define('LOGO_MAX_WIDTH', 300);
@@ -241,19 +251,32 @@ define('THUMBS_QUALITY', 90);
 /* Widgets */
 define('WIDGETS_FOLDER',ROOT_DIR.'/includes/widgets/');
 
-/**
- * Define the system name, and the information that will be used
- * on the footer blocks.
- *
- */
-define('SYSTEM_NAME','ProjectSend');
-define('SYSTEM_URI','https://www.projectsend.org/');
-define('SYSTEM_URI_LABEL','ProjectSend on github');
-define('DONATIONS_URL','https://www.projectsend.org/donations/');
+/* Default e-mail templates files */
+define('EMAIL_TEMPLATE_HEADER', 'header.html');
+define('EMAIL_TEMPLATE_FOOTER', 'footer.html');
+define('EMAIL_TEMPLATE_NEW_CLIENT', 'new-client.html');
+define('EMAIL_TEMPLATE_NEW_CLIENT_SELF', 'new-client-self.html');
+define('EMAIL_TEMPLATE_CLIENT_EDITED', 'client-edited.html');
+define('EMAIL_TEMPLATE_NEW_USER', 'new-user.html');
+define('EMAIL_TEMPLATE_ACCOUNT_APPROVE', 'account-approve.html');
+define('EMAIL_TEMPLATE_ACCOUNT_DENY', 'account-deny.html');
+define('EMAIL_TEMPLATE_NEW_FILE_BY_USER', 'new-file-by-user.html');
+define('EMAIL_TEMPLATE_NEW_FILE_BY_CLIENT', 'new-file-by-client.html');
+define('EMAIL_TEMPLATE_PASSWORD_RESET', 'password-reset.html');
 
 /** Passwords */
 define('HASH_COST_LOG2', 8);
 define('HASH_PORTABLE', false);
+
+/**
+ * Footable
+ * Define the amount of items to show
+ * @todo Get this value off a cookie if it exists.
+ */
+define('FOOTABLE_PAGING_NUMBER', '10');
+define('FOOTABLE_PAGING_NUMBER_LOG', '15');
+define('RESULTS_PER_PAGE', '10');
+define('RESULTS_PER_PAGE_LOG', '15');
 
 /**
  * External links

@@ -76,7 +76,7 @@ if ($_POST) {
 													'affected_account' => $new_response['new_id'],
 													'affected_account_name' => $group_arguments['name']
 												);
-							$new_record_action = $logger->add_entry($log_action_args);
+							$new_record_action = $logger->addEntry($log_action_args);
 						break;
 						case 0:
 							$msg = __('There was an error. Please try again.','cftp_admin');

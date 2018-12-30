@@ -157,7 +157,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '400');
 				<?php
 					foreach ($my_files as $file) {
 						$download_link = make_download_link($file);
-						$date = date(TIMEFORMAT_USE,strtotime($file['timestamp']));
+						$date = date(TIMEFORMAT,strtotime($file['timestamp']));
 				?>
 						<div class="photo <?php if ($file['expired'] == true) { echo 'expired'; } ?>">
 							<div class="photo_int">
@@ -212,7 +212,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '400');
 									<p class="exp_date">
 										<?php
 											if ( $file['expires'] == '1' ) {
-												$exp_date = date( TIMEFORMAT_USE, strtotime( $file['expiry_date'] ) );
+												$exp_date = date( TIMEFORMAT, strtotime( $file['expiry_date'] ) );
 												_e('Expiration date:','pinboxes_template'); ?> <span><?php echo $exp_date; ?></span>
 										<?php
 											}

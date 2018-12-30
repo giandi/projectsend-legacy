@@ -457,7 +457,7 @@ if (current_role_in($allowed_update)) {
 											'mail_smtp_port' => '',
 											'mail_smtp_user' => '',
 											'mail_smtp_pass' => '',
-											'mail_from_name' => SITE_NAME
+											'mail_from_name' => THIS_INSTALL_TITLE
 										);
 			
 			foreach($new_database_values as $row => $value) {
@@ -570,7 +570,7 @@ if (current_role_in($allowed_update)) {
 								'owner_id' => CURRENT_USER_ID,
 								'affected_account_name' => $current_version
 							);
-		$new_record_action = $logger->add_entry($log_action_args);
+		$new_record_action = $logger->addEntry($log_action_args);
 
 
 		/**

@@ -6,6 +6,7 @@
  * @package		ProjectSend
  * @subpackage	Classes
  */
+namespace ProjectSend\Classes;
 
 class FilesActions
 {
@@ -17,7 +18,7 @@ class FilesActions
 		$this->dbh = $dbh;
 	}
 
-	function get_files($arguments)
+	function getFiles($arguments)
 	{
 		$this->file_id		= !empty( $arguments['file_id'] ) ? $arguments['file_id'] : '';
 		$this->uploader	= !empty( $arguments['uploader'] ) ? $arguments['uploader'] : '';
@@ -117,7 +118,7 @@ class FilesActions
 
 	}
 
-	function delete_files($rel_id)
+	function deleteFiles($rel_id)
 	{
 		$this->can_delete		= false;
 		$this->result			= '';
@@ -186,7 +187,7 @@ class FilesActions
 		}
 	}
 
-	function change_files_hide_status($change_to,$file_id,$modify_type,$modify_id)
+	function changeHiddenStatus($change_to,$file_id,$modify_type,$modify_id)
 	{
 		$this->check_level = array(9,8,7);
 		if (isset($file_id)) {
@@ -205,7 +206,7 @@ class FilesActions
 		}
 	}
 
-	function hide_for_everyone($file_id)
+	function hideForEveryone($file_id)
 	{
 		$this->check_level = array(9,8,7);
 		if (isset($file_id)) {
@@ -218,7 +219,7 @@ class FilesActions
 		}
 	}
 
-	function unassign_file($file_id,$modify_type,$modify_id)
+	function unassignFile($file_id,$modify_type,$modify_id)
 	{
 		$this->check_level = array(9,8,7);
 		if (isset($file_id)) {

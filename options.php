@@ -185,9 +185,8 @@ if ($_POST) {
  * the allowed filetypes on the form. This value comes from
  * site.options.php
 */
-$allowed_file_types = str_replace('|',',',$allowed_file_types);
 /** Explode, sort, and implode the values to list them alphabetically */
-$allowed_file_types = explode(',',$allowed_file_types);
+$allowed_file_types = explode('|',ALLOWED_FILE_TYPES);
 sort($allowed_file_types);
 
 /** If .php files are allowed, set the flag for the warning message */
@@ -296,7 +295,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="this_install_title" class="col-sm-4 control-label"><?php _e('Site name','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="this_install_title" id="this_install_title" class="form-control" value="<?php echo html_output(SITE_NAME); ?>" />
+										<input type="text" name="this_install_title" id="this_install_title" class="form-control" value="<?php echo html_output(THIS_INSTALL_TITLE); ?>" />
 									</div>
 								</div>
 
@@ -316,7 +315,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="timeformat" class="col-sm-4 control-label"><?php _e('Time format','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" class="form-control" name="timeformat" id="timeformat" value="<?php echo TIMEFORMAT_USE; ?>" />
+										<input type="text" class="form-control" name="timeformat" id="timeformat" value="<?php echo TIMEFORMAT; ?>" />
 										<p class="field_note"><?php _e('For example, d/m/Y h:i:s will result in something like','cftp_admin'); ?> <strong><?php echo date('d/m/Y h:i:s'); ?></strong>.
 										<?php _e('For the full list of available values, visit','cftp_admin'); ?> <a href="http://php.net/manual/en/function.date.php" target="_blank"><?php _e('this page','cftp_admin'); ?></a>.</p>
 									</div>
@@ -344,7 +343,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="files_descriptions_use_ckeditor">
-											<input type="checkbox" value="1" name="files_descriptions_use_ckeditor" id="files_descriptions_use_ckeditor" class="checkbox_options" <?php echo (DESCRIPTIONS_USE_CKEDITOR == 1) ? 'checked="checked"' : ''; ?> /> <?php _e("Use the visual editor on files descriptions",'cftp_admin'); ?>
+											<input type="checkbox" value="1" name="files_descriptions_use_ckeditor" id="files_descriptions_use_ckeditor" class="checkbox_options" <?php echo (FILES_DESCRIPTIONS_USE_CKEDITOR == 1) ? 'checked="checked"' : ''; ?> /> <?php _e("Use the visual editor on files descriptions",'cftp_admin'); ?>
 										</label>
 									</div>
 								</div>
@@ -405,7 +404,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 												/** Fill the groups array that will be used on the form */
 												$get_groups		= new GroupActions;
 												$arguments		= array();
-												$groups 		= $get_groups->get_groups($arguments);
+												$groups 		= $get_groups->getGroups($arguments);
 
 												foreach ( $groups as $group ) {
 											?>
@@ -518,7 +517,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="public_listing_page_enable">
-											<input type="checkbox" value="1" name="public_listing_page_enable" id="public_listing_page_enable" class="checkbox_options" <?php echo (PUBLIC_LISTING_ENABLE == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('Enable page','cftp_admin'); ?>
+											<input type="checkbox" value="1" name="public_listing_page_enable" id="public_listing_page_enable" class="checkbox_options" <?php echo (PUBLIC_LISTING_PAGE_ENABLE == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('Enable page','cftp_admin'); ?>
 										</label>
 										<p class="field_note"><?php _e('The url for the listings page is','cftp_admin'); ?><br>
 										<a href="<?php echo PUBLIC_LANDING_URI; ?>" target="_blank">
@@ -580,7 +579,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="mail_copy_user_upload">
-											<input type="checkbox" value="1" name="mail_copy_user_upload" id="mail_copy_user_upload" <?php echo (COPY_MAIL_ON_USER_UPLOADS == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('When a system user uploads files','cftp_admin'); ?>
+											<input type="checkbox" value="1" name="mail_copy_user_upload" id="mail_copy_user_upload" <?php echo (MAIL_COPY_USER_UPLOAD == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('When a system user uploads files','cftp_admin'); ?>
 										</label>
 									</div>
 								</div>
@@ -588,7 +587,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="mail_copy_client_upload">
-											<input type="checkbox" value="1" name="mail_copy_client_upload" id="mail_copy_client_upload" <?php echo (COPY_MAIL_ON_CLIENT_UPLOADS == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('When a client uploads files','cftp_admin'); ?>
+											<input type="checkbox" value="1" name="mail_copy_client_upload" id="mail_copy_client_upload" <?php echo (MAIL_COPY_CLIENT_UPLOAD == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('When a client uploads files','cftp_admin'); ?>
 										</label>
 									</div>
 								</div>
@@ -600,7 +599,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="mail_copy_main_user">
-											<input type="checkbox" value="1" name="mail_copy_main_user" class="mail_copy_main_user" <?php echo (COPY_MAIL_MAIN_USER == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('Address supplied above (on "From")','cftp_admin'); ?>
+											<input type="checkbox" value="1" name="mail_copy_main_user" class="mail_copy_main_user" <?php echo (MAIL_COPY_MAIN_USER == 1) ? 'checked="checked"' : ''; ?> /> <?php _e('Address supplied above (on "From")','cftp_admin'); ?>
 										</label>
 									</div>
 								</div>
@@ -608,7 +607,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="mail_copy_addresses" class="col-sm-4 control-label"><?php _e('Also to this addresses','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="mail_copy_addresses" id="mail_copy_addresses" class="mail_data empty form-control" value="<?php echo html_output(COPY_MAIL_ADDRESSES); ?>" />
+										<input type="text" name="mail_copy_addresses" id="mail_copy_addresses" class="mail_data empty form-control" value="<?php echo html_output(MAIL_COPY_ADDRESSES); ?>" />
 										<p class="field_note"><?php _e('Separate e-mail addresses with a comma.','cftp_admin'); ?></p>
 									</div>
 								</div>
@@ -692,9 +691,9 @@ $allowed_file_types = implode(',',$allowed_file_types);
 									<label for="mail_smtp_auth" class="col-sm-4 control-label"><?php _e('Authentication','cftp_admin'); ?></label>
 									<div class="col-sm-8">
 										<select class="form-control" name="mail_smtp_auth" id="mail_smtp_auth">
-											<option value="none" <?php echo (SMTP_AUTH == 'none') ? 'selected="selected"' : ''; ?>><?php _e('None','cftp_admin'); ?></option>
-											<option value="ssl" <?php echo (SMTP_AUTH == 'ssl') ? 'selected="selected"' : ''; ?>>SSL</option>
-											<option value="tls" <?php echo (SMTP_AUTH == 'tls') ? 'selected="selected"' : ''; ?>>TLS</option>
+											<option value="none" <?php echo (MAIL_SMTP_AUTH == 'none') ? 'selected="selected"' : ''; ?>><?php _e('None','cftp_admin'); ?></option>
+											<option value="ssl" <?php echo (MAIL_SMTP_AUTH == 'ssl') ? 'selected="selected"' : ''; ?>>SSL</option>
+											<option value="tls" <?php echo (MAIL_SMTP_AUTH == 'tls') ? 'selected="selected"' : ''; ?>>TLS</option>
 										</select>
 									</div>
 								</div>
@@ -736,7 +735,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_upper">
-											<input type="checkbox" value="1" name="pass_require_upper" id="pass_require_upper" class="checkbox_options" <?php echo (PASS_REQ_UPPER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_upper; ?>
+											<input type="checkbox" value="1" name="pass_require_upper" id="pass_require_upper" class="checkbox_options" <?php echo (PASS_REQUIRE_UPPER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_upper; ?>
 										</label>
 									</div>
 								</div>
@@ -744,7 +743,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_lower">
-											<input type="checkbox" value="1" name="pass_require_lower" id="pass_require_lower" class="checkbox_options" <?php echo (PASS_REQ_LOWER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_lower; ?>
+											<input type="checkbox" value="1" name="pass_require_lower" id="pass_require_lower" class="checkbox_options" <?php echo (PASS_REQUIRE_LOWER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_lower; ?>
 										</label>
 									</div>
 								</div>
@@ -752,7 +751,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_number">
-											<input type="checkbox" value="1" name="pass_require_number" id="pass_require_number" class="checkbox_options" <?php echo (PASS_REQ_NUMBER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_number; ?>
+											<input type="checkbox" value="1" name="pass_require_number" id="pass_require_number" class="checkbox_options" <?php echo (PASS_REQUIRE_NUMBER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_number; ?>
 										</label>
 									</div>
 								</div>
@@ -760,7 +759,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_special">
-											<input type="checkbox" value="1" name="pass_require_special" id="pass_require_special" class="checkbox_options" <?php echo (PASS_REQ_SPECIAL == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_special; ?>
+											<input type="checkbox" value="1" name="pass_require_special" id="pass_require_special" class="checkbox_options" <?php echo (PASS_REQUIRE_SPECIAL == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_special; ?>
 										</label>
 									</div>
 								</div>

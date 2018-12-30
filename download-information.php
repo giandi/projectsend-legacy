@@ -188,13 +188,13 @@ include('header.php');
 
 						$sql->setFetchMode(PDO::FETCH_ASSOC);
 						while ( $row = $sql->fetch() ) {
-							$table->add_row();
+							$table->addRow();
 		
 							/**
 							 * Prepare the information to be used later on the cells array
 							 * 1- Get account download time and date
 							 */
-							$date = date(TIMEFORMAT_USE,strtotime($row['timestamp']));
+							$date = date(TIMEFORMAT,strtotime($row['timestamp']));
 							$time = date('h:i:s',strtotime($row['timestamp']));
 							
 							/**
@@ -231,7 +231,7 @@ include('header.php');
 							
 							
 							foreach ( $tbody_cells as $cell ) {
-								$table->add_cell( $cell );
+								$table->addCell( $cell );
 							}
 							
 							$table->end_row();

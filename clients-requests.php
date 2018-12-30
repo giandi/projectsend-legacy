@@ -105,11 +105,11 @@ include('header.php');
 
 						/** $client['account'] == 1 means approve that account */
 						if ( !empty( $client['account'] ) and $client['account'] == '1' ) {
-							$email_type = 'client_approve';
+							$email_type = 'account_approve';
 							/**
 							 * 1 - Approve account
 							 */
-							$approve = $process_account->client_account_approve( $client['id'] );
+							$approve = $process_account->accountApprove( $client['id'] );
 							/**
 							 * 2 - Prepare memberships information
 							 */
@@ -123,12 +123,12 @@ include('header.php');
 														);
 						}
 						else {
-							$email_type = 'client_deny';
+							$email_type = 'account_deny';
 
 							/**
 							 * 1 - Deny account
 							 */
-							$deny = $process_account->client_account_deny( $client['id'] );
+							$deny = $process_account->accountDeny( $client['id'] );
 							/**
 							 * 2 - Deny all memberships
 							 */
@@ -159,7 +159,7 @@ include('header.php');
 														'memberships'	=> $processed_requests,
 														'preview'		=> true,
 													);
-						$notify_send = $notify_client->psend_send_email($email_arguments);
+						$notify_send = $notify_client->send($email_arguments);
 					}
 
 					$log_action_number = 38;
@@ -185,7 +185,7 @@ include('header.php');
 											'owner_id' => CURRENT_USER_ID,
 											'affected_account_name' => $all_users[$client]
 										);
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				}
 			}
 
@@ -418,7 +418,7 @@ include('header.php');
 					 */
 					$toggle_attr = 'data-toggle="toggle" data-style="membership_toggle" data-on="Accept" data-off="Deny" data-onstyle="success" data-offstyle="danger" data-size="mini"';
 					while ( $row = $sql->fetch() ) {
-						$table->add_row();
+						$table->addRow();
 
 						$client_user	= $row["user"];
 						$client_id		= $row["id"];
@@ -426,7 +426,7 @@ include('header.php');
 						/**
 						 * Get account creation date
 						 */
-						$date = date(TIMEFORMAT_USE,strtotime($row['timestamp']));
+						$date = date(TIMEFORMAT,strtotime($row['timestamp']));
 						
 						/**
 						 * Make an array of group membership requests
@@ -503,7 +503,7 @@ include('header.php');
 											);
 
 						foreach ( $tbody_cells as $cell ) {
-							$table->add_cell( $cell );
+							$table->addCell( $cell );
 						}
 		
 						$table->end_row();

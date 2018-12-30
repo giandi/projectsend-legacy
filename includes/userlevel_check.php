@@ -99,7 +99,7 @@ function permission_denied_page($error_type) {
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
             
-                <title><?php echo html_output( $page_title . ' &raquo; ' . SITE_NAME ); ?></title>
+                <title><?php echo html_output( $page_title . ' &raquo; ' . THIS_INSTALL_TITLE ); ?></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <?php meta_favicon(); ?>
                 <script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery/jquery.1.12.4.min.js"></script>

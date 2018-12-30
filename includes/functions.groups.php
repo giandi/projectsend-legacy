@@ -236,7 +236,7 @@ function delete_group($group_id)
                                         'owner_id' => CURRENT_USER_ID,
                                         'affected_account_name' => $group_data['name']
                                     );
-                $new_record_action = $logger->add_entry($log_action_args);		
+                $new_record_action = $logger->addEntry($log_action_args);		
 
                 return true;
             }

@@ -194,11 +194,11 @@ if (!empty($found_notifications)) {
 			/** Create the object and send the email */
 			$notify_client = new \ProjectSend\Classes\Emails;
 			$email_arguments = array(
-										'type' => 'new_files_for_client',
+										'type' => 'new_files_by_user',
 										'address' => $address,
 										'files_list' => $files_list
 									);
-			$try_sending = $notify_client->psend_send_email($email_arguments);
+			$try_sending = $notify_client->send($email_arguments);
 			if ($try_sending == 1) {
 				$notifications_sent = array_merge($notifications_sent, $this_client_notifications);
 			}
@@ -238,11 +238,11 @@ if (!empty($found_notifications)) {
 					/** Create the object and send the email */
 					$notify_admin = new \ProjectSend\Classes\Emails;
 					$email_arguments = array(
-												'type' => 'new_file_by_client',
+												'type' => 'new_files_by_client',
 												'address' => $address,
 												'files_list' => $files_list
 											);
-					$try_sending = $notify_admin->psend_send_email($email_arguments);
+					$try_sending = $notify_admin->send($email_arguments);
 					if ($try_sending == 1) {
 						$notifications_sent = array_merge($notifications_sent, $this_admin_notifications);
 					}

@@ -232,7 +232,7 @@ class MembersActions
 			$this->arguments	= array();
 
 			$this->arguments = array();
-			$this->get_groups = $this->groups->get_groups($this->arguments);
+			$this->get_groups = $this->groups->getGroups($this->arguments);
 
 			while ( $this->row = $this->requests->fetch() ) {
 				$this->results[$this->row['client_id']]['requests'][] = array(
@@ -299,7 +299,7 @@ class MembersActions
 					$this->arguments = array(
 											'public'	=> true,
 										);
-					$this->public_groups = $this->memberships->get_groups($this->arguments);
+					$this->public_groups = $this->memberships->getGroups($this->arguments);
 				}
 				
 				$this->results 		= array(

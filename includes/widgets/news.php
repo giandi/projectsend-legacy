@@ -19,7 +19,7 @@
                                 if ($n < $max_news) {
                             ?>
                                     <li>
-                                        <span class="date"><?php echo date(TIMEFORMAT_USE,strtotime($item->pubDate)); ?></span>
+                                        <span class="date"><?php echo date(TIMEFORMAT,strtotime($item->pubDate)); ?></span>
                                         <a href="<?php echo html_output($item->link); ?>" target="_blank">
                                             <h5><?php echo html_output($item->title); ?></h5>
                                         </a>

@@ -112,7 +112,7 @@ include('header-unlogged.php');
 				$email_arguments['memberships'] = $execute_requests['requests'];
 			}
 
-			$notify_admin_status = $notify_admin->psend_send_email($email_arguments);
+			$notify_admin_status = $notify_admin->send($email_arguments);
 		}
 	}
 	?>
@@ -164,7 +164,7 @@ include('header-unlogged.php');
 														'affected_account' => $new_response['new_id'],
 														'affected_account_name' => $add_client_data_name
 													);
-								$new_record_action = $logger->add_entry($log_action_args);
+								$new_record_action = $logger->addEntry($log_action_args);
 							break;
 							case 0:
 								$msg = __('There was an error. Please try again.','cftp_admin');

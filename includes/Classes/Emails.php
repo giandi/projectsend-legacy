@@ -23,18 +23,18 @@ use PHPMailer\PHPMailer\Exception;
 
 class Emails
 {
-    public $dbh;
-    public $container;
+    private $dbh;
+    private $header;
+    private $footer;
 
-    function __construct($container)
+    function __construct()
     {
-        parent::__construct($container);
+        global $dbh;
+        $this->dbh = $dbh;
 
 		/** Define the messages texts */
-		global $email_template_header;
-		global $email_template_footer;
-		$email_template_header = file_get_contents(EMAIL_TEMPLATES_DIR . DS . EMAIL_TEMPLATE_HEADER);
-		$email_template_footer = file_get_contents(EMAIL_TEMPLATES_DIR . DS . EMAIL_TEMPLATE_FOOTER);
+		$this->header = file_get_contents(EMAIL_TEMPLATES_DIR . DS . EMAIL_TEMPLATE_HEADER);
+		$this->footer = file_get_contents(EMAIL_TEMPLATES_DIR . DS . EMAIL_TEMPLATE_FOOTER);
 
 		/** Strings for the "New file uploaded" BY A SYSTEM USER e-mail */
 		$email_strings_file_by_user = array(
@@ -143,9 +143,6 @@ class Emails
 	 */
 	private function email_prepare_body($type)
 	{
-		global $email_template_header;
-		global $email_template_footer;
-
 		switch ($type) {
 			case 'new_client':
 					$filename	= EMAIL_TEMPLATE_NEW_CLIENT;
@@ -205,7 +202,7 @@ class Emails
 		 * Header
 		 */
 		if (!defined('EMAIL_HEADER_FOOTER_CUSTOMIZE') || EMAIL_HEADER_FOOTER_CUSTOMIZE == '0') {
-			$this->make_body = $email_template_header;
+			$this->make_body = $this->header;
 		}
 		else {
 			$this->make_body = EMAIL_HEADER_TEXT;
@@ -220,7 +217,7 @@ class Emails
 		 * Footer
 		 */
 		if (!defined('EMAIL_HEADER_FOOTER_CUSTOMIZE') || EMAIL_HEADER_FOOTER_CUSTOMIZE == '0') {
-			$this->make_body .= $email_template_footer;
+			$this->make_body .= $this->footer;
 		}
 		else {
 			$this->make_body .= EMAIL_FOOTER_TEXT;
@@ -285,7 +282,7 @@ class Emails
 			$this->groups_args	= array(
 										'group_ids' => $memberships_requests
 									);
-			$this->get_groups = $this->groups->get_groups( $this->groups_args );
+			$this->get_groups = $this->groups->getGroups( $this->groups_args );
 
 			$this->groups_list = '<ul>';
 			foreach ( $this->get_groups as $group ) {
@@ -313,14 +310,14 @@ class Emails
 	 * Prepare the body for the "Account approved" e-mail.
 	 * Also sends the memberships requests approval status.
 	 */
-	private function account_approve($username,$name,$memberships_requests)
+	private function email_account_approve($username,$name,$memberships_requests)
 	{
 		global $email_strings_account_approved;
 		$requests_title_replace = false;
 
 		$this->groups = new GroupActions();
 		$this->get_args = array();
-		$this->get_groups = $this->groups->get_groups( $this->get_args );
+		$this->get_groups = $this->groups->getGroups( $this->get_args );
 
 		if ( !empty( $memberships_requests['approved'] ) ) {
 			$requests_title_replace = true;
@@ -536,7 +533,7 @@ class Emails
 			$this->groups_args	= array(
 										'group_ids' => $memberships_requests
 									);
-			$this->get_groups = $this->groups->get_groups( $this->groups_args );
+			$this->get_groups = $this->groups->getGroups( $this->groups_args );
 
 			$this->groups_list = '<ul>';
 			foreach ( $this->get_groups as $group ) {

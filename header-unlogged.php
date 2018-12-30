@@ -32,8 +32,8 @@ else {
 	 */
 	$header_vars = array(
 						'html_lang'		=> SITE_LANG,
-						'title'			=> $page_title . ' &raquo; ' . html_output(SITE_NAME),
-						'header_title'	=> html_output(SITE_NAME),
+						'title'			=> $page_title . ' &raquo; ' . html_output(THIS_INSTALL_TITLE),
+						'header_title'	=> html_output(THIS_INSTALL_TITLE),
 					);
 
 	if ( !is_projectsend_installed() ) {

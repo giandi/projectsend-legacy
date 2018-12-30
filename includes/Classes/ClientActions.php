@@ -301,7 +301,7 @@ class ClientActions
 	/**
 	 * Mark the client as active or inactive.
 	 */
-	function change_client_active_status($client_id,$change_to)
+	public function changeActiveStatus($client_id,$change_to)
 	{
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
@@ -323,7 +323,7 @@ class ClientActions
 	/**
 	 * Approve account
 	 */
-	function account_approve($client_id)
+	function accountApprove($client_id)
 	{
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {
@@ -347,7 +347,7 @@ class ClientActions
 	/**
 	 * Deny account
 	 */
-	function account_deny($client_id)
+	function accountDeny($client_id)
 	{
 		$this->check_level = array(9,8);
 		if (isset($client_id)) {

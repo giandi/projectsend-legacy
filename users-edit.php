@@ -65,7 +65,7 @@ if ($_POST) {
 	/**
 	 * If the user is not an admin, check if the id of the user
 	 * that's being edited is the same as the current logged in one.
-	 */
+     */
 	if (CURRENT_USER_LEVEL != 9) {
 		if ($user_id != CURRENT_USER_ID) {
 			die();
@@ -134,6 +134,7 @@ if ($_POST) {
 }
 
 $page_title = __('Edit system user','cftp_admin');
+
 if (CURRENT_USER_USERNAME == $user_arguments['username']) {
 	$page_title = __('My account','cftp_admin');
 }
@@ -159,7 +160,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 											'affected_account_name' => $saved_user['username'],
 											'get_user_real_name' => true
 										);
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				break;
 				case 0:
 					$msg = __('There was an error. Please try again.','cftp_admin');

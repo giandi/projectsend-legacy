@@ -214,7 +214,7 @@ switch ($clients_form_type) {
 				}
 			}
 
-			$sql_groups = $memberships->get_groups($arguments);
+			$sql_groups = $memberships->getGroups($arguments);
 			
 			$selected_groups	= ( !empty( $found_groups ) ) ? $found_groups : '';
 			$my_current_groups	= array();

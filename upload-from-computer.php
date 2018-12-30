@@ -44,12 +44,10 @@ $current_level = get_current_user_level();
 			message_no_clients();
 		}
 	?>
-		<p>
-			<?php
-				$msg = __('Click on Add files to select all the files that you want to upload, and then click continue. On the next step, you will be able to set a name and description for each uploaded file. Remember that the maximum allowed file size (in mb.) is ','cftp_admin') . ' <strong>'.UPLOAD_MAX_FILESIZE.'</strong>';
-				echo system_message('info', $msg);
-			?>
-		</p>
+        <?php
+            $msg = __('Click on Add files to select all the files that you want to upload, and then click continue. On the next step, you will be able to set a name and description for each uploaded file. Remember that the maximum allowed file size (in mb.) is ','cftp_admin') . ' <strong>'.UPLOAD_MAX_FILESIZE.'</strong>';
+            echo system_message('info', $msg);
+        ?>
 
 		<script type="text/javascript">
 			$(document).ready(function() {
@@ -79,13 +77,13 @@ $current_level = get_current_user_level();
 						if ( false === CAN_UPLOAD_ANY_FILE_TYPE ) {
 					?>
 							filters : [
-								{title : "Allowed files", extensions : "<?php echo $options_values['allowed_file_types']; ?>"}
+								{title : "Allowed files", extensions : "<?php echo ALLOWED_FILE_TYPES; ?>"}
 							],
 					<?php
 						}
 					?>
-					flash_swf_url : 'includes/plupload/js/plupload.flash.swf',
-					silverlight_xap_url : 'includes/plupload/js/plupload.silverlight.xap',
+					flash_swf_url : 'assets/lib/plupload/js/plupload.flash.swf',
+					silverlight_xap_url : 'assets/lib/plupload/js/plupload.silverlight.xap',
 					preinit: {
 						Init: function (up, info) {
 							$('#uploader_container').removeAttr("title");
@@ -154,23 +152,7 @@ $current_level = get_current_user_level();
 			});
 		</script>
 		
-		<form action="upload-process-form.php" name="upload_by_client" id="upload_by_client" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
-			<input type="hidden" name="uploaded_files" id="uploaded_files" value="" />
-            
-			<div id="uploader">
-				<div class="message message_error">
-					<p><?php _e("Your browser doesn't support HTML5, Flash or Silverlight. Please update your browser or install Adobe Flash or Silverlight to continue.",'cftp_admin'); ?></p>
-				</div>
-			</div>
-			<div class="after_form_buttons">
-				<button type="submit" name="Submit" class="btn btn-wide btn-primary" id="btn-submit"><?php _e('Upload files','cftp_admin'); ?></button>
-			</div>
-			<div class="message message_info message_uploading">
-				<p><?php _e("Your files are being uploaded! Progress indicators may take a while to update, but work is still being done behind the scenes.",'cftp_admin'); ?></p>
-			</div>
-		</form>
-
+        <?php include_once FORMS_DIR . DS . 'upload.php'; ?>
 </div>
 
 <?php

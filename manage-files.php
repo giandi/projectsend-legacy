@@ -130,8 +130,8 @@ include('header.php');
 						 * account is the client.
 						 */
 						foreach ($selected_files as $work_file) {
-							$this_file = new FilesActions();
-							$hide_file = $this_file->change_files_hide_status('1', $work_file, $_GET['modify_type'], $_GET['modify_id']);
+							$this_file = new ProjectSend\Classes\FilesActions;
+							$hide_file = $this_file->changeHiddenStatus('1', $work_file, $_GET['modify_type'], $_GET['modify_id']);
 						}
 						$msg = __('The selected files were marked as hidden.','cftp_admin');
 						echo system_message('success',$msg);
@@ -144,8 +144,8 @@ include('header.php');
 						 * that the file is visible.
 						 */
 						foreach ($selected_files as $work_file) {
-							$this_file = new FilesActions();
-							$show_file = $this_file->change_files_hide_status('0', $work_file, $_GET['modify_type'], $_GET['modify_id']);
+							$this_file = new ProjectSend\Classes\FilesActions;
+							$show_file = $this_file->changeHiddenStatus('0', $work_file, $_GET['modify_type'], $_GET['modify_id']);
 						}
 						$msg = __('The selected files were marked as visible.','cftp_admin');
 						echo system_message('success',$msg);
@@ -157,8 +157,8 @@ include('header.php');
 						 * Remove the file from this client or group only.
 						 */
 						foreach ($selected_files as $work_file) {
-							$this_file = new FilesActions();
-							$unassign_file = $this_file->unassign_file($work_file, $_GET['modify_type'], $_GET['modify_id']);
+							$this_file = new ProjectSend\Classes\FilesActions;
+							$unassign_file = $this_file->unassignFile($work_file, $_GET['modify_type'], $_GET['modify_id']);
 						}
 						$msg = __('The selected files were unassigned from this client.','cftp_admin');
 						echo system_message('success',$msg);
@@ -176,8 +176,8 @@ include('header.php');
 												'errors'	=> 0,
 											);
 						foreach ($selected_files as $index => $file_id) {
-							$this_file		= new FilesActions();
-							$delete_status	= $this_file->delete_files($file_id);
+							$this_file		= new ProjectSend\Classes\FilesActions;
+							$delete_status	= $this_file->deleteFiles($file_id);
 
 							if ( $delete_status == true ) {
 								$delete_results['ok']++;
@@ -213,7 +213,7 @@ include('header.php');
 						$log_action_args['affected_account_name'] = $name_for_actions;
 						$log_action_args['get_user_real_name'] = true;
 					}
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				}
 			}
 			else {
@@ -646,7 +646,7 @@ include('header.php');
 	
 					$sql->setFetchMode(PDO::FETCH_ASSOC);
 					while ( $row = $sql->fetch() ) {
-						$table->add_row();
+						$table->addRow();
 	
 						/**
 						 * Prepare the information to be used later on the cells array
@@ -672,7 +672,7 @@ include('header.php');
 							$hidden = $data_file['hidden'];
 						}
 	
-						$date = date(TIMEFORMAT_USE,strtotime($row['timestamp']));
+						$date = date(TIMEFORMAT,strtotime($row['timestamp']));
 	
 						/**
 						 * Get file size only if the file exists
@@ -721,7 +721,7 @@ include('header.php');
 							$expires_label	= __('Does not expire','cftp_admin');
 						}
 						else {
-							$expires_date = date( TIMEFORMAT_USE, strtotime ($row['expiry_date'] ) );
+							$expires_date = date( TIMEFORMAT, strtotime ($row['expiry_date'] ) );
 	
 							if (time() > strtotime($row['expiry_date'])) {
 								$expires_button	= 'danger';
@@ -838,7 +838,7 @@ include('header.php');
 									);
 	
 						foreach ( $tbody_cells as $cell ) {
-							$table->add_cell( $cell );
+							$table->addCell( $cell );
 						}
 		
 						$table->end_row();

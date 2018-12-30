@@ -78,7 +78,7 @@ class ActionsLog
 	/**
 	 * Create a new client.
 	 */
-	function add_entry($arguments)
+	function addEntry($arguments)
 	{
 		global $dbh;
 		$this->state = array();

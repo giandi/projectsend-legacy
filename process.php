@@ -95,7 +95,7 @@ class process {
 											'owner_user' => $this->global_name,
 											'affected_account_name' => $this->global_name
 										);
-					$this->new_record_action = $this->new_log_action->add_entry($this->log_action_args);
+					$this->new_record_action = $this->new_log_action->addEntry($this->log_action_args);
 
 
 					$results = array(
@@ -198,7 +198,7 @@ class process {
 								'owner_id'	=> CURRENT_USER_ID,
 								'affected_account_name' => CURRENT_USER_NAME
 							);
-		$new_record_action = $logger->add_entry($log_action_args);
+		$new_record_action = $logger->addEntry($log_action_args);
 		
 		$redirect_to = 'index.php';
 		if ( isset( $_GET['timeout'] ) ) {
@@ -312,7 +312,7 @@ class process {
 												'get_user_real_name'	=> true,
 												'get_file_real_name'	=> true
 											);
-						$new_record_action = $logger->add_entry($log_action_args);
+						$new_record_action = $logger->addEntry($log_action_args);
 						$this->real_file = UPLOADED_FILES_DIR.DS.$this->filename_find;
                         $this->save_file = UPLOADED_FILES_DIR.DS.$this->filename_save;
 

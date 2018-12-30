@@ -12,7 +12,7 @@ require_once('bootstrap.php');
 /**
  * If the option to show this page is not enabled, redirect
  */
-if ( PUBLIC_LISTING_ENABLE != 1 ) {
+if ( PUBLIC_LISTING_PAGE_ENABLE != 1 ) {
 	header("location:" . BASE_URI . "index.php");
 	die();
 }
@@ -180,7 +180,7 @@ function list_file($data, $origin) {
 							$get_arguments	= array(
 													 	'public'	=> true,
 													);
-							$found_groups	= $get_groups->get_groups($get_arguments);
+							$found_groups	= $get_groups->getGroups($get_arguments);
 							foreach ($found_groups as $group_id => $group_data) {
 								$groups[$group_id] = array(
 															'id'		=> $group_data['id'],

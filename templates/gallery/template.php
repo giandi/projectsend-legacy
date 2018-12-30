@@ -34,7 +34,7 @@ foreach ($my_files as $file) {
 		$img_files[] = $file;
 	}
 }
-$count = count($img_files);
+$count = (isset($img_files)) ? count($img_files) : 0;
 
 define('TEMPLATE_THUMBNAILS_WIDTH', '280');
 define('TEMPLATE_THUMBNAILS_HEIGHT', '215');

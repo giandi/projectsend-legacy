@@ -94,19 +94,26 @@ include('header.php');
 
 		$files_to_add = array();
 
-		/** Read the temp folder and list every allowed file */
+        /** Read the temp folder and list every allowed file */
 		if ($handle = opendir(UPLOADED_FILES_DIR)) {
 			while (false !== ($filename = readdir($handle))) {
 				$filename_path = UPLOADED_FILES_DIR.DS.$filename;
 				if(!is_dir($filename_path)) {
-					if ($filename != "." && $filename != "..") {
+                    $ignore = [
+                        ".",
+                        "..",
+                        ".htaccess",
+                        "index.php"
+                    ];
+                    if (!in_array($filename, $ignore)) {
 						/** Check types of files that are not on the database */							
 						if (!array_key_exists($filename,$db_files)) {
-							$file_object = new PSend_Upload_File();
-							$new_filename = $file_object->safe_rename_on_disk($filename,UPLOADED_FILES_DIR);
+                            $file_object = new ProjectSend\Classes\UploadFile;
+                            $new_filename = $file_object->safeRenameOnDisk($filename,UPLOADED_FILES_DIR);
 							/** Check if the filetype is allowed */
-							if ($file_object->is_filetype_allowed($new_filename)) {
-								/** Add it to the array of available files */
+							if ($file_object->isFiletypeAllowed($new_filename)) {
+
+                                /** Add it to the array of available files */
 								$new_filename_path = UPLOADED_FILES_DIR.DS.$new_filename;
 								//$files_to_add[$new_filename] = $new_filename_path;
 								$files_to_add[] = array(
@@ -210,7 +217,7 @@ include('header.php');
 				$table->thead( $thead_columns );
 
 				foreach ($files_to_add as $add_file) {
-					$table->add_row();
+					$table->addRow();
 					/**
 					 * Add the cells to the row
 					 */
@@ -228,7 +235,7 @@ include('header.php');
 																		),
 												),
 											array(
-													'content'		=> date( TIMEFORMAT_USE, filemtime( $add_file['path'] ) ),
+													'content'		=> date( TIMEFORMAT, filemtime( $add_file['path'] ) ),
 													'attributes'	=> array(
 																			'data-value'	=> filemtime( $add_file['path'] ),
 																		),
@@ -240,7 +247,7 @@ include('header.php');
 										);
 
 					foreach ( $tbody_cells as $cell ) {
-						$table->add_cell( $cell );
+						$table->addCell( $cell );
 					}
 	
 					$table->end_row();

@@ -35,7 +35,7 @@ class TableGenerate
 	 * If "order" is set and the current column in the loop contains
 	 * the current sort order needs to be inversed on the link.
 	 */
-	private function build_sortable_th_content( $sort_url, $is_current_sorted, $content ) {
+	private function buildSortableThContent( $sort_url, $is_current_sorted, $content ) {
 		$url_parse = parse_url( $_SERVER['REQUEST_URI'] );
 
 		if ( !empty( $_GET ) ) {
@@ -111,7 +111,7 @@ class TableGenerate
 					}
 					
 					if ( $sortable == true && !empty( $sort_url ) ) {
-						$content = self::build_sortable_th_content( $sort_url, $is_current_sorted, $content );
+						$content = self::buildSortableThContent( $sort_url, $is_current_sorted, $content );
 					}
 	
 					/**  Generate the column */
@@ -166,7 +166,7 @@ class TableGenerate
 		$this->contents .= $this->output;
 	}
 	
-	public function add_row() {
+	public function addRow() {
 		if ( $this->current_row == 1 ) {
 			$this->contents .= "<tbody>\n";
 		}
@@ -176,7 +176,7 @@ class TableGenerate
 		$this->current_row++;
 	}
 
-	public function add_cell( $attributes ) {
+	public function addCell( $attributes ) {
 		$continue	= ( !isset( $attributes['condition'] ) || !empty( $attributes['condition'] ) ) ? true : false;
 		
 		if ( $continue == true ) {
@@ -217,7 +217,7 @@ class TableGenerate
 	/**
 	 * PAGINATION
 	 */
-	private function construct_pagination_link( $link, $page = 1 ) {
+	private function constructPaginationLink( $link, $page = 1 ) {
 		$params['page'] = $page;
 	
 		/**
@@ -259,10 +259,10 @@ class TableGenerate
 			/** First and previous */
 			if ( $params['current'] > 1 ) {
 				$this->output .= '<li>
-										<a href="' . self::construct_pagination_link( $params['link'] ) .'" data-page="first"><span aria-hidden="true">&laquo;</span></a>
+										<a href="' . self::constructPaginationLink( $params['link'] ) .'" data-page="first"><span aria-hidden="true">&laquo;</span></a>
 									</li>
 									<li>
-										<a href="'. self::construct_pagination_link( $params['link'], $params['current'] - 1 ) .'" data-page="prev">&lsaquo;</a>
+										<a href="'. self::constructPaginationLink( $params['link'], $params['current'] - 1 ) .'" data-page="prev">&lsaquo;</a>
 									</li>';
 			}
 
@@ -289,7 +289,7 @@ class TableGenerate
 					$this->output .= '<li class="active"><a href="#">' . $i .'</a></li>';
 				}
 				else {
-					$this->output .= '<li><a href="' . self::construct_pagination_link( $params['link'], $i) .'">' . $i .'</a></li>';
+					$this->output .= '<li><a href="' . self::constructPaginationLink( $params['link'], $i) .'">' . $i .'</a></li>';
 				}
 				
 				if ( $i > $params['current'] ) {
@@ -300,10 +300,10 @@ class TableGenerate
 			/** Next and last */
 			if ( $params['current'] != $params['pages'] ) {
 				$this->output .= '<li>
-										<a href="' . self::construct_pagination_link( $params['link'], $params['current'] + 1 ) .'" data-page="next">&rsaquo;</a>
+										<a href="' . self::constructPaginationLink( $params['link'], $params['current'] + 1 ) .'" data-page="next">&rsaquo;</a>
 									</li>
 									<li>
-										<a href="' . self::construct_pagination_link( $params['link'], $params['pages'] ) .'" data-page="last"><span aria-hidden="true">&raquo;</span></a>
+										<a href="' . self::constructPaginationLink( $params['link'], $params['pages'] ) .'" data-page="last"><span aria-hidden="true">&raquo;</span></a>
 									</li>';
 			}
 

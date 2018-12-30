@@ -144,9 +144,9 @@ while( $row = $statement->fetch() ) {
 					$file['assignments'] = 'c'.$global_user;
 				}
 
-				$this_upload = new PSend_Upload_File();
+				$this_upload = new ProjectSend\Classes\UploadFile;
 				if (!in_array($file['file'],$urls_db_files)) {
-					$file['file'] = $this_upload->safe_rename($file['file']);
+					$file['file'] = $this_upload->safeRename($file['file']);
 				}
 				$location = UPLOADED_FILES_DIR.DS.$file['file'];
 
@@ -155,7 +155,7 @@ while( $row = $statement->fetch() ) {
 						'uploaded_name'		=> $location,
 						'filename'			=> $file['file'],
 					);
-					$upload_move		= $this_upload->upload_move($move_arguments);
+					$upload_move		= $this_upload->moveFile($move_arguments);
 					$new_filename		= $upload_move['filename_disk'];
                     $original_filename	= $upload_move['filename_original'];
 
@@ -220,7 +220,7 @@ while( $row = $statement->fetch() ) {
 						/**
 						 * 1- Add the file to the database
 						 */
-						$process_file = $this_upload->upload_add_to_database($add_arguments);
+						$process_file = $this_upload->addFileToDatabase($add_arguments);
 						if($process_file['database'] == true) {
 							$add_arguments['new_file_id']	= $process_file['new_file_id'];
 							$add_arguments['all_users']		= $users;
@@ -228,7 +228,7 @@ while( $row = $statement->fetch() ) {
 							/**
 							 * 2- Add the assignments to the database
 							 */
-							$process_assignment = $this_upload->upload_add_assignment($add_arguments);
+							$process_assignment = $this_upload->addFileAssignment($add_arguments);
 
 							/**
 							 * 3- Add the assignments to the database
@@ -237,13 +237,13 @@ while( $row = $statement->fetch() ) {
 														'file_id'		=> $process_file['new_file_id'],
 														'categories'	=> !empty( $file['categories'] ) ? $file['categories'] : '',
 													);
-							$this_upload->upload_save_categories( $categories_arguments );
+							$this_upload->setCategories( $categories_arguments );
 
 							/**
 							 * 4- Add the notifications to the database
 							 */
 							if ($send_notifications == true) {
-								$process_notifications = $this_upload->upload_add_notifications($add_arguments);
+								$process_notifications = $this_upload->addNotifications($add_arguments);
 							}
 							/**
 							 * 5- Mark is as correctly uploaded / assigned
@@ -428,7 +428,7 @@ while( $row = $statement->fetch() ) {
 					$i = 1;
 					foreach ($uploaded_files as $file) {
 						clearstatcache();
-						$this_upload = new PSend_Upload_File();
+						$this_upload = new ProjectSend\Classes\UploadFile;
 						$file_original = $file;
 
 						$location = UPLOADED_FILES_DIR.DS.$file;
@@ -439,14 +439,14 @@ while( $row = $statement->fetch() ) {
 						 */
 						if(file_exists($location)) {
 							/** Generate a safe filename */
-							//$file = $this_upload->safe_rename($file);
+							//$file = $this_upload->safeRename($file);
 							/**
 							 * Remove the extension from the file name and replace every
 							 * underscore with a space to generate a valid upload name.
 							 */
 							$filename_no_ext = substr($file, 0, strrpos($file, '.'));
 							$file_title = str_replace('_',' ',$filename_no_ext);
-							if ($this_upload->is_filetype_allowed($file)) {
+							if ($this_upload->isFiletypeAllowed($file)) {
 								if (in_array($file,$urls_db_files)) {
 									$statement = $dbh->prepare("SELECT filename, description FROM " . TABLE_FILES . " WHERE url = :url");
 									$statement->bindParam(':url', $file);
@@ -484,7 +484,7 @@ while( $row = $statement->fetch() ) {
 
 																<div class="form-group">
 																	<label><?php _e('Description', 'cftp_admin');?></label>
-																	<textarea name="file[<?php echo $i; ?>][description]" class="<?php if ( DESCRIPTIONS_USE_CKEDITOR == 1 ) { echo 'ckeditor'; } ?> form-control" placeholder="<?php _e('Optionally, enter here a description for the file.', 'cftp_admin');?>"><?php echo (isset($description)) ? html_output($description) : ''; ?></textarea>
+																	<textarea name="file[<?php echo $i; ?>][description]" class="<?php if ( FILES_DESCRIPTIONS_USE_CKEDITOR == 1 ) { echo 'ckeditor'; } ?> form-control" placeholder="<?php _e('Optionally, enter here a description for the file.', 'cftp_admin');?>"><?php echo (isset($description)) ? html_output($description) : ''; ?></textarea>
 																</div>
 
 															</div>

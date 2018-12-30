@@ -312,7 +312,7 @@ function get_client_by_username($client)
 {
     global $dbh;
 
-    $statement = $dbh->prepare("SELECT id FROM " . TABLE_USERS . " WHERE username=:username");
+    $statement = $dbh->prepare("SELECT id FROM " . TABLE_USERS . " WHERE user=:username");
     $statement->bindParam(':username', $client);
     $statement->execute();
     $statement->setFetchMode(PDO::FETCH_ASSOC);
@@ -1047,7 +1047,7 @@ function get_branding_layout($return_thumbnail = false)
         $layout = '
             <div class="row">
                 <div class="col-xs-12 branding_unlogged">
-                    <img src="' . $branding_image . '" alt="' . html_output(SITE_NAME) . '" />
+                    <img src="' . $branding_image . '" alt="' . html_output(THIS_INSTALL_TITLE) . '" />
 					</div>
 				</div>';
     }
@@ -1110,19 +1110,19 @@ function password_notes()
 	$rules_active	= array();
 	$rules			= array(
 							'lower'		=> array(
-												'value'	=> PASS_REQ_UPPER,
+												'value'	=> PASS_REQUIRE_UPPER,
 												'text'	=> $validation_req_upper,
 											),
 							'upper'		=> array(
-												'value'	=> PASS_REQ_LOWER,
+												'value'	=> PASS_REQUIRE_LOWER,
 												'text'	=> $validation_req_lower,
 											),
 							'number'	=> array(
-												'value'	=> PASS_REQ_NUMBER,
+												'value'	=> PASS_REQUIRE_NUMBER,
 												'text'	=> $validation_req_number,
 											),
 							'special'	=> array(
-												'value'	=> PASS_REQ_SPECIAL,
+												'value'	=> PASS_REQUIRE_SPECIAL,
 												'text'	=> $validation_req_special,
 											),
 						);
@@ -1229,8 +1229,8 @@ function option_file_upload( $file, $validate_ext = '', $option = '', $action = 
 
 	if ( is_uploaded_file( $file['tmp_name'] ) ) {
 
-		$this_upload = new PSend_Upload_File();
-		$safe_filename = $this_upload->safe_rename( $file['name'] );
+		$this_upload = new ProjectSend\Classes\UploadFile;
+		$safe_filename = $this_upload->safeRename( $file['name'] );
 		/**
 		 * Check the file type for allowed extensions.
 		 */
@@ -1263,7 +1263,7 @@ function option_file_upload( $file, $validate_ext = '', $option = '', $action = 
 											'action' => $action,
 											'owner_id' => CURRENT_USER_ID
 										);
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				}
 			}
 			else {
@@ -1544,7 +1544,7 @@ function render_log_action($params)
 			break;
 	}
 
-	$date = date(TIMEFORMAT_USE,strtotime($timestamp));
+	$date = date(TIMEFORMAT,strtotime($timestamp));
 
 	if (!empty($part1)) { $log['1'] = $part1; }
 	if (!empty($part2)) { $log['2'] = $part2; }

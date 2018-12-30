@@ -50,7 +50,7 @@ include('header.php');
 					 */
 					foreach ($selected_clients as $work_client) {
 						$this_client = new \ProjectSend\Classes\ClientActions;
-						$hide_client = $this_client->change_client_active_status($work_client,'1');
+						$hide_client = $this_client->changeActiveStatus($work_client,'1');
 					}
 					$msg = __('The selected clients were marked as active.','cftp_admin');
 					echo system_message('success',$msg);
@@ -64,7 +64,7 @@ include('header.php');
 					 */
 					foreach ($selected_clients as $work_client) {
 						$this_client = new \ProjectSend\Classes\ClientActions;
-						$hide_client = $this_client->change_client_active_status($work_client,'0');
+						$hide_client = $this_client->changeActiveStatus($work_client,'0');
 					}
 					$msg = __('The selected clients were marked as inactive.','cftp_admin');
 					echo system_message('success',$msg);
@@ -91,7 +91,7 @@ include('header.php');
 										'owner_id' => CURRENT_USER_ID,
 										'affected_account_name' => $all_users[$client]
 									);
-				$new_record_action = $logger->add_entry($log_action_args);
+				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 		else {
@@ -333,7 +333,7 @@ include('header.php');
 	
 					$sql->setFetchMode(PDO::FETCH_ASSOC);
 					while ( $row = $sql->fetch() ) {
-						$table->add_row();
+						$table->addRow();
 
 						$client_user	= $row["user"];
 						$client_id		= $row["id"];
@@ -354,7 +354,7 @@ include('header.php');
 						/**
 						 * 2- Get account creation date
 						 */
-						$date = date(TIMEFORMAT_USE,strtotime($row['timestamp']));
+						$date = date(TIMEFORMAT,strtotime($row['timestamp']));
 
 						/**
 						 * Prepare the information to be used later on the cells array
@@ -490,7 +490,7 @@ include('header.php');
 											);
 
 						foreach ( $tbody_cells as $cell ) {
-							$table->add_cell( $cell );
+							$table->addCell( $cell );
 						}
 		
 						$table->end_row();

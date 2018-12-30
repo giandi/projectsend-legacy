@@ -114,7 +114,7 @@ include('header-unlogged.php');
 														'username' => $username,
 														'token' => $token
 													);
-						$notify_send = $notify_user->psend_send_email($email_arguments);
+						$notify_send = $notify_user->send($email_arguments);
 			
 						if ($notify_send == 1){
 							$state['email'] = 1;

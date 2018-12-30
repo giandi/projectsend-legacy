@@ -97,19 +97,19 @@ class Validation
 
 		$rules	= array(
 						'lower'		=> array(
-											'value'	=> PASS_REQ_UPPER,
+											'value'	=> PASS_REQUIRE_UPPER,
 											'chars'	=> $this->allowed_lower,
 										),
 						'upper'		=> array(
-											'value'	=> PASS_REQ_LOWER,
+											'value'	=> PASS_REQUIRE_LOWER,
 											'chars'	=> $this->allowed_upper,
 										),
 						'number'	=> array(
-											'value'	=> PASS_REQ_NUMBER,
+											'value'	=> PASS_REQUIRE_NUMBER,
 											'chars'	=> $this->allowed_numbers,
 										),
 						'special'	=> array(
-											'value'	=> PASS_REQ_SPECIAL,
+											'value'	=> PASS_REQUIRE_SPECIAL,
 											'chars'	=> $this->allowed_symbols,
 										),
 					);

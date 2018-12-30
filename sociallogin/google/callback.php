@@ -3,7 +3,7 @@ require_once('../../bootstrap.php');
 
 $googleClient = new Google_Client();
 $oauth2 = new Google_Oauth2Service($googleClient);
-$googleClient->setApplicationName(SITE_NAME);
+$googleClient->setApplicationName(THIS_INSTALL_TITLE);
 $googleClient->setClientSecret(GOOGLE_CLIENT_SECRET);
 $googleClient->setClientId(GOOGLE_CLIENT_ID);
 $googleClient->setRedirectUri(BASE_URI . 'sociallogin/google/callback.php');
@@ -73,7 +73,7 @@ if (isset($_SESSION['id_token_token']) && isset($_SESSION['id_token_token']->id_
           'owner_id' => $logged_id,
           'affected_account_name' => $global_name
         );
-        $new_record_action = $logger->add_entry($log_action_args);
+        $new_record_action = $logger->addEntry($log_action_args);
 
         if ($user_level == '0') {
           header("location:" . BASE_URI . "my_files/");
@@ -135,7 +135,7 @@ if (isset($_SESSION['id_token_token']) && isset($_SESSION['id_token_token']->id_
           'username' => $add_client_data_user,
           'name' => $add_client_data_name
         );
-        $notify_admin_status = $notify_admin->psend_send_email($email_arguments);
+        $notify_admin_status = $notify_admin->send($email_arguments);
 
         if (CLIENTS_AUTO_APPROVE == '0') {
           $_SESSION['errorstate'] = 'inactive_client';

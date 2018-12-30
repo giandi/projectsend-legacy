@@ -19,7 +19,7 @@ require_once(ROOT_DIR . '/includes/security/xsrf.php');
 require_once(ROOT_DIR.'/sys.vars.php');
 
 /** Load the database class */
-require_once(ROOT_DIR.'/includes/classes/database.php');
+require_once(ROOT_DIR.'/includes/database.php');
 
 /** Load the site options */
 if ( !defined( 'IS_MAKE_CONFIG' ) ) {
@@ -63,24 +63,6 @@ require_once(ROOT_DIR.'/includes/functions.forms.php');
 
 /** Search, filters and actions forms */
 require_once(ROOT_DIR.'/includes/functions.groups.php');
-
-/**
- * Always require this classes to avoid repetition of code
- * on other files.
- *
- */
-$classes_files = array(
-						'actions-files.php',
-						'actions-groups.php',
-						'file-upload.php',
-						'send-email.php',
-					);
-foreach ( $classes_files as $filename ) {
-	$location = ROOT_DIR . '/includes/classes/' . $filename;
-	if ( file_exists( $location ) ) {
-		require_once( $location );
-	}
-}
 
 /**
  * Google Login

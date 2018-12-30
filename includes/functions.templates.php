@@ -54,7 +54,7 @@ function extract_template_info($template_directory)
     $template_info['location'] = $folder;
     
     // Currently active template
-    if ( $folder == TEMPLATE_USE ) {
+    if ( $folder == SELECTED_CLIENTS_TEMPLATE ) {
         $template_info['active'] = 1;
     }
     

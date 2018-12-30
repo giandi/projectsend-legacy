@@ -242,11 +242,11 @@ if ( current_role_in( array( 9,8,7 ) ) )
 												),
 												array(
 													'label'	=> __('New file by user', 'cftp_admin'),
-													'link'	=> 'email-templates.php?section=new_files_for_client',
+													'link'	=> 'email-templates.php?section=new_files_by_user',
 												),
 												array(
 													'label'	=> __('New file by client', 'cftp_admin'),
-													'link'	=> 'email-templates.php?section=new_file_by_client',
+													'link'	=> 'email-templates.php?section=new_files_by_client',
 												),
 												array(
 													'label'	=> __('New client (welcome)', 'cftp_admin'),
@@ -258,11 +258,11 @@ if ( current_role_in( array( 9,8,7 ) ) )
 												),
 												array(
 													'label'	=> __('Approve client account', 'cftp_admin'),
-													'link'	=> 'email-templates.php?section=client_approve',
+													'link'	=> 'email-templates.php?section=account_approve',
 												),
 												array(
 													'label'	=> __('Deny client account', 'cftp_admin'),
-													'link'	=> 'email-templates.php?section=client_deny',
+													'link'	=> 'email-templates.php?section=account_deny',
 												),
 												array(
 													'label'	=> __('Client updated memberships', 'cftp_admin'),

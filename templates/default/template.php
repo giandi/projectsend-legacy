@@ -92,13 +92,13 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 				<div class="right_clear"></div><br />
 
 				<div class="form_actions_count">
-					<p class="form_count_total"><?php _e('Found','cftp_admin'); ?>: <span><?php echo $count_for_pagination; ?> <?php _e('files','cftp_admin'); ?></span></p>
+					<p class="form_count_total"><?php _e('Found','cftp_admin'); ?>: <span><?php echo (isset($count_for_pagination)) ? $count_for_pagination : 0; ?> <?php _e('files','cftp_admin'); ?></span></p>
 				</div>
 	
 				<div class="right_clear"></div>
 	
 				<?php
-					if (!$count_for_pagination) {
+					if (!isset($count_for_pagination)) {
 						if (isset($no_results_error)) {
 							switch ($no_results_error) {
 								case 'search':
@@ -113,7 +113,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 					}
 
 
-					if ($count > 0) {
+					if (isset($count) && $count > 0) {
 						/**
 						 * Generate the table using the class.
 						 */
@@ -177,7 +177,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 						foreach ($my_files as $file) {
 							$download_link = make_download_link($file);
 
-							$table->add_row();
+							$table->addRow();
 
 							/**
 							 * Prepare the information to be used later on the cells array
@@ -211,7 +211,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 							}
 							
 							/** Date */
-							$date = date(TIMEFORMAT_USE,strtotime($file['timestamp']));
+							$date = date(TIMEFORMAT,strtotime($file['timestamp']));
 							
 							/** Expiration */
 							if ( $file['expires'] == '1' ) {
@@ -221,7 +221,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 									$class = 'danger';
 								}
 								
-								$value = date( TIMEFORMAT_USE, strtotime( $file['expiry_date'] ) );
+								$value = date( TIMEFORMAT, strtotime( $file['expiry_date'] ) );
 							} else {
 								$class = 'success';
 								$value = __('Never','cftp_template');
@@ -300,7 +300,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 												);
 
 							foreach ( $tbody_cells as $cell ) {
-								$table->add_cell( $cell );
+								$table->addCell( $cell );
 							}
 			
 							$table->end_row();

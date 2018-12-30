@@ -123,7 +123,7 @@ include('header.php');
 										'owner_id' => CURRENT_USER_ID,
 										'affected_account_name' => $all_users[$user]
 									);
-				$new_record_action = $logger->add_entry($log_action_args);
+				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 		else {
@@ -352,7 +352,7 @@ include('header.php');
 
 				$sql->setFetchMode(PDO::FETCH_ASSOC);
 				while ( $row = $sql->fetch() ) {
-					$table->add_row();
+					$table->addRow();
 
 					/**
 					 * Prepare the information to be used later on the cells array
@@ -375,7 +375,7 @@ include('header.php');
 					/**
 					 * 3- Get account creation date
 					 */
-					$date = date( TIMEFORMAT_USE, strtotime( $row['timestamp'] ) );
+					$date = date( TIMEFORMAT, strtotime( $row['timestamp'] ) );
 
 
 					/**
@@ -420,7 +420,7 @@ include('header.php');
 										);
 
 					foreach ( $tbody_cells as $cell ) {
-						$table->add_cell( $cell );
+						$table->addCell( $cell );
 					}
 	
 					$table->end_row();

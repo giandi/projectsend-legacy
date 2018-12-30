@@ -264,9 +264,9 @@ include('header.php');
 										'affected_account_name'	=> $log['affected_account_name']
 									)
 				);
-				$date = date(TIMEFORMAT_USE,strtotime($log['timestamp']));
+				$date = date(TIMEFORMAT,strtotime($log['timestamp']));
 
-				$table->add_row();
+				$table->addRow();
 				
 				$tbody_cells = array(
 										array(
@@ -294,7 +294,7 @@ include('header.php');
 									);
 
 				foreach ( $tbody_cells as $cell ) {
-					$table->add_cell( $cell );
+					$table->addCell( $cell );
 				}
 
 				$table->end_row();

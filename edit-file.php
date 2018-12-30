@@ -167,7 +167,7 @@ $current_level = get_current_user_level();
 							$file['assignments'] = 'c'.$global_user;
 						}
 
-						$this_upload = new PSend_Upload_File();
+						$this_upload = new ProjectSend\Classes\UploadFile;
 						/**
 						 * Unassigned files are kept as orphans and can be related
 						 * to clients or groups later.
@@ -234,7 +234,7 @@ $current_level = get_current_user_level();
 																'file_id' => $this_file_id,
 																'file_name' => $file['name']
 															);
-								$clean_assignments = $this_upload->clean_all_assignments($clean_all_arguments);
+								$clean_assignments = $this_upload->cleanAllAssignments($clean_all_arguments);
 							}
 							else {
 								$clean_arguments = array (
@@ -245,14 +245,14 @@ $current_level = get_current_user_level();
 														'current_clients' => $file_on_clients,
 														'current_groups' => $file_on_groups
 													);
-								$clean_assignments = $this_upload->clean_assignments($clean_arguments);
+								$clean_assignments = $this_upload->cleanAssignments($clean_arguments);
 							}
 
 							$categories_arguments = array(
 														'file_id'		=> $this_file_id,
 														'categories'	=> !empty( $file['categories'] ) ? $file['categories'] : '',
 													);
-							$this_upload->upload_save_categories( $categories_arguments );
+							$this_upload->setCategories( $categories_arguments );
 						}
 
 						/** Uploader is a client */
@@ -269,7 +269,7 @@ $current_level = get_current_user_level();
 						/**
 						 * 1- Add the file to the database
 						 */
-						$process_file = $this_upload->upload_add_to_database($add_arguments);
+						$process_file = $this_upload->addFileToDatabase($add_arguments);
 						if($process_file['database'] == true) {
 							$add_arguments['new_file_id'] = $process_file['new_file_id'];
 							$add_arguments['all_users'] = $users;
@@ -279,20 +279,20 @@ $current_level = get_current_user_level();
 								/**
 								 * 2- Add the assignments to the database
 								 */
-								$process_assignment = $this_upload->upload_add_assignment($add_arguments);
+								$process_assignment = $this_upload->addFileAssignment($add_arguments);
 
 								/**
 								 * 3- Hide for everyone if checked
 								 */
 								if (!empty($file['hideall'])) {
-									$this_file = new FilesActions();
-									$hide_file = $this_file->hide_for_everyone($this_file_id);
+									$this_file = new ProjectSend\Classes\FilesActions;
+									$hide_file = $this_file->hideForEveryone($this_file_id);
 								}
 								/**
 								 * 4- Add the notifications to the database
 								 */
 								if ($send_notifications == true) {
-									$process_notifications = $this_upload->upload_add_notifications($add_arguments);
+									$process_notifications = $this_upload->addNotifications($add_arguments);
 								}
 							}
 
@@ -304,7 +304,7 @@ $current_level = get_current_user_level();
 													'affected_file' => $process_file['new_file_id'],
 													'affected_file_name' => $file['name']
 												);
-							$new_record_action = $logger->add_entry($log_action_args);
+							$new_record_action = $logger->addEntry($log_action_args);
 
 							$msg = __('The file has been edited succesfuly.','cftp_admin');
 							echo system_message('success',$msg);
@@ -381,7 +381,7 @@ $current_level = get_current_user_level();
 
 															<div class="form-group">
 																<label><?php _e('Description', 'cftp_admin');?></label>
-																<textarea name="file[<?php echo $i; ?>][description]" class="<?php if ( DESCRIPTIONS_USE_CKEDITOR == 1 ) { echo 'ckeditor'; } ?> form-control" placeholder="<?php _e('Optionally, enter here a description for the file.', 'cftp_admin');?>"><?php echo (!empty($row['description'])) ? html_output($row['description']) : ''; ?></textarea>
+																<textarea name="file[<?php echo $i; ?>][description]" class="<?php if ( FILES_DESCRIPTIONS_USE_CKEDITOR == 1 ) { echo 'ckeditor'; } ?> form-control" placeholder="<?php _e('Optionally, enter here a description for the file.', 'cftp_admin');?>"><?php echo (!empty($row['description'])) ? html_output($row['description']) : ''; ?></textarea>
 															</div>
 														</div>
 													</div>

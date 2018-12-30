@@ -113,7 +113,7 @@ if ($added_files > 0) {
 							'owner_id' => CURRENT_USER_ID,
 							'affected_account_name' => $current_username
 						);
-	$new_record_action = $logger->add_entry($log_action_args);
+	$new_record_action = $logger->addEntry($log_action_args);
 
 	if (file_exists($zip_file)) {
 		setCookie("download_started", 1, time() + 20, '/', "", false, false);

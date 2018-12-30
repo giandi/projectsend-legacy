@@ -129,7 +129,7 @@ include('header.php');
 														'addresses'		=> $client_information['email'],
 														'memberships'	=> $processed_requests,
 													);
-						$notify_send = $notify_client->psend_send_email($email_arguments);
+						$notify_send = $notify_client->send($email_arguments);
 					}
 					
 					$log_action_number = 39;
@@ -161,7 +161,7 @@ include('header.php');
 											'owner_id' => CURRENT_USER_ID,
 											'affected_account_name' => $all_users[$client]
 										);
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				}
 			}
 
@@ -320,7 +320,7 @@ include('header.php');
 				if ($count > 0) {
 					$get_groups	= new GroupActions();
 					$arguments	= array();
-					$all_groups	= $get_groups->get_groups($arguments);
+					$all_groups	= $get_groups->getGroups($arguments);
 
 
 					/**
@@ -388,7 +388,7 @@ include('header.php');
 					 */
 					$toggle_attr = 'data-toggle="toggle" data-style="membership_toggle" data-on="Accept" data-off="Deny" data-onstyle="success" data-offstyle="danger" data-size="mini"';
 					while ( $row = $sql->fetch() ) {
-						$table->add_row();
+						$table->addRow();
 						
 						$client_id		= $row["client_id"];
 
@@ -452,7 +452,7 @@ include('header.php');
 											);
 
 						foreach ( $tbody_cells as $cell ) {
-							$table->add_cell( $cell );
+							$table->addCell( $cell );
 						}
 		
 						$table->end_row();

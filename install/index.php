@@ -201,7 +201,7 @@ include_once('../header-unlogged.php');
 															'owner_id' => 1,
 															'owner_user' => $got_admin_name
 														);
-									$new_record_action = $logger->add_entry($log_action_args);
+									$new_record_action = $logger->addEntry($log_action_args);
 
 									$location = 'index.php?status=success';
 									header("Location: $location");

@@ -6,8 +6,9 @@
  * @package		ProjectSend
  * @subpackage	Classes
  */
+namespace ProjectSend\Classes;
 
-class PSend_Upload_File
+class UploadFile
 {
 
 	var $folder;
@@ -36,7 +37,7 @@ class PSend_Upload_File
 	 * @return string
 	 * @link http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
 	 */
-	function generate_safe_filename($unformatted) {
+	function generateSafeFilename($unformatted) {
 	
 		$got = pathinfo( strtolower( trim( $unformatted ) ) );
 		$url = $got['filename'];
@@ -68,15 +69,14 @@ class PSend_Upload_File
 	 * Check if the file extension is among the allowed ones, that are defined on
 	 * the options page.
 	 */
-	function is_filetype_allowed($filename)
+	function isFiletypeAllowed($filename)
 	{
 		if ( true === CAN_UPLOAD_ANY_FILE_TYPE ) {
 			return true;
 		}
 		else {
-			global $options_values;
 			$this->safe_filename = $filename;
-			$allowed_file_types = str_replace(',','|',$options_values['allowed_file_types']);
+			$allowed_file_types = str_replace(',','|', ALLOWED_FILE_TYPES);
 			$file_types = "/^\.(".$allowed_file_types."){1}$/i";
 			if (preg_match($file_types, strrchr($this->safe_filename, '.'))) {
 				return true;
@@ -89,10 +89,10 @@ class PSend_Upload_File
 	 * If there are multiple invalid characters in a row, only one replacement character
 	 * will be used, to avoid unnecessarily long file names.
 	 */
-	function safe_rename($name)
+	function safeRename($name)
 	{
 		$this->name = $name;
-		$this->safe_filename = $this->generate_safe_filename( $this->name );
+		$this->safe_filename = $this->generateSafeFilename( $this->name );
 		return basename($this->safe_filename);
 	}
 	
@@ -104,11 +104,11 @@ class PSend_Upload_File
 	 * Files are renamed before being shown on the list.
 	 *
 	 */
-	function safe_rename_on_disk($name,$folder)
+	function safeRenameOnDisk($name,$folder)
 	{
 		$this->name = $name;
 		$this->folder = $folder;
-		$this->safe_filename = $this->generate_safe_filename( $this->name );
+		$this->safe_filename = $this->generateSafeFilename( $this->name );
 		if(rename($this->folder.'/'.$this->name, $this->folder.'/'.$this->safe_filename)) {
 			return $this->safe_filename;
 		}
@@ -122,7 +122,7 @@ class PSend_Upload_File
 	 * after uploading it) to the final folder.
 	 * If succesful, the original file is then deleted.
 	 */
-	function upload_move($arguments)
+	function moveFile($arguments)
 	{
 		$this->uploaded_name	= $arguments['uploaded_name'];
 		$this->filename			= $arguments['filename'];
@@ -149,7 +149,7 @@ class PSend_Upload_File
 	/**
 	 * Called after correctly moving the file to the final location.
 	 */
-	function upload_add_to_database($arguments)
+	function addFileToDatabase($arguments)
 	{
 		$this->file_on_disk		= (!empty($arguments['file_disk'])) ? $arguments['file_disk'] : '';
 		$this->post_file		= (!empty($arguments['file_original'])) ? $arguments['file_original'] : '';
@@ -198,7 +198,7 @@ class PSend_Upload_File
 									'affected_file_name' => $this->name,
 									'affected_account_name' => $this->uploader
 								);
-			$new_record_action = $logger->add_entry($log_action_args);
+			$new_record_action = $logger->addEntry($log_action_args);
 		}
 		else {
 			$this->statement = $this->dbh->prepare("SELECT id, public_allow, public_token FROM " . TABLE_FILES . " WHERE url = :url");
@@ -252,7 +252,7 @@ class PSend_Upload_File
 	/**
 	 * Used to add new assignments and notifications
 	 */
-	function upload_add_assignment($arguments)
+	function addFileAssignment($arguments)
 	{
 		$this->name = encode_html($arguments['name']);
 		$this->uploader_id = $arguments['uploader_id'];
@@ -294,7 +294,7 @@ class PSend_Upload_File
 											'affected_account' => $this->assignment,
 											'affected_account_name' => $this->account_name
 										);
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				}
 			}
 		}
@@ -303,7 +303,7 @@ class PSend_Upload_File
 	/**
 	 * Used to create the new notifications on the database
 	 */
-	function upload_add_notifications($arguments)
+	function addNotifications($arguments)
 	{
 		$this->uploader_type = $arguments['uploader_type'];
 		$this->file_id = $arguments['new_file_id'];
@@ -373,7 +373,7 @@ class PSend_Upload_File
 	/**
 	 * Used when editing a file
 	 */
-	function clean_assignments($arguments)
+	function cleanAssignments($arguments)
 	{
 		$this->assign_to = $arguments['assign_to'];
 		$this->file_id = $arguments['file_id'];
@@ -416,13 +416,13 @@ class PSend_Upload_File
 										'owner_id' => $this->owner_id
 									);
 
-		$this->delete_assignments($this->delete_arguments);
+		$this->deleteAssignments($this->delete_arguments);
 	}
 
 	/**
 	 * Used when editing a file
 	 */
-	function clean_all_assignments($arguments)
+	function cleanAllAssignments($arguments)
 	{
 		$this->file_id = $arguments['file_id'];
 		$this->file_name = $arguments['file_name'];
@@ -450,14 +450,14 @@ class PSend_Upload_File
 										'owner_id' => $this->owner_id
 									);
 
-		$this->delete_assignments($this->delete_arguments);
+		$this->deleteAssignments($this->delete_arguments);
 	}
 
 
 	/**
 	 * Receives the data from any of the 2 clear assignments functions
 	 */	
-	private function delete_assignments($arguments)
+	private function deleteAssignments($arguments)
 	{
 		$this->clients = $arguments['clients'];
 		$this->groups = $arguments['groups'];
@@ -496,7 +496,7 @@ class PSend_Upload_File
 										'affected_account' => $this->deleted_client,
 										'affected_account_name' => $this->clients_names[$this->deleted_client]
 									);
-				$new_record_action = $logger->add_entry($log_action_args);
+				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 		/**
@@ -533,7 +533,7 @@ class PSend_Upload_File
 										'affected_account' => $this->deleted_group,
 										'affected_account_name' => $this->groups_names[$this->deleted_group]
 									);
-				$new_record_action = $logger->add_entry($log_action_args);
+				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 	}
@@ -541,7 +541,7 @@ class PSend_Upload_File
 	/**
 	 * Used to save the categories relations
 	 */
-	function upload_save_categories($arguments)
+	function setCategories($arguments)
 	{
 		$this->file_id		= $arguments['file_id'];
 		$this->categories	= $arguments['categories'];

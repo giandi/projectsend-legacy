@@ -99,7 +99,7 @@ if ( isset( $_GET['action'] ) ) {
 										'owner_id'				=> CURRENT_USER_ID,
 										'affected_account_name'	=> $all_categories[$category]
 									);
-				$new_record_action = $logger->add_entry($log_action_args);
+				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 	}
@@ -345,7 +345,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 						$i++;
 						if  ( $i > $limit_start && $i <= $limit_amount ) {
 
-							$table->add_row();
+							$table->addRow();
 
 							$depth = ( $category['depth'] > 0 ) ? str_repeat( '&mdash;', $category['depth'] ) . ' ' : false;
 
@@ -388,7 +388,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 														),
 												);
 							foreach ( $tbody_cells as $cell ) {
-								$table->add_cell( $cell );
+								$table->addCell( $cell );
 							}
 							
 							$table->end_row();

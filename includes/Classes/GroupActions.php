@@ -182,7 +182,7 @@ class GroupActions
 	/**
 	 * Return an array of existing groups
 	 */
-	function get_groups($arguments)
+	function getGroups($arguments)
 	{
 		$this->group_ids	= !empty( $arguments['group_ids'] ) ? $arguments['group_ids'] : array();
 		$this->group_ids	= is_array( $this->group_ids ) ? $this->group_ids : array( $this->group_ids );

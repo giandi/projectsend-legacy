@@ -30,7 +30,7 @@ $login_button_text = __('Log in','cftp_admin');
 	 */
 	if ( GOOGLE_SIGNIN_ENABLED == '1' ) {
 		$googleClient = new Google_Client();
-		$googleClient->setApplicationName(SITE_NAME);
+		$googleClient->setApplicationName(THIS_INSTALL_TITLE);
 		$googleClient->setClientSecret(GOOGLE_CLIENT_SECRET);
 		$googleClient->setClientId(GOOGLE_CLIENT_ID);
 		$googleClient->setAccessType('online');
@@ -146,13 +146,7 @@ $login_button_text = __('Log in','cftp_admin');
 							?>
 						</select>
 					</div>
-<?php
-/*
-					<label for="login_form_remember">
-						<input type="checkbox" name="login_form_remember" id="login_form_remember" value="on" />
-						<?php _e('Remember me','cftp_admin'); ?>
-					</label>
-*/?>
+
 					<div class="inside_form_buttons">
 						<button type="submit" id="submit" class="btn btn-wide btn-primary"><?php echo $login_button_text; ?></button>
 					</div>

@@ -45,13 +45,13 @@ $chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
 $chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 0;
 $fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
 
-$this_file = new PSend_Upload_File();
+$this_file = new ProjectSend\Classes\UploadFile;
 // Rename the file
-$fileName = $this_file->safe_rename($fileName);
+$fileName = $this_file->safeRename($fileName);
 
 // Validate file has an acceptable extension
 $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
-$allowedExt = explode(',', $options_values['allowed_file_types'] );
+$allowedExt = explode(',', ALLOWED_FILE_TYPES );
 if ( false === CAN_UPLOAD_ANY_FILE_TYPE ) {
     if (!in_array($fileExt, $allowedExt)) {
         die('{"jsonrpc" : "2.0", "error" : {"code": 104, "message": "Invalid Extension."}, "id" : "id"}');

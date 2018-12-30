@@ -110,7 +110,7 @@ class CategoriesActions
 											'affected_account'		=> $this->state['new_id'],
 											'affected_account_name'	=> $this->name
 										);
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				}
 				else {
 					/** Query couldn't be executed */
@@ -155,7 +155,7 @@ class CategoriesActions
 											'affected_account'		=> $arguments['id'],
 											'affected_account_name'	=> $this->name
 										);
-					$new_record_action = $logger->add_entry($log_action_args);
+					$new_record_action = $logger->addEntry($log_action_args);
 				}
 				else {
 					$this->state['query'] = 0;
