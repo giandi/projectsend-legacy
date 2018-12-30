@@ -11,7 +11,7 @@ require_once('bootstrap.php');
 
 $page_title = __('Register new account','cftp_admin');
 
-include('header-unlogged.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 
 	/** The form was submitted */
 	if ($_POST) {
@@ -22,48 +22,34 @@ include('header-unlogged.php');
 			$recaptcha_request		= file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptcha_secret_key}&response={$recaptcha_response}&remoteip={$recaptcha_user_ip}");
 		}
 
-		$new_client = new \ProjectSend\Classes\ClientActions();
-	
-		/**
-		 * Clean the posted form values to be used on the clients actions,
-		 * and again on the form if validation failed.
-		 */
-		$add_client_data_name = encode_html($_POST['add_client_form_name']);
-		$add_client_data_user = encode_html($_POST['add_client_form_user']);
-		$add_client_data_email = encode_html($_POST['add_client_form_email']);
-		/** Optional fields: Address, Phone, Internal Contact, Notify */
-		$add_client_data_addr = (isset($_POST["add_client_form_address"])) ? encode_html($_POST["add_client_form_address"]) : '';
-		$add_client_data_phone = (isset($_POST["add_client_form_phone"])) ? encode_html($_POST["add_client_form_phone"]) : '';
-		$add_client_data_intcont = (isset($_POST["add_client_form_intcont"])) ? encode_html($_POST["add_client_form_intcont"]) : '';
-		$add_client_data_notify_upload = (isset($_POST["add_client_form_notify_upload"])) ? 1 : 0;
-		$add_client_data_group = (isset($_POST["add_client_group_request"])) ? $_POST["add_client_group_request"] : '';
+		$new_client = new \ProjectSend\Classes\ClientActions;
 	
 		/** Arguments used on validation and client creation. */
-		$new_arguments = array(
-								'id'		=> '',
-								'username'	=> $add_client_data_user,
-								'password'	=> $_POST['add_client_form_pass'],
-								//'password_repeat' => $_POST['add_client_form_pass2'],
-								'name'		=> $add_client_data_name,
-								'email'		=> $add_client_data_email,
-								'address'	=> $add_client_data_addr,
-								'phone'		=> $add_client_data_phone,
-								'contact'	=> $add_client_data_intcont,
-								'notify_upload'	=> $add_client_data_notify_upload,
-								'group'		=> $add_client_data_group,
-								'type'		=> 'new_client',
-							);
-
-		$new_arguments['active']			= (CLIENTS_AUTO_APPROVE == 0) ? 0 : 1;
-		$new_arguments['account_requested']	= (CLIENTS_AUTO_APPROVE == 0) ? 1 : 0;
-		$new_arguments['recaptcha']			= ( defined('RECAPTCHA_AVAILABLE') ) ? $recaptcha_request : null;
+        $client_arguments = array(
+            'id'	    		=> '',
+            'username'	    	=> encode_html($_POST['username']),
+            'password'		    => $_POST['password'],
+            'name'	    		=> encode_html($_POST['name']),
+            'email'		    	=> encode_html($_POST['email']),
+            'address'		    => (isset($_POST["address"])) ? encode_html($_POST['address']) : '',
+            'phone'	    		=> (isset($_POST["phone"])) ? encode_html($_POST['phone']) : '',
+            'contact'	    	=> (isset($_POST["contact"])) ? encode_html($_POST['contact']) : '',
+            'max_file_size'	    => UPLOAD_MAX_FILESIZE,
+            'notify_upload'    	=> (isset($_POST["notify_upload"])) ? 1 : 0,
+            'notify_account' 	=> (isset($_POST["notify_account"])) ? 1 : 0,
+            'active'	    	=> (CLIENTS_AUTO_APPROVE == 0) ? 0 : 1,
+            'account_requested'	=> (CLIENTS_AUTO_APPROVE == 0) ? 1 : 0,
+            'group' 	    	=> (isset($_POST["groups_request"])) ? $_POST["groups_request"] : '',
+            'type'		    	=> 'new_client',
+            'recaptcha'         => ( defined('RECAPTCHA_AVAILABLE') ) ? $recaptcha_request : null,
+        );
 
 		/** Validate the information from the posted form. */
-		$new_validate = $new_client->validate_client($new_arguments);
+		$validation = $new_client->validate($client_arguments);
 		
 		/** Create the client if validation is correct. */
-		if ($new_validate == 1) {
-			$new_response = $new_client->create_client($new_arguments);
+        if ($validation['passed'] == true) {
+			$new_response = $new_client->create($client_arguments);
 
 			$admin_name = 'SELFREGISTERED';
 			/**
@@ -74,7 +60,7 @@ include('header-unlogged.php');
 				$group_id = CLIENTS_AUTO_GROUP;
 				define('AUTOGROUP', true);
 
-				$autogroup	= new MembersActions;
+				$autogroup	= new \ProjectSend\Classes\MembersActions;
 				$arguments	= array(
 									'client_id'	=> $new_response['new_id'],
 									'group_ids'	=> $group_id,
@@ -88,10 +74,10 @@ include('header-unlogged.php');
 			 * Check if the client requested memberships to groups
 			 */
 			define('REGISTERING', true);
-			$request	= new MembersActions;
+			$request	= new \ProjectSend\Classes\MembersActions;
 			$arguments	= array(
 								'client_id'		=> $new_response['new_id'],
-								'group_ids'		=> $add_client_data_group,
+								'group_ids'		=> $client_arguments['group'],
 								'request_by'	=> $admin_name,
 							);
 	
@@ -104,8 +90,8 @@ include('header-unlogged.php');
 			$email_arguments = array(
 											'type'			=> 'new_client_self',
 											'address'		=> ADMIN_EMAIL_ADDRESS,
-											'username'		=> $add_client_data_user,
-											'name'			=> $add_client_data_name,
+											'username'		=> $client_arguments['username'],
+											'name'			=> $client_arguments['name'],
 										);
 
 			if ( !empty( $execute_requests['requests'] ) ) {
@@ -119,7 +105,11 @@ include('header-unlogged.php');
 
 <div class="col-xs-12 col-sm-12 col-lg-4 col-lg-offset-4">
 
-	<?php echo get_branding_layout(true); ?>
+	<div class="row">
+        <div class="col-xs-12 branding_unlogged">
+            <?php echo get_branding_layout(); ?>
+        </div>
+    </div>
 
 	<div class="white-box">
 		<div class="white-box-interior">
@@ -127,14 +117,16 @@ include('header-unlogged.php');
 			<?php
 				if (CLIENTS_CAN_REGISTER == '0') {
 					$msg = __('Client self registration is not allowed. If you need an account, please contact a system administrator.','cftp_admin');
-					echo system_message('danger',$msg);
+                    echo system_message('danger',$msg);
 				}
 				else {
 					/**
 					 * If the form was submited with errors, show them here.
 					 */
-					$valid_me->list_errors();
-	
+                    if (isset($validation['errors'])) {
+                        echo $validation['errors'];
+                    }
+        
 					if (isset($new_response)) {
 						/**
 						 * Get the process state and show the corresponding ok or error messages.
@@ -145,24 +137,26 @@ include('header-unlogged.php');
 	
 						switch ($new_response['actions']) {
 							case 1:
-								$msg = __('Account added correctly.','cftp_admin');
+                                $msg = __('Account added correctly.','cftp_admin');
 								echo system_message('success',$msg);
 	
 								if (CLIENTS_AUTO_APPROVE == 0) {
-									$msg = __('Please remember that an administrator needs to approve your account before you can log in.','cftp_admin');
+                                    $msg = __('Please remember that an administrator needs to approve your account before you can log in.','cftp_admin');
+                                    $type = 'warning';
 								}
 								else {
-									$msg = __('You may now log in with your new credentials.','cftp_admin');
+                                    $msg = __('You may now log in with your new credentials.','cftp_admin');
+                                    $type = 'success';
 								}
-								echo system_message('info',$msg);
+								echo system_message($type,$msg);
 	
 								/** Record the action log */
-								$logger = new \ProjectSend\Classes\ActionsLog();
+								$logger = new ProjectSend\Classes\ActionsLog;
 								$log_action_args = array(
 														'action' => 4,
 														'owner_id' => $new_response['new_id'],
 														'affected_account' => $new_response['new_id'],
-														'affected_account_name' => $add_client_data_name
+														'affected_account_name' => $client_arguments['name']
 													);
 								$new_record_action = $logger->addEntry($log_action_args);
 							break;
@@ -202,7 +196,7 @@ include('header-unlogged.php');
 						 * Include the form.
 						 */
 						$clients_form_type = 'new_client_self';
-						include('clients-form.php');
+						include_once FORMS_DIR . DS . 'clients.php';
 					}
 				}
 			?>
@@ -214,4 +208,4 @@ include('header-unlogged.php');
 	</div> <!-- main -->
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

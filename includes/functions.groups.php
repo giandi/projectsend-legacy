@@ -230,7 +230,7 @@ function delete_group($group_id)
                 $statement->execute();
 
                 // Record the action log
-                global $logger;
+                $logger = new ProjectSend\Classes\ActionsLog;
                 $log_action_args = array(
                                         'action' => 18,
                                         'owner_id' => CURRENT_USER_ID,

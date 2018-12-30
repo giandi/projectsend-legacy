@@ -96,12 +96,12 @@ include('header.php');
 				case 'apply':
 					$selected_clients = $_POST['accounts'];
 					foreach ( $selected_clients as $client ) {
-						$process_memberships	= new MembersActions();
+						$process_memberships	= new \ProjectSend\Classes\MembersActions;
 
 						/**
 						 * 1- Approve or deny account
 						 */
-						$process_account = new \ProjectSend\Classes\ClientActions();
+						$process_account = new \ProjectSend\Classes\ClientActions;
 
 						/** $client['account'] == 1 means approve that account */
 						if ( !empty( $client['account'] ) and $client['account'] == '1' ) {
@@ -166,7 +166,7 @@ include('header.php');
 					break;
 				case 'delete':
 					foreach ($selected_clients as $client) {
-						$this_client = new \ProjectSend\Classes\ClientActions();
+						$this_client = new \ProjectSend\Classes\ClientActions;
 						$delete_client = $this_client->delete_client($client['id']);
 					}
 					
@@ -179,7 +179,7 @@ include('header.php');
 			/** Record the action log */
 			if ( !empty( $log_action_number ) ) {
 				foreach ($selected_clients_ids as $client) {
-					$logger = new \ProjectSend\Classes\ActionsLog();
+					$logger = new \ProjectSend\Classes\ActionsLog;
 					$log_action_args = array(
 											'action' => $log_action_number,
 											'owner_id' => CURRENT_USER_ID,
@@ -346,7 +346,7 @@ include('header.php');
 					/**
 					 * Pre-populate a membership requests array
 					 */
-					$get_requests	= new MembersActions();
+					$get_requests	= new \ProjectSend\Classes\MembersActions;
 					$arguments		= array();
 					if ( $current_filter == 'denied' ) {
 						$arguments['denied'] = 1;
