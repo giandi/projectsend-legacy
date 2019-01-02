@@ -7,6 +7,7 @@
  * @subpackage	Classes
  */
 namespace ProjectSend\Classes;
+use \PDO;
 
 class UploadFile
 {
