@@ -29,18 +29,6 @@ include('header.php');
 		/** Continue only if 1 or more clients were selected. */
 		if(!empty($_GET['batch'])) {
 			$selected_clients = $_GET['batch'];
-			$clients_to_get = implode( ',', array_map( 'intval', array_unique( $selected_clients ) ) );
-
-			/**
-			 * Make a list of users to avoid individual queries.
-			 */
-			$sql_user = $dbh->prepare( "SELECT id, name FROM " . TABLE_USERS . " WHERE FIND_IN_SET(id, :clients)" );
-			$sql_user->bindParam(':clients', $clients_to_get);
-			$sql_user->execute();
-			$sql_user->setFetchMode(PDO::FETCH_ASSOC);
-			while ( $data_user = $sql_user->fetch() ) {
-				$all_users[$data_user['id']] = $data_user['name'];
-			}
 
 			switch($_GET['action']) {
 				case 'activate':
@@ -49,49 +37,41 @@ include('header.php');
 					 * Inactive clients are not allowed to log in.
 					 */
 					foreach ($selected_clients as $work_client) {
-						$this_client = new \ProjectSend\Classes\ClientActions;
-						$hide_client = $this_client->changeActiveStatus($work_client,'1');
+                        $this_client = new \ProjectSend\Classes\Users($dbh);
+                        if ($this_client->get($work_client)) {
+                            $hide_user = $this_client->setActiveStatus(1);
+                        }
 					}
-					$msg = __('The selected clients were marked as active.','cftp_admin');
+                    
+                    $msg = __('The selected clients were marked as active.','cftp_admin');
 					echo system_message('success',$msg);
-					$log_action_number = 19;
 					break;
-
 				case 'deactivate':
 					/**
 					 * Reverse of the previous action. Setting the value to 0 means
 					 * that the client is inactive.
 					 */
 					foreach ($selected_clients as $work_client) {
-						$this_client = new \ProjectSend\Classes\ClientActions;
-						$hide_client = $this_client->changeActiveStatus($work_client,'0');
+                        $this_client = new \ProjectSend\Classes\Users($dbh);
+                        if ($this_client->get($work_client)) {
+                            $hide_user = $this_client->setActiveStatus(0);
+                        }
 					}
-					$msg = __('The selected clients were marked as inactive.','cftp_admin');
+                    
+                    $msg = __('The selected clients were marked as inactive.','cftp_admin');
 					echo system_message('success',$msg);
-					$log_action_number = 20;
 					break;
-
 				case 'delete':
-					foreach ($selected_clients as $client) {
-						$this_client = new \ProjectSend\Classes\ClientActions;
-						$delete_client = $this_client->delete($client);
+					foreach ($selected_clients as $work_client) {
+                        $this_client = new \ProjectSend\Classes\Users($dbh);
+                        if ($this_client->get($work_client)) {
+                            $delete_user = $this_client->delete();
+                        }
 					}
 					
 					$msg = __('The selected clients were deleted.','cftp_admin');
 					echo system_message('success',$msg);
-					$log_action_number = 17;
 					break;
-			}
-
-			/** Record the action log */
-			foreach ($selected_clients as $client) {
-				$logger = new \ProjectSend\Classes\ActionsLog;
-				$log_action_args = array(
-										'action' => $log_action_number,
-										'owner_id' => CURRENT_USER_ID,
-										'affected_account_name' => $all_users[$client]
-									);
-				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 		else {

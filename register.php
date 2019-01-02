@@ -11,6 +11,8 @@ require_once('bootstrap.php');
 
 $page_title = __('Register new account','cftp_admin');
 
+$new_client = new \ProjectSend\Classes\Users($dbh);
+
 include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 
 	/** The form was submitted */
@@ -22,34 +24,31 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 			$recaptcha_request		= file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptcha_secret_key}&response={$recaptcha_response}&remoteip={$recaptcha_user_ip}");
 		}
 
-		$new_client = new \ProjectSend\Classes\ClientActions;
-	
 		/** Arguments used on validation and client creation. */
         $client_arguments = array(
-            'id'	    		=> '',
-            'username'	    	=> encode_html($_POST['username']),
-            'password'		    => $_POST['password'],
-            'name'	    		=> encode_html($_POST['name']),
-            'email'		    	=> encode_html($_POST['email']),
-            'address'		    => (isset($_POST["address"])) ? encode_html($_POST['address']) : '',
-            'phone'	    		=> (isset($_POST["phone"])) ? encode_html($_POST['phone']) : '',
-            'contact'	    	=> (isset($_POST["contact"])) ? encode_html($_POST['contact']) : '',
-            'max_file_size'	    => UPLOAD_MAX_FILESIZE,
-            'notify_upload'    	=> (isset($_POST["notify_upload"])) ? 1 : 0,
-            'notify_account' 	=> (isset($_POST["notify_account"])) ? 1 : 0,
-            'active'	    	=> (CLIENTS_AUTO_APPROVE == 0) ? 0 : 1,
+            'username' => $_POST['username'],
+            'password' => $_POST['password'],
+            'name' => $_POST['name'],
+            'email' => $_POST['email'],
+            'address' => (isset($_POST["address"])) ? $_POST['address'] : null,
+            'phone' => (isset($_POST["phone"])) ? $_POST['phone'] : null,
+            'contact' => (isset($_POST["contact"])) ? $_POST['contact'] : null,
+            'max_file_size' => UPLOAD_MAX_FILESIZE,
+            'notify_upload' => (isset($_POST["notify_upload"])) ? 1 : 0,
+            'notify_account' => (isset($_POST["notify_account"])) ? 1 : 0,
+            'active' => (CLIENTS_AUTO_APPROVE == 0) ? 0 : 1,
             'account_requested'	=> (CLIENTS_AUTO_APPROVE == 0) ? 1 : 0,
-            'group' 	    	=> (isset($_POST["groups_request"])) ? $_POST["groups_request"] : '',
-            'type'		    	=> 'new_client',
-            'recaptcha'         => ( defined('RECAPTCHA_AVAILABLE') ) ? $recaptcha_request : null,
+            'group' => (isset($_POST["groups_request"])) ? $_POST["groups_request"] : null,
+            'type' => 'new_client',
+            'recaptcha' => ( defined('RECAPTCHA_AVAILABLE') ) ? $recaptcha_request : null,
         );
 
-		/** Validate the information from the posted form. */
-		$validation = $new_client->validate($client_arguments);
-		
-		/** Create the client if validation is correct. */
-        if ($validation['passed'] == true) {
-			$new_response = $new_client->create($client_arguments);
+        /** Validate the information from the posted form. */
+        /** Create the user if validation is correct. */
+        $new_client->setType('new_client');
+        $new_client->set($client_arguments);
+        if ($new_client->validate()) {
+            $new_response = $new_client->create();
 
 			$admin_name = 'SELFREGISTERED';
 			/**
@@ -62,7 +61,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 
 				$autogroup	= new \ProjectSend\Classes\MembersActions;
 				$arguments	= array(
-									'client_id'	=> $new_response['new_id'],
+									'client_id'	=> $new_client->getId(),
 									'group_ids'	=> $group_id,
 									'added_by'	=> $admin_name,
 								);
@@ -76,7 +75,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 			define('REGISTERING', true);
 			$request	= new \ProjectSend\Classes\MembersActions;
 			$arguments	= array(
-								'client_id'		=> $new_response['new_id'],
+								'client_id'		=> $new_client->getId(),
 								'group_ids'		=> $client_arguments['group'],
 								'request_by'	=> $admin_name,
 							);
@@ -99,9 +98,9 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 			}
 
 			$notify_admin_status = $notify_admin->send($email_arguments);
-		}
+        }
 	}
-	?>
+?>
 
 <div class="col-xs-12 col-sm-12 col-lg-4 col-lg-offset-4">
 
@@ -120,12 +119,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
                     echo system_message('danger',$msg);
 				}
 				else {
-					/**
-					 * If the form was submited with errors, show them here.
-					 */
-                    if (isset($validation['errors'])) {
-                        echo $validation['errors'];
-                    }
+                    // If the form was submited with errors, show them here.
+                    echo $new_client->getValidationErrors();
         
 					if (isset($new_response)) {
 						/**
@@ -135,7 +130,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 						$error_msg = '</p><br /><p>';
 						$error_msg .= __('Please contact a system administrator.','cftp_admin');
 	
-						switch ($new_response['actions']) {
+						switch ($new_response['query']) {
 							case 1:
                                 $msg = __('Account added correctly.','cftp_admin');
 								echo system_message('success',$msg);
@@ -149,17 +144,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
                                     $type = 'success';
 								}
 								echo system_message($type,$msg);
-	
-								/** Record the action log */
-								$logger = new ProjectSend\Classes\ActionsLog;
-								$log_action_args = array(
-														'action' => 4,
-														'owner_id' => $new_response['new_id'],
-														'affected_account' => $new_response['new_id'],
-														'affected_account_name' => $client_arguments['name']
-													);
-								$new_record_action = $logger->addEntry($log_action_args);
-							break;
+                                break;
 							case 0:
 								$msg = __('There was an error. Please try again.','cftp_admin');
 								$msg .= $error_msg;

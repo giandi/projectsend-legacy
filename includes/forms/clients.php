@@ -51,7 +51,9 @@
 			?>
 
 			// show the errors or continue if everything is ok
-			if (show_form_errors() == false) { return false; }
+			if (show_form_errors() == false) {
+                //return false;
+            }
 		});
 	});
 </script>

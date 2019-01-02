@@ -101,7 +101,8 @@ include('header.php');
 						/**
 						 * 1- Approve or deny account
 						 */
-						$process_account = new \ProjectSend\Classes\ClientActions;
+                        $process_account = new \ProjectSend\Classes\Users($dbh);
+                        $process_account->setId($client['id']);
 
 						/** $client['account'] == 1 means approve that account */
 						if ( !empty( $client['account'] ) and $client['account'] == '1' ) {
@@ -109,7 +110,7 @@ include('header.php');
 							/**
 							 * 1 - Approve account
 							 */
-							$approve = $process_account->accountApprove( $client['id'] );
+							$approve = $process_account->accountApprove();
 							/**
 							 * 2 - Prepare memberships information
 							 */
@@ -128,7 +129,7 @@ include('header.php');
 							/**
 							 * 1 - Deny account
 							 */
-							$deny = $process_account->accountDeny( $client['id'] );
+							$deny = $process_account->accountDeny();
 							/**
 							 * 2 - Deny all memberships
 							 */
@@ -161,32 +162,16 @@ include('header.php');
 													);
 						$notify_send = $notify_client->send($email_arguments);
 					}
-
-					$log_action_number = 38;
 					break;
 				case 'delete':
 					foreach ($selected_clients as $client) {
-						$this_client = new \ProjectSend\Classes\ClientActions;
-						$delete_client = $this_client->delete_client($client['id']);
+                        $this_client = new \ProjectSend\Classes\Users($dbh);
+                        $this_client->setId($client['id']);
+						$delete_client = $this_client->delete();
 					}
-					
-					$log_action_number = 17;
 					break;
 				default:
 					break;
-			}
-
-			/** Record the action log */
-			if ( !empty( $log_action_number ) ) {
-				foreach ($selected_clients_ids as $client) {
-					$logger = new \ProjectSend\Classes\ActionsLog;
-					$log_action_args = array(
-											'action' => $log_action_number,
-											'owner_id' => CURRENT_USER_ID,
-											'affected_account_name' => $all_users[$client]
-										);
-					$new_record_action = $logger->addEntry($log_action_args);
-				}
 			}
 
 			/** Redirect after processing */

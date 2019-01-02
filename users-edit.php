@@ -12,7 +12,7 @@ require_once('bootstrap.php');
 $active_nav = 'users';
 
 /** Create the object */
-$edit_user = new \ProjectSend\Classes\UserActions;
+$edit_user = new \ProjectSend\Classes\Users($dbh);
 
 /** Check if the id parameter is on the URI. */
 if (isset($_GET['id'])) {
@@ -28,10 +28,10 @@ else {
 
 /**
  * Get the user information from the database to use on the form.
- * @todo replace when a User class is made
  */
 if ($page_status === 1) {
-    $user_arguments = get_user_by_id($user_id);
+    $edit_user->get($user_id);
+    $user_arguments = $edit_user->getProperties();
 }
 
 /**
@@ -79,13 +79,12 @@ if ($_POST) {
 	 * validation failed, the new unsaved values are shown to avoid
 	 * having to type them again.
 	 */
-
     $user_arguments = array(
-        'id' => $user_id,
+        'id' => $user_arguments['id'],
         'username' => $user_arguments['username'],
-        'name' => encode_html($_POST['name']),
-        'email' => encode_html($_POST['email']),
-        'level' => $user_arguments['level'],
+        'name' => $_POST['name'],
+        'email' => $_POST['email'],
+        'role' => $user_arguments['role'],
         'max_file_size' => $user_arguments['max_file_size'],
         'active' => $user_arguments['active'],
         'type' => 'edit_user',
@@ -96,11 +95,9 @@ if ($_POST) {
 	}
 
     /**
-	 * If the password field, or the verification are not completed,
-	 * send an empty value to prevent notices.
+	 * If the password field send an empty value to prevent notices.
 	 */
 	$user_arguments['password'] = (isset($_POST['password'])) ? $_POST['password'] : '';
-	//$user_arguments['password_repeat'] = (isset($_POST['password_repeat'])) ? $_POST['password_repeat'] : '';
 
 	/**
 	 * Edit level only when user is not Uploader (level 7) or when
@@ -117,21 +114,20 @@ if ($_POST) {
 	}
 
     if ($can_edit_level_and_active === true) {
-        $user_arguments['level'] = (isset($_POST['level'])) ? $_POST['level'] : $user_arguments['level'];
+        $user_arguments['role'] = (isset($_POST['level'])) ? $_POST['level'] : $user_arguments['role'];
         $user_arguments['active'] = (isset($_POST["active"])) ? 1 : 0;
     }
 
-	/** Validate the information from the posted form. */
-	$validation = $edit_user->validate($user_arguments);
+    /** Validate the information from the posted form. */
+    $edit_user->set($user_arguments);
+    $edit_user->setType("existing_user");
+    if ($edit_user->validate()) {
+		$edit_response = $edit_user->edit();
 
-	/** Create the user if validation is correct. */
-	if ($validation['passed'] == true) {
-		$edit_response = $edit_user->edit($user_arguments);
+        $location = BASE_URI . 'users-edit.php?id=' . $user_id . '&status=' . $edit_response['query'];
+        header("Location: $location");
+        exit;
     }
-
-	$location = BASE_URI . 'users-edit.php?id=' . $user_id . '&status=' . $edit_response['query'];
-	header("Location: $location");
-	exit;
 }
 
 $page_title = __('Edit system user','cftp_admin');
@@ -150,18 +146,6 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 				case 1:
 					$msg = __('User edited correctly.','cftp_admin');
 					echo system_message('success',$msg);
-
-					$saved_user = get_user_by_id($user_id);
-					/** Record the action log */
-					$logger = new ProjectSend\Classes\ActionsLog;
-					$log_action_args = array(
-											'action' => 13,
-											'owner_id' => CURRENT_USER_ID,
-											'affected_account' => $user_id,
-											'affected_account_name' => $saved_user['username'],
-											'get_user_real_name' => true
-										);
-					$new_record_action = $logger->addEntry($log_action_args);
 				break;
 				case 0:
 					$msg = __('There was an error. Please try again.','cftp_admin');
@@ -175,12 +159,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 		<div class="white-box-interior">
 		
 			<?php
-				/**
-				 * If the form was submited with errors, show them here.
-				 */
-                if (isset($validation['errors'])) {
-                    echo $validation['errors'];
-                }
+                // If the form was submited with errors, show them here.
+                echo $new_client->getValidationErrors();
 			?>
 			
 			<?php

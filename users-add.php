@@ -17,6 +17,8 @@ $active_nav = 'users';
 
 $page_title = __('Add system user','cftp_admin');
 
+$new_user = new \ProjectSend\Classes\Users($dbh);
+
 include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 /**
@@ -24,39 +26,34 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
  * the form
  */
 $user_arguments = array(
-    'active'            => 1,
-    'notify_account'    => 1,
+    'active' => 1,
+    'notify_account' => 1,
 );
 
 if ($_POST) {
-	$new_user = new \ProjectSend\Classes\UserActions;
-
 	/**
 	 * Clean the posted form values to be used on the user actions,
 	 * and again on the form if validation failed.
 	 */
     $user_arguments = array(
-        'id'	    		=> '',
-        'username'	    	=> encode_html($_POST['username']),
-        'password'		    => $_POST['password'],
-        //'password_repeat' => $_POST['password_repeat'],
-        'name'	    		=> encode_html($_POST['name']),
-        'email'		    	=> encode_html($_POST['email']),
-        'level'		        => encode_html($_POST['level']),
-        'max_file_size'	    => (isset($_POST["max_file_size"])) ? encode_html($_POST['max_file_size']) : '',
-        'notify_account' 	=> (isset($_POST["notify_account"])) ? 1 : 0,
-        'active'	    	=> (isset($_POST["active"])) ? 1 : 0,
-        'type'		    	=> 'new_user',
+        'username' => $_POST['username'],
+        'password' => $_POST['password'],
+        'name' => $_POST['name'],
+        'email' => $_POST['email'],
+        'role' => $_POST['level'],
+        'max_file_size' => (isset($_POST["max_file_size"])) ? $_POST['max_file_size'] : '',
+        'notify_account' => (isset($_POST["notify_account"])) ? 1 : 0,
+        'active' => (isset($_POST["active"])) ? 1 : 0,
+        'type' => 'new_user',
     );
 
 	/** Validate the information from the posted form. */
-	$validation = $new_user->validate($user_arguments);
-	
-	/** Create the user if validation is correct. */
-    if ($validation['passed'] == true) {
-		$new_response = $new_user->create($user_arguments);
-	}
-	
+    /** Create the user if validation is correct. */
+    $new_user->setType('new_user');
+    $new_user->set($user_arguments);
+	if ($new_user->validate()) {
+        $new_response = $new_user->create();
+    }
 }
 ?>
 <div class="col-xs-12 col-sm-12 col-lg-6">
@@ -64,12 +61,8 @@ if ($_POST) {
 		<div class="white-box-interior">
 		
 			<?php
-				/**
-				 * If the form was submited with errors, show them here.
-				 */
-                if (isset($validation['errors'])) {
-                    echo $validation['errors'];
-                }
+                // If the form was submited with errors, show them here.
+                echo $new_client->getValidationErrors();
 
 				if (isset($new_response)) {
 					/**
@@ -79,17 +72,6 @@ if ($_POST) {
 						case 1:
 							$msg = __('User added correctly.','cftp_admin');
 							echo system_message('success',$msg);
-	
-							/** Record the action log */
-                            $logger = new ProjectSend\Classes\ActionsLog;
-							$log_action_args = array(
-													'action' => 2,
-													'owner_id' => CURRENT_USER_ID,
-													'affected_account' => $new_response['new_id'],
-													'affected_account_name' => $user_arguments['name']
-												);
-							$new_record_action = $logger->addEntry($log_action_args);
-	
 						break;
 						case 0:
 							$msg = __('There was an error. Please try again.','cftp_admin');
@@ -102,7 +84,7 @@ if ($_POST) {
 					switch ($new_response['email']) {
 						case 2:
 							$msg = __('A welcome message was not sent to the new user.','cftp_admin');
-							echo system_message('success',$msg);
+							echo system_message('info',$msg);
 						break;
 						case 1:
 							$msg = __('A welcome message with login information was sent to the new user.','cftp_admin');

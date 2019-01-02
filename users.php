@@ -32,21 +32,7 @@ include('header.php');
 		/** Continue only if 1 or more users were selected. */
 		if(!empty($_GET['batch'])) {
 			$selected_users = $_GET['batch'];
-			$users_to_get = implode( ',', array_map( 'intval', array_unique( $selected_users ) ) );
 
-			/**
-			 * Make a list of users to avoid individual queries.
-			 */
-			$sql_user = $dbh->prepare( "SELECT id, name FROM " . TABLE_USERS . " WHERE FIND_IN_SET(id, :users)" );
-			$sql_user->bindParam(':users', $users_to_get);
-			$sql_user->execute();
-			$sql_user->setFetchMode(PDO::FETCH_ASSOC);
-			while ( $data_user = $sql_user->fetch() ) {
-				$all_users[$data_user['id']] = $data_user['name'];
-			}
-
-
-			$my_info = get_user_by_username(get_current_user_username());
 			$affected_users = 0;
 
 			switch($_GET['action']) {
@@ -56,14 +42,15 @@ include('header.php');
 					 * Inactive users are not allowed to log in.
 					 */
 					foreach ($selected_users as $work_user) {
-						$this_user = new \ProjectSend\Classes\UserActions;
-						$hide_user = $this_user->setActiveStatus($work_user,'1');
+                        $this_user = new \ProjectSend\Classes\Users($dbh);
+                        if ($this_user->get($work_user)) {
+                            $hide_user = $this_user->setActiveStatus(1);
+                        }
 					}
-					$msg = __('The selected users were marked as active.','cftp_admin');
-					echo system_message('success',$msg);
-					$log_action_number = 27;
-					break;
 
+                    $msg = __('The selected users were marked as active.','cftp_admin');
+					echo system_message('success',$msg);
+					break;
 				case 'deactivate':
 					/**
 					 * Reverse of the previous action. Setting the value to 0 means
@@ -73,9 +60,11 @@ include('header.php');
 						/**
 						 * A user should not be able to deactivate himself
 						 */
-						if ($work_user != $my_info['id']) {
-							$this_user = new \ProjectSend\Classes\UserActions;
-							$hide_user = $this_user->setActiveStatus($work_user,'0');
+						if ($work_user != CURRENT_USER_ID) {
+                            $this_user = new \ProjectSend\Classes\Users($dbh);
+                            if ($this_user->get($work_user)) {
+                                $hide_user = $this_user->setActiveStatus(0);
+                            }
 							$affected_users++;
 						}
 						else {
@@ -87,19 +76,19 @@ include('header.php');
 					if ($affected_users > 0) {
 						$msg = __('The selected users were marked as inactive.','cftp_admin');
 						echo system_message('success',$msg);
-						$log_action_number = 28;
 					}
 					break;
-
 				case 'delete':		
 					foreach ($selected_users as $work_user) {
 						/**
 						 * A user should not be able to delete himself
 						 */
-						if ($work_user != $my_info['id']) {
-							$this_user = new \ProjectSend\Classes\UserActions;
-							$delete_user = $this_user->delete($work_user);
-							$affected_users++;
+						if ($work_user != CURRENT_USER_ID) {
+                            $this_user = new \ProjectSend\Classes\Users($dbh);
+                            if ($this_user->get($work_user)) {
+                                $delete_user = $this_user->delete();
+                                $affected_users++;
+                            }
 						}
 						else {
 							$msg = __('You cannot delete your own account.','cftp_admin');
@@ -110,20 +99,8 @@ include('header.php');
 					if ($affected_users > 0) {
 						$msg = __('The selected users were deleted.','cftp_admin');
 						echo system_message('success',$msg);
-						$log_action_number = 16;
 					}
 				break;
-			}
-
-			/** Record the action log */
-			foreach ($selected_users as $user) {
-				$logger = new \ProjectSend\Classes\ActionsLog();
-				$log_action_args = array(
-										'action' => $log_action_number,
-										'owner_id' => CURRENT_USER_ID,
-										'affected_account_name' => $all_users[$user]
-									);
-				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 		else {

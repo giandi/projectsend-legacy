@@ -17,7 +17,9 @@ $active_nav = 'clients';
 
 $page_title = __('Add client','cftp_admin');
 
-include('header.php');
+$new_client = new \ProjectSend\Classes\Users($dbh);
+
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 /**
  * Set checkboxes as 1 to default them to checked when first entering
@@ -30,42 +32,38 @@ $client_arguments = array(
 );
 
 if ($_POST) {
-    $new_client = new \ProjectSend\Classes\ClientActions;
-
     /**
      * Clean the posted form values to be used on the clients actions,
      * and again on the form if validation failed.
      */
     $client_arguments = array(
-        'id'	    		=> '',
-        'username'	    	=> encode_html($_POST['username']),
-        'password'		    => $_POST['password'],
-        //'password_repeat' => $_POST['password_repeat'],
-        'name'	    		=> encode_html($_POST['name']),
-        'email'		    	=> encode_html($_POST['email']),
-        'address'		    => (isset($_POST["address"])) ? encode_html($_POST['address']) : '',
-        'phone'	    		=> (isset($_POST["phone"])) ? encode_html($_POST['phone']) : '',
-        'contact'	    	=> (isset($_POST["contact"])) ? encode_html($_POST['contact']) : '',
-        'max_file_size'	    => (isset($_POST["max_file_size"])) ? encode_html($_POST['max_file_size']) : '',
-        'notify_upload'    	=> (isset($_POST["notify_upload"])) ? 1 : 0,
-        'notify_account' 	=> (isset($_POST["notify_account"])) ? 1 : 0,
-        'active'	    	=> (isset($_POST["active"])) ? 1 : 0,
-        'type'		    	=> 'new_client',
+        'username'=> $_POST['username'],
+        'password' => $_POST['password'],
+        'name' => $_POST['name'],
+        'email' => $_POST['email'],
+        'address' => (isset($_POST["address"])) ? $_POST['address'] : '',
+        'phone' => (isset($_POST["phone"])) ? $_POST['phone'] : '',
+        'contact' => (isset($_POST["contact"])) ? $_POST['contact'] : '',
+        'max_file_size' => (isset($_POST["max_file_size"])) ? $_POST['max_file_size'] : '',
+        'notify_upload' => (isset($_POST["notify_upload"])) ? 1 : 0,
+        'notify_account' => (isset($_POST["notify_account"])) ? 1 : 0,
+        'active' => (isset($_POST["active"])) ? 1 : 0,
+        'type' => 'new_client',
     );
 
     /** Validate the information from the posted form. */
-    $validation = $new_client->validate($client_arguments);
+    /** Create the user if validation is correct. */
+    $new_client->setType('new_client');
+    $new_client->set($client_arguments);
+	if ($new_client->validate()) {
+        $new_response = $new_client->create();
     
-    /** Create the client if validation is correct. */
-    if ($validation['passed'] == true) {
-        $new_response = $new_client->create($client_arguments);
-        
         $add_to_groups = (!empty( $_POST['groups_request'] ) ) ? $_POST['groups_request'] : '';
         if ( !empty( $add_to_groups ) ) {
             array_map('encode_html', $add_to_groups);
             $memberships	= new \ProjectSend\Classes\MembersActions;
             $arguments		= array(
-                                    'client_id'	=> $new_response['new_id'],
+                                    'client_id'	=> $new_client->getId(),
                                     'group_ids'	=> $add_to_groups,
                                     'added_by'	=> CURRENT_USER_USERNAME,
                                 );
@@ -73,7 +71,6 @@ if ($_POST) {
             $memberships->client_add_to_groups($arguments);
         }
     }
-    
 }
 ?>
 
@@ -81,12 +78,8 @@ if ($_POST) {
     <div class="white-box">
         <div class="white-box-interior">
             <?php
-                /**
-                 * If the form was submited with errors, show them here.
-                 */
-                if (isset($validation['errors'])) {
-                    echo $validation['errors'];
-                }
+                // If the form was submited with errors, show them here.
+                echo $new_client->getValidationErrors();
             ?>
             
             <?php
@@ -94,20 +87,10 @@ if ($_POST) {
                     /**
                      * Get the process state and show the corresponding ok or error messages.
                      */
-                    switch ($new_response['actions']) {
+                    switch ($new_response['query']) {
                         case 1:
                             $msg = __('Client added correctly.','cftp_admin');
                             echo system_message('success',$msg);
-    
-                            /** Record the action log */
-                            $logger = new ProjectSend\Classes\ActionsLog;
-                            $log_action_args = array(
-                                                    'action' => 3,
-                                                    'owner_id' => CURRENT_USER_ID,
-                                                    'affected_account' => $new_response['new_id'],
-                                                    'affected_account_name' => $client_arguments['name']
-                                                );
-                            $new_record_action = $logger->addEntry($log_action_args);
                         break;
                         case 0:
                             $msg = __('There was an error. Please try again.','cftp_admin');
@@ -120,7 +103,7 @@ if ($_POST) {
                     switch ($new_response['email']) {
                         case 2:
                             $msg = __('A welcome message was not sent to your client.','cftp_admin');
-                            echo system_message('success',$msg);
+                            echo system_message('info',$msg);
                         break;
                         case 1:
                             $msg = __('A welcome message with login information was sent to your client.','cftp_admin');

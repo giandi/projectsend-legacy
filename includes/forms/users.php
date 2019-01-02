@@ -30,17 +30,14 @@
 			?>
 					// Only check password if any of the 2 fields is completed
 					var password_1 = $("#password").val();
-					//var password_2 = $("#password_repeat").val();
-					if ($.trim(password_1).length > 0/* || $.trim(password_2).length > 0*/) {
+					if ($.trim(password_1).length > 0) {
 			<?php
 				}
 			?>
 
 						is_complete(this.password,'<?php echo $json_strings['validation']['no_pass']; ?>');
-						//is_complete(this.password_repeat,'<?php echo $json_strings['validation']['no_pass2']; ?>');
 						is_length(this.password,<?php echo MIN_PASS_CHARS; ?>,<?php echo MAX_PASS_CHARS; ?>,'<?php echo $json_strings['validation']['length_pass']; ?>');
 						is_password(this.password,'<?php echo $json_strings['validation']['valid_pass'] . " " . addslashes($json_strings['validation']['valid_chars']); ?>');
-						//is_match(this.password,this.password_repeat,'<?php echo $json_strings['validation']['match_pass']; ?>');
 
 			<?php
 				/** Close the jquery IF statement. */
@@ -135,7 +132,7 @@ switch ($user_form_type) {
                             ];
                             foreach ( $roles as $role_level => $role_name ) {
                         ?>
-						        <option value="<?php echo $role_level; ?>" <?php echo (isset($user_arguments['level']) && $user_arguments['level'] == $role_level) ? 'selected="selected"' : ''; ?>><?php echo $role_name; ?></option>
+						        <option value="<?php echo $role_level; ?>" <?php echo (isset($user_arguments['role']) && $user_arguments['role'] == $role_level) ? 'selected="selected"' : ''; ?>><?php echo $role_name; ?></option>
                         <?php
                             }
                         ?>

@@ -16,7 +16,7 @@ require_once('bootstrap.php');
 $active_nav = 'clients';
 
 /** Create the object */
-$edit_client = new \ProjectSend\Classes\ClientActions;
+$edit_client = new \ProjectSend\Classes\Users($dbh);
 
 /** Check if the id parameter is on the URI. */
 if (isset($_GET['id'])) {
@@ -32,7 +32,8 @@ else {
  * @todo replace when a Client class is made
  */
 if ($page_status === 1) {
-    $client_arguments = get_client_by_id($client_id);
+    $edit_client->get($client_id);
+    $client_arguments = $edit_client->getProperties();
 
 	/** Get groups where this client is member */
 	$get_groups		= new \ProjectSend\Classes\MembersActions;
@@ -87,21 +88,22 @@ if ($_POST) {
 	 * having to type them again.
 	 */
     $client_arguments = array(
-        'id'	    		=> $client_id,
-        'username'	    	=> encode_html($_POST['username']),
-        'name'	    		=> encode_html($_POST['name']),
-        'email'		    	=> encode_html($_POST['email']),
-        'address'		    => (isset($_POST["address"])) ? encode_html($_POST['address']) : '',
-        'phone'	    		=> (isset($_POST["phone"])) ? encode_html($_POST['phone']) : '',
-        'contact'	    	=> (isset($_POST["contact"])) ? encode_html($_POST['contact']) : '',
-        'notify_upload'    	=> (isset($_POST["notify_upload"])) ? 1 : 0,
-        'max_file_size'     => $client_arguments['max_file_size'],
-        'active'            => $client_arguments['active'],
-        'type'		    	=> 'edit_client',
+        'id' => $client_id,
+        'username' => $_POST['username'],
+        'role' => 0,
+        'name' => $_POST['name'],
+        'email' => $_POST['email'],
+        'address' => (isset($_POST["address"])) ? $_POST['address'] : null,
+        'phone' => (isset($_POST["phone"])) ? $_POST['phone'] : null,
+        'contact' => (isset($_POST["contact"])) ? $_POST['contact'] : null,
+        'notify_upload' => (isset($_POST["notify_upload"])) ? 1 : 0,
+        'max_file_size' => $client_arguments['max_file_size'],
+        'active' => $client_arguments['active'],
+        'type' => 'edit_client',
     );
 
 	if ( $ignore_size == false ) {
-		$client_arguments['max_file_size'] = (isset($_POST["max_file_size"])) ? $_POST["max_file_size"] : '';
+		$client_arguments['max_file_size'] = (isset($_POST["max_file_size"])) ? $_POST["max_file_size"] : null;
 	}
 
 	if (CURRENT_USER_LEVEL != 0) {
@@ -112,15 +114,13 @@ if ($_POST) {
 	 * If the password field, or the verification are not completed,
 	 * send an empty value to prevent notices.
 	 */
-	$client_arguments['password'] = (isset($_POST['password'])) ? $_POST['password'] : '';
-	//$client_arguments['password_repeat'] = (isset($_POST['password_repeat'])) ? $_POST['password_repeat'] : '';
+	$client_arguments['password'] = (isset($_POST['password'])) ? $_POST['password'] : null;
 
 	/** Validate the information from the posted form. */
-    $validation = $edit_client->validate($client_arguments);
-	
-	/** Edit the account if validation is correct. */
-	if ($validation['passed'] == true) {
-        $edit_response = $edit_client->edit($client_arguments);
+    $edit_client->set($client_arguments);
+    $edit_client->setType("existing_client");
+    if ($edit_client->validate()) {
+		$edit_response = $edit_client->edit();
 
         $edit_groups = (!empty( $_POST['groups_request'] ) ) ? $_POST['groups_request'] : array();
         $memberships	= new \ProjectSend\Classes\MembersActions;
@@ -160,19 +160,6 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 				case 1:
 					$msg = __('Client edited correctly.','cftp_admin');
 					echo system_message('success',$msg);
-
-                    $saved_client = get_client_by_id($client_id);
-
-					/** Record the action log */
-					$logger = new ProjectSend\Classes\ActionsLog;
-					$log_action_args = array(
-											'action' => 14,
-											'owner_id' => CURRENT_USER_ID,
-											'affected_account' => $client_id,
-											'affected_account_name' => $saved_client['username'],
-											'get_user_real_name' => true
-										);
-					$new_record_action = $logger->addEntry($log_action_args);
 				break;
 				case 0:
 					$msg = __('There was an error. Please try again.','cftp_admin');
@@ -185,12 +172,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 		<div class="white-box-interior">
 	
 			<?php
-				/**
-				 * If the form was submited with errors, show them here.
-				 */
-                if (isset($validation['errors'])) {
-                    echo $validation['errors'];
-                }
+                // If the form was submited with errors, show them here.
+                echo $edit_client->getValidationErrors();
 			?>
 			
 			<?php
