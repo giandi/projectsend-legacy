@@ -10,10 +10,10 @@
 $show_cancel = false;
 
 switch ( $form_information['type'] ) {
-	case 'new_category':
+	case 'create':
 		$submit_value	= __('Create','cftp_admin');
 		break;
-	case 'edit_category':
+	case 'edit':
 		$submit_value	= __('Save','cftp_admin');
 		$show_cancel	= true;
 		break;

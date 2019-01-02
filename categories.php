@@ -14,22 +14,7 @@ $active_nav = 'files';
 $page_title = __('Categories administration','cftp_admin');
 
 include_once ADMIN_VIEWS_DIR . DS . 'header.php';
-?>
 
-<script type="text/javascript">
-	$(document).ready( function() {
-		$("#process_category").submit(function() {
-			clean_form( this );
-
-			is_complete( this.category_name, '<?php echo $json_strings['validation']['no_name']; ?>' );
-
-			// show the errors or continue if everything is ok
-			if (show_form_errors() == false) { return false; }
-		});
-	});
-</script>
-
-<?php
 /**
  * Messages set when adding or editing a category
  */
@@ -60,46 +45,24 @@ if ( isset( $_GET['action'] ) ) {
 			/**
 			 * Make a list of categories to avoid individual queries.
 			 */
-			$selected_categories	= $_GET['batch'];
-	
-			$get_categories_delete	= get_categories(
-													array(
-														'id'		=> $selected_categories,
-													)
-                                                );
-            if (count($get_categories_delete) < 1 ) {
+            $selected_categories = $_GET['batch'];
+
+            if (count($selected_categories) < 1 ) {
                 $msg = __('Please select at least one category.','cftp_admin');
                 echo system_message('danger',$msg);
             }
 
-            foreach ( $get_categories_delete['categories'] as $delete_cat ) {
-				$all_categories[$delete_cat['id']] = $delete_cat['name'];
-			}
-	
-			$my_info = get_user_by_username(get_current_user_username());
-			$affected_users = 0;
-	
 			switch($_GET['action']) {
 				case 'delete':
-					foreach ($selected_categories as $category) {
-						$this_category		= new \ProjectSend\Classes\CategoriesActions;
-						$delete_category	= $this_category->delete($category);
-					}
+					foreach ($selected_categories as $category_id) {
+                        $category = new \ProjectSend\Classes\Categories();
+                        $category->get($category_id);
+						$delete_category = $category->delete();
+                    }
+                    
 					$msg = __('The selected categories were deleted.','cftp_admin');
 					echo system_message('success',$msg);
-					$log_action_number = 36;
 					break;
-			}
-	
-			/** Record the action log */
-			foreach ($selected_categories as $category) {
-                $logger = new \ProjectSend\Classes\ActionsLog;
-				$log_action_args = array(
-										'action'				=> $log_action_number,
-										'owner_id'				=> CURRENT_USER_ID,
-										'affected_account_name'	=> $all_categories[$category]
-									);
-				$new_record_action = $logger->addEntry($log_action_args);
 			}
 		}
 	}
@@ -113,7 +76,7 @@ $results_show = 'arranged';
  * Add the search terms
  */
 if ( isset( $_GET['search'] ) && !empty( $_GET['search'] ) ) {
-	$params['search']	= $_GET['search'];
+	$params['search'] = $_GET['search'];
 	$results_show = 'categories'; // show from all categories, not the arranged array
 }
 
@@ -136,8 +99,9 @@ else {
  * By default, the action is ADD category
  */
 $form_information = array(
-							'type'	=> 'new_category',
-							'title'	=> __('Create new category','cftp_admin'),
+							'type' => 'create',
+                            'title' => __('Create new category','cftp_admin'),
+                            'redirect_status' => 'added',
 						);
 
 /** Loading the form in EDIT mode */
@@ -148,8 +112,9 @@ if (
 	$action				= 'edit';
 	$editing			= !empty( $_POST['editing_id'] ) ? $_POST['editing_id'] : $_GET['id'];
 	$form_information	= array(
-								'type'	=> 'edit_category',
-								'title'	=> __('Edit category','cftp_admin'),
+								'type'	=> 'edit',
+                                'title'	=> __('Edit category','cftp_admin'),
+                                'redirect_status' => 'edited',
 							);
 
 	/**
@@ -165,41 +130,32 @@ if (
  * Process the action
  */
 if ( isset( $_POST['btn_process'] ) ) {
-	/**
+    /**
 	 * Applies for both ADDING a new category as well
 	 * as editing one but with the form already sent.
 	 */
 	$category_name			= $_POST['category_name'];
 	$category_parent		= $_POST['category_parent'];
-	$category_description	= $_POST['category_description'];
-
-	$category_object = new \ProjectSend\Classes\CategoriesActions;
+    $category_description	= $_POST['category_description'];
+    
+	$category_object = new \ProjectSend\Classes\Categories($dbh);
 
 	$arguments = array(
 						'name'			=> $category_name,
 						'parent'		=> $category_parent,
 						'description'	=> $category_description,
 					);
+    if ($form_information['type'] == 'edit') {
+        $arguments['id'] = ( $_POST ) ? $_POST['editing_id'] : $_GET['id'];
+    }
+    
+    $category_object->set($arguments);
+    if ($category_object->validate() ) {
+        $method = $form_information['type'];
 
-	$validation = $category_object->validate( $arguments );
-
-	switch ( $form_information['type'] ) {
-		case 'new_category':
-				$arguments['action']	= 'add';
-				$redirect_status		= 'added';				
-			break;
-		case 'edit_category':
-				$arguments['action']	= 'edit';
-				$redirect_status		= 'edited';
-				$arguments['id']		= ( $_POST ) ? $_POST['editing_id'] : $_GET['id'];
-			break;
-	}
-
-	if ($validation['passed'] == true) {
-		$process = $category_object->save( $arguments );
+        $process = $category_object->{$method}( $arguments );
 		if ( $process['query'] === 1 ) {
 			$redirect = true;
-			$status = $redirect_status;
 		}
 		else {
 			$msg = __('There was a problem saving to the database.','cftp_admin');
@@ -214,7 +170,7 @@ if ( isset( $_POST['btn_process'] ) ) {
 	/** Redirect so the actions are reflected immediatly */
 	if ( isset( $redirect ) && $redirect === true ) {
 		while (ob_get_level()) ob_end_clean();
-		$location = BASE_URI . 'categories.php?status=' . $status;
+		$location = BASE_URI . 'categories.php?status=' . $form_information['redirect_status'];
 		header("Location: $location");
 		die();
 	}
@@ -227,6 +183,19 @@ if ( isset( $_POST['btn_process'] ) ) {
 			<?php show_search_form('categories.php'); ?>
 		</div>
 	</div>
+
+    <script type="text/javascript">
+        $(document).ready( function() {
+            $("#process_category").submit(function() {
+                clean_form( this );
+
+                is_complete( this.category_name, '<?php echo $json_strings['validation']['no_name']; ?>' );
+
+                // show the errors or continue if everything is ok
+                if (show_form_errors() == false) { return false; }
+            });
+        });
+    </script>
 
 	<form action="categories.php" class="form-inline" name="selected_categories" id="selected_categories" method="get">
 
