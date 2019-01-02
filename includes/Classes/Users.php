@@ -58,15 +58,16 @@ class Users
     }
 
     /**
-     * Set the validation type
+     * Set the ID
      */
-     public function setId($id)
-     {
-         $this->id = $id;
-     }
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
   
     /**
-     * Set the validation type
+     * Return the ID
+     * @return int
      */
     public function getId()
     {
@@ -77,8 +78,8 @@ class Users
         return false;
     }
   
-      /**
-     * Set the validation type
+    /**
+     * Set the validation type (user or client, new or edit)
      */
     public function setType($type)
     {
