@@ -4,11 +4,14 @@
  *
  * @package		ProjectSend
  */
+use \PDO;
+use \ZipArchive;
+
 $allowed_levels = array(9,8,7,0);
 require_once('bootstrap.php');
 require_once('header.php');
 
-$zip_file = tempnam("tmp", "zip");
+$zip_file = @tempnam("tmp", "zip");
 $zip = new ZipArchive();
 $zip->open($zip_file, ZipArchive::OVERWRITE);
 
@@ -23,13 +26,10 @@ foreach ($files_to_zip as $idx => $file) {
 
 $added_files = 0;
 
-$current_level = get_current_user_level();
-$current_username = get_current_user_username();
-
 /**
  * Get the list of different groups the client belongs to.
  */
-$get_groups		= new MembersActions();
+$get_groups		= new \ProjectSend\Classes\MembersActions();
 $get_arguments	= array(
 								'client_id'	=> CURRENT_USER_ID,
 								'return'	=> 'list',
@@ -58,7 +58,7 @@ foreach ($files_to_zip as $file_to_zip) {
 		$this_file_expired	= true;
 	}
 		
-	if ($current_level == 0) {
+	if (CURRENT_USER_LEVEL == 0) {
 		if ($this_file_expires == '0' || $this_file_expired == false) {
 			$statement = $dbh->prepare("SELECT * FROM " . TABLE_FILES_RELATIONS . " WHERE (client_id = :client_id OR FIND_IN_SET(group_id, :groups)) AND file_id = :file_id AND hidden = '0'");
 			$statement->bindValue(':client_id', CURRENT_USER_ID, PDO::PARAM_INT);
@@ -111,7 +111,7 @@ if ($added_files > 0) {
 	$log_action_args = array(
 							'action' => 9,
 							'owner_id' => CURRENT_USER_ID,
-							'affected_account_name' => $current_username
+							'affected_account_name' => CURRENT_USER_USERNAME
 						);
 	$new_record_action = $logger->addEntry($log_action_args);
 

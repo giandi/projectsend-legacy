@@ -59,18 +59,6 @@ while( $row = $statement->fetch() ) {
 /** Fill the categories array that will be used on the form */
 $categories = array();
 $get_categories = get_categories();
-
-
-/**
- * Get the user level to determine if the uploader is a
- * system user or a client.
- */
-$current_level = get_current_user_level();
-
-
-
-//echo '<pre>'; print_r($_POST); echo '</pre>'; // DEBUG
-
 ?>
 
 <div class="col-xs-12">
@@ -163,7 +151,7 @@ $current_level = get_current_user_level();
 						* If the uploader is a client, set the "client" var to the current
 						* uploader username, since the "client" field is not posted.
 						*/
-						if ($current_level == 0) {
+						if (CURRENT_USER_LEVEL == 0) {
 							$file['assignments'] = 'c'.$global_user;
 						}
 
@@ -191,7 +179,7 @@ $current_level = get_current_user_level();
 							$send_notifications = false;
 						}
 
-						if ($current_level != 0) {
+						if (CURRENT_USER_LEVEL != 0) {
 
 							if (!empty($file['expires'])) {
 								$add_arguments['expires'] = '1';
@@ -256,7 +244,7 @@ $current_level = get_current_user_level();
 						}
 
 						/** Uploader is a client */
-						if ($current_level == 0) {
+						if (CURRENT_USER_LEVEL == 0) {
 							$add_arguments['assign_to'] = array('c'.CURRENT_USER_ID);
 							$add_arguments['hidden'] = '0';
 							$add_arguments['uploader_type'] = 'client';
@@ -275,7 +263,7 @@ $current_level = get_current_user_level();
 							$add_arguments['all_users'] = $users;
 							$add_arguments['all_groups'] = $groups;
 
-							if ($current_level != 0) {
+							if (CURRENT_USER_LEVEL != 0) {
 								/**
 								 * 2- Add the assignments to the database
 								 */
@@ -442,12 +430,12 @@ $current_level = get_current_user_level();
 																</div>
 															</div>
 														<?php
-															} /** Close $current_level check */
+															} /** Close CURRENT_USER_LEVEL check */
 														?>
 														</div>
 													</div>
 											<?php
-												} /** Close $current_level check */
+												} /** Close CURRENT_USER_LEVEL check */
 											?>
 
 											<?php
@@ -536,7 +524,7 @@ $current_level = get_current_user_level();
 														</div>
 													</div>
 											<?php
-												} /** Close $current_level check */
+												} /** Close CURRENT_USER_LEVEL check */
 											?>
 										</div>
 									</div>

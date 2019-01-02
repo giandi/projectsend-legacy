@@ -285,7 +285,7 @@ class process {
 					else {
 						$this->can_download = true;
 						$log_action = 7;
-						$global_user = get_current_user_username();
+						$global_user = CURRENT_USER_USERNAME;
 						$log_action_owner_id = CURRENT_USER_ID;
 					}
 

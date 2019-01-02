@@ -71,15 +71,12 @@ class GroupActions
 		$this->public_token		= generateRandomString(32);
 		$this->timestamp = time();
 
-		/** Who is creating the group? */
-		$this->this_admin = get_current_user_username();
-
 		$this->sql_query = $this->dbh->prepare("INSERT INTO " . TABLE_GROUPS . " (name, description, public, public_token, created_by)"
-												." VALUES (:name, :description, :public, :token, :this_admin)");
+												." VALUES (:name, :description, :public, :token, :admin)");
 		$this->sql_query->bindParam(':name', $this->name);
 		$this->sql_query->bindParam(':description', $this->description);
 		$this->sql_query->bindParam(':public', $this->ispublic, PDO::PARAM_INT);
-		$this->sql_query->bindParam(':this_admin', $this->this_admin);
+		$this->sql_query->bindParam(':admin', CURRENT_USER_USERNAME);
 		$this->sql_query->bindParam(':token', $this->public_token);
 		$this->sql_query->execute();
 
@@ -93,7 +90,7 @@ class GroupActions
 			foreach ($this->members as $this->member) {
 				$this->sql_member = $this->dbh->prepare("INSERT INTO " . TABLE_MEMBERS . " (added_by,client_id,group_id)"
 														." VALUES (:admin, :member, :id)");
-				$this->sql_member->bindParam(':admin', $this->this_admin);
+				$this->sql_member->bindParam(':admin', CURRENT_USER_USERNAME);
 				$this->sql_member->bindParam(':member', $this->member, PDO::PARAM_INT);
 				$this->sql_member->bindParam(':id', $this->id, PDO::PARAM_INT);
 				$this->sql_member->execute();
@@ -125,9 +122,6 @@ class GroupActions
 		$this->ispublic = $arguments['public'];
 		$this->timestamp = time();
 
-		/** Who is adding the members to the group? */
-		$this->this_admin = get_current_user_username();
-
 		/** SQL query */
 		$this->sql_query = $this->dbh->prepare( "UPDATE " . TABLE_GROUPS . " SET name = :name, description = :description, public = :public WHERE id = :id" );
 		$this->sql_query->bindParam(':name', $this->name);
@@ -146,7 +140,7 @@ class GroupActions
 			foreach ($this->members as $this->member) {
 				$this->sql_member = $this->dbh->prepare("INSERT INTO " . TABLE_MEMBERS . " (added_by,client_id,group_id)"
 														." VALUES (:admin, :member, :id)");
-				$this->sql_member->bindParam(':admin', $this->this_admin);
+				$this->sql_member->bindParam(':admin', CURRENT_USER_USERNAME);
 				$this->sql_member->bindParam(':member', $this->member, PDO::PARAM_INT);
 				$this->sql_member->bindParam(':id', $this->id, PDO::PARAM_INT);
 				$this->sql_member->execute();

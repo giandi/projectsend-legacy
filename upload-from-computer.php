@@ -24,12 +24,6 @@ if (CLIENTS_CAN_UPLOAD == 1) {
 	$allowed_levels[] = 0;
 }
 include('header.php');
-
-/**
- * Get the user level to determine if the uploader is a
- * system user or a client.
- */
-$current_level = get_current_user_level();
 ?>
 
 <div class="col-xs-12">

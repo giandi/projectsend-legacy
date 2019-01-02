@@ -17,8 +17,6 @@ $active_nav = 'files';
 
 $page_title = __('Manage files','cftp_admin');
 
-$current_level = get_current_user_level();
-
 /**
  * Used to distinguish the current page results.
  * Global means all files.
@@ -313,8 +311,7 @@ include('header.php');
 			 * If the user is an uploader, or a client is editing his files
 			 * only show files uploaded by that account.
 			*/
-			$current_level = get_current_user_level();
-			if ($current_level == '7' || $current_level == '0') {
+			if (CURRENT_USER_LEVEL == '7' || CURRENT_USER_LEVEL == '0') {
 				$conditions[] = "uploader = :uploader";
 				$no_results_error = 'account_level';
 	
@@ -392,7 +389,7 @@ include('header.php');
 				<?php show_search_form('manage-files.php'); ?>
 
 				<?php
-					if( $current_level != '0' && $results_type == 'global') {
+					if( CURRENT_USER_LEVEL != '0' && $results_type == 'global') {
 				?>
 					<form action="manage-files.php" name="files_filters" method="get" class="form-inline form_filters">
 						<?php form_add_existing_parameters( array('hidden', 'action', 'uploader') ); ?>
@@ -424,7 +421,7 @@ include('header.php');
 					}
 
 					/** Filters are not available for clients */
-					if($current_level != '0' && $results_type != 'global') {
+					if(CURRENT_USER_LEVEL != '0' && $results_type != 'global') {
 				?>
 						<form action="manage-files.php" name="files_filters" method="get" class="form-inline form_filters">
 							<?php form_add_existing_parameters( array('hidden', 'action', 'uploader') ); ?>
@@ -457,7 +454,7 @@ include('header.php');
 			<?php form_add_existing_parameters( array( 'modify_id', 'modify_type' ) ); ?>
 			<?php
 				/** Actions are not available for clients */
-				if($current_level != '0' || CLIENTS_CAN_DELETE_OWN_FILES == '1') {
+				if(CURRENT_USER_LEVEL != '0' || CLIENTS_CAN_DELETE_OWN_FILES == '1') {
 			?>
 					<div class="form_actions_right">
 						<div class="form_actions">
@@ -555,9 +552,9 @@ include('header.php');
 					 * They will be used to generate or no certain columns
 					 */
 					$conditions = array(
-										'select_all'		=> ( $current_level != '0' || CLIENTS_CAN_DELETE_OWN_FILES == '1' ) ? true : false,
-										'is_not_client'		=> ( $current_level != '0' ) ? true : false,
-										'total_downloads'	=> ( $current_level != '0' && !isset( $search_on ) ) ? true : false,
+										'select_all'		=> ( CURRENT_USER_LEVEL != '0' || CLIENTS_CAN_DELETE_OWN_FILES == '1' ) ? true : false,
+										'is_not_client'		=> ( CURRENT_USER_LEVEL != '0' ) ? true : false,
+										'total_downloads'	=> ( CURRENT_USER_LEVEL != '0' && !isset( $search_on ) ) ? true : false,
 										'is_search_on'		=> ( isset( $search_on ) ) ? true : false,
 									);
 	
@@ -765,7 +762,7 @@ include('header.php');
 						 * (no specific client or group selected)
 						 */
 						if ( !isset( $search_on ) ) {
-							if ($current_level != '0') {
+							if (CURRENT_USER_LEVEL != '0') {
 								if ( $row["download_count"] > 0 ) {
 									$btn_class		= 'downloaders btn-primary';
 								}

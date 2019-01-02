@@ -38,12 +38,6 @@ define('CAN_INCLUDE_FILES', true);
 <div class="col-xs-12">
 
 <?php
-/**
- * Get the user level to determine if the uploader is a
- * system user or a client.
- */
-$current_level = get_current_user_level();
-
 /** Coming from the web uploader */
 if(isset($_POST['finished_files'])) {
 	$uploaded_files = array_filter($_POST['finished_files']);
@@ -125,7 +119,7 @@ while( $row = $statement->fetch() ) {
 		/**
 		 * Get the ID of the current client that is uploading files.
 		 */
-		if ($current_level == 0) {
+		if (CURRENT_USER_LEVEL == 0) {
 			$client_my_info = get_client_by_username($global_user);
 			$client_my_id = $client_my_info["id"];
 		}
@@ -140,7 +134,7 @@ while( $row = $statement->fetch() ) {
 				* If the uploader is a client, set the "client" var to the current
 				* uploader username, since the "client" field is not posted.
 				*/
-				if ($current_level == 0) {
+				if (CURRENT_USER_LEVEL == 0) {
 					$file['assignments'] = 'c'.$global_user;
 				}
 
@@ -195,7 +189,7 @@ while( $row = $statement->fetch() ) {
 						}
 
 						/** Uploader is a client */
-						if ($current_level == 0) {
+						if (CURRENT_USER_LEVEL == 0) {
 							$add_arguments['assign_to'] = array('c'.$client_my_id);
 							$add_arguments['hidden'] = '0';
 							$add_arguments['uploader_type'] = 'client';
@@ -287,7 +281,7 @@ while( $row = $statement->fetch() ) {
 					<th data-hide="phone"><?php _e('Description','cftp_admin'); ?></th>
 					<th data-hide="phone"><?php _e('File Name','cftp_admin'); ?></th>
 					<?php
-						if ($current_level != 0) {
+						if (CURRENT_USER_LEVEL != 0) {
 					?>
 							<th data-hide="phone"><?php _e("Status",'cftp_admin'); ?></th>
 							<th data-hide="phone"><?php _e('Assignations','cftp_admin'); ?></th>
@@ -307,7 +301,7 @@ while( $row = $statement->fetch() ) {
 						<td><?php echo htmlentities_allowed($uploaded['description']); ?></td>
 						<td><?php echo html_output($uploaded['file']); ?></td>
 						<?php
-							if ($current_level != 0) {
+							if (CURRENT_USER_LEVEL != 0) {
 						?>
 								<td class="<?php echo (!empty($uploaded['hidden'])) ? 'file_status_hidden' : 'file_status_visible'; ?>">
 
@@ -355,7 +349,7 @@ while( $row = $statement->fetch() ) {
 								/*
 								 * Show the "My files" button only to clients
 								 */
-								if ($current_level == 0) {
+								if (CURRENT_USER_LEVEL == 0) {
 							?>
 									<a href="my_files/" class="btn-primary btn btn-sm"><?php _e('View my files','cftp_admin'); ?></a>
 							<?php
@@ -380,7 +374,7 @@ while( $row = $statement->fetch() ) {
 		<p><?php _e('Please complete the following information to finish the uploading process. Remember that "Title" is a required field.','cftp_admin'); ?></p>
 
 		<?php
-			if ($current_level != 0) {
+			if (CURRENT_USER_LEVEL != 0) {
 		?>
 			<div class="message message_info"><strong><?php _e('Note','cftp_admin'); ?></strong>: <?php _e('You can skip assigning if you want. The files are retained and you may add them to clients or groups later.','cftp_admin'); ?></div>
 		<?php
@@ -537,12 +531,12 @@ while( $row = $statement->fetch() ) {
 																	</label>
 																</div>
 														<?php
-															} /** Close $current_level check */
+															} /** Close CURRENT_USER_LEVEL check */
 														?>
 														</div>
 													</div>
 												<?php
-													} /** Close $current_level check */
+													} /** Close CURRENT_USER_LEVEL check */
 												?>
 
 												<?php
@@ -624,7 +618,7 @@ while( $row = $statement->fetch() ) {
 															</div>
 														</div>
 													<?php
-														} /** Close $current_level check */
+														} /** Close CURRENT_USER_LEVEL check */
 													?>
 											</div>
 										</div>
