@@ -139,8 +139,8 @@ if (current_role_in($core_update_allowed)) {
 				?>
 
 				<div class="row">
-					<div id="section_title">
-						<div class="col-xs-12">
+					<div class="col-xs-12">
+					    <div id="section_title">
 							<h2><?php echo $page_title; ?></h2>
 						</div>
 					</div>
