@@ -464,6 +464,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 										<?php
 											$actions_options = array(
 																	'none'			=> __('Select action','cftp_admin'),
+																	'zip'			=> __('Download zipped','cftp_admin'),
 																);
 
 											/** Options only available when viewing a client/group files list */
@@ -558,6 +559,10 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 													'condition'		=> $conditions['select_all'],
 												),
 												array(
+													'content'		=> __('Thumbnail','cftp_admin'),
+													'hide'			=> 'phone,tablet',
+												),
+                                                array(
 													'sortable'		=> true,
 													'sort_url'		=> 'timestamp',
 													'sort_default'	=> true,
@@ -661,7 +666,9 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						}
 	
 						$date = date(TIMEFORMAT,strtotime($row['timestamp']));
-	
+
+                        $file_absolute_path = UPLOADED_FILES_DIR . DS . $row['url'];
+
 						/**
 						 * Get file size only if the file exists
 						 */
@@ -677,8 +684,17 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 	
 						/***/
 						$pathinfo = pathinfo($row['url']);
-						$extension = ( !empty( $pathinfo['extension'] ) ) ? strtolower($pathinfo['extension']) : '';
-	
+                        $extension = ( !empty( $pathinfo['extension'] ) ) ? strtolower($pathinfo['extension']) : '';
+                        
+                        /** Thumbnail */
+						$thumbnail_cell = '';
+						if ( file_is_image( $file_absolute_path ) ) {
+							$thumbnail = make_thumbnail( $file_absolute_path, null, 50, 50 );
+							if ( !empty( $thumbnail['thumbnail']['url'] ) ) {
+								$thumbnail_cell = '<img src="' . $thumbnail['thumbnail']['url'] . '" class="thumbnail" />';
+							}
+						}
+
 						/** Is file assigned? */
 						$assigned_class		= ($count_assignations == 0) ? 'danger' : 'success';
 						$assigned_status	= ($count_assignations == 0) ? __('No','cftp_admin') : __('Yes','cftp_admin');
@@ -775,6 +791,9 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 													'condition'		=> $conditions['select_all'],
 												),
 												array(
+													'content'		=> $thumbnail_cell,
+												),
+                                                array(
 													'content'		=> $date,
 												),
 												array(
