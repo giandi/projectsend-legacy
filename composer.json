@@ -28,6 +28,7 @@
         "hybridauth/hybridauth": "^2.11",
         "league/oauth2-google": "^2.2",
         "paragonie/random_compat": "^2.0",
-        "phpmailer/phpmailer": "~6.0"
+        "phpmailer/phpmailer": "~6.0",
+		"tamtamchik/simple-flash": "^1.2"
 	}
 }

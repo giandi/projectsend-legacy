@@ -52,7 +52,7 @@ if(!empty($_GET['member'])) {
 	}
 }
 
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
 <div class="col-xs-12">
@@ -431,4 +431,4 @@ include('header.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

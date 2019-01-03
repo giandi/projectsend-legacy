@@ -12,7 +12,7 @@ $page_title = __('File information','cftp_admin');
 
 $dont_redirect_if_logged = 1;
 
-include('header-unlogged.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 
 	if (!empty($_GET['token']) && !empty($_GET['id'])) {
 		$got_token		= $_GET['token'];
@@ -186,4 +186,4 @@ include('header-unlogged.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

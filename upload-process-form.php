@@ -30,7 +30,7 @@ require_once('bootstrap.php');
 $active_nav = 'files';
 
 $page_title = __('Upload files', 'cftp_admin');
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 define('CAN_INCLUDE_FILES', true);
 ?>
@@ -731,4 +731,4 @@ while( $row = $statement->fetch() ) {
 </script>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

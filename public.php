@@ -57,7 +57,7 @@ $page_title = __('Public groups and files','cftp_admin');
 
 $dont_redirect_if_logged = 1;
 
-include('header-unlogged.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 
 /**
  * General function that defines the formating of files lines
@@ -303,4 +303,4 @@ function list_file($data, $origin) {
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

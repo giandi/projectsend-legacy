@@ -45,26 +45,17 @@ if (isset($_GET['client_id'])) {
  * The group's id is passed on the URI also.
  */
 if (isset($_GET['group_id'])) {
-	$this_id = $_GET['group_id'];
+    $this_id = $_GET['group_id'];
+    
+    $group = get_group_by_id($this_id);
 
-
-	$sql_name = $dbh->prepare("SELECT name from " . TABLE_GROUPS . " WHERE id=:id");
-	$sql_name->bindParam(':id', $this_id, PDO::PARAM_INT);
-	$sql_name->execute();							
-
-	if ( $sql_name->rowCount() > 0) {
-		$sql_name->setFetchMode(PDO::FETCH_ASSOC);
-		while( $row_group = $sql_name->fetch() ) {
-			$group_name = $row_group["name"];
-		}
-		/** Add the name of the client to the page's title. */
-		if(!empty($group_name)) {
-			$page_title .= ' '.__('for group','cftp_admin').' '.html_entity_decode($group_name);
-			$search_on = 'group_id';
-			$name_for_actions = html_entity_decode($group_name);
-			$results_type = 'group';
-		}
-	}
+    /** Add the name of the client to the page's title. */
+    if(!empty($group['name'])) {
+        $page_title .= ' '.__('for group','cftp_admin').' '.html_entity_decode($group['name']);
+        $search_on = 'group_id';
+        $name_for_actions = html_entity_decode($group_name);
+        $results_type = 'group';
+    }
 }
 
 /**
@@ -81,7 +72,7 @@ if (isset($_GET['category'])) {
 	}
 }
 
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
 <div class="col-xs-12">
@@ -860,4 +851,4 @@ include('header.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

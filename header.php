@@ -11,7 +11,6 @@
  * @see check_for_admin
  * @see can_see_content
  */
-
 /** Check for an active session or cookie */
 check_for_session();
 
@@ -93,7 +92,7 @@ if (current_role_in($core_update_allowed)) {
 
 			<ul class="nav pull-right nav_account">
 				<li id="header_welcome">
-					<span><?php //_e('Welcome', 'cftp_admin'); ?> <?php echo CURRENT_USER_NAME; ?></span>
+					<span><?php echo CURRENT_USER_NAME; ?></span>
 				</li>
 				<li>
 					<?php

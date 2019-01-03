@@ -17,7 +17,7 @@ $active_nav = 'dashboard';
 
 $body_class = array('dashboard', 'home', 'hide_title');
 
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 define('CAN_INCLUDE_FILES', true);
 
@@ -135,4 +135,4 @@ if (current_role_in($log_allowed)) {
 	</script>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

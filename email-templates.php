@@ -91,7 +91,7 @@ switch ( $section ) {
 $page_title = $section_title;
 
 $active_nav = 'emails';
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 if ($_POST) {
 	foreach ($checkboxes as $checkbox) {
@@ -471,4 +471,4 @@ if ($_POST) {
 </script>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

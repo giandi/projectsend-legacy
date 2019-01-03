@@ -24,7 +24,7 @@ if(!check_for_session()) {
 $active_nav = 'files';
 
 $page_title = __('Edit file','cftp_admin');
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 define('CAN_INCLUDE_FILES', true);
 
@@ -561,4 +561,4 @@ $get_categories = get_categories();
 </script>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

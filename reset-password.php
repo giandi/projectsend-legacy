@@ -10,7 +10,7 @@ require_once('bootstrap.php');
 
 $page_title = __('Lost password','cftp_admin');
 
-include('header-unlogged.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 	$show_form = 'enter_email';
 
 	if (!empty($_GET['token']) && !empty($_GET['user'])) {
@@ -362,4 +362,4 @@ include('header-unlogged.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

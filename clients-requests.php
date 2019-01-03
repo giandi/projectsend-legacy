@@ -19,7 +19,7 @@ $active_nav = 'clients';
 $this_page = 'clients-requests.php';
 
 $page_title = __('Account requests','cftp_admin');
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
 <script type="text/javascript">
@@ -513,4 +513,4 @@ include('header.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

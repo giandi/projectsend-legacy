@@ -14,7 +14,7 @@ require_once('bootstrap.php');
 $page_title	= __("Templates",'cftp_admin');
 
 $active_nav = 'templates';
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 /**
  * Changing the client's template
@@ -137,4 +137,4 @@ if ( isset($_GET['activate_template']) ) {
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

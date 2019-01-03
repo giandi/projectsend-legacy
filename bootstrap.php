@@ -5,7 +5,6 @@
  * @package ProjectSend
  * @subpackage Core
  */
-
 define('ROOT_DIR', dirname(__FILE__));
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -17,6 +16,9 @@ require_once(ROOT_DIR . '/includes/security/xsrf.php');
 
 /** Basic system constants */
 require_once(ROOT_DIR.'/sys.vars.php');
+
+/** Flash messages */
+require_once(ROOT_DIR . '/includes/flash.php');
 
 /** Load the database class */
 require_once(ROOT_DIR.'/includes/database.php');

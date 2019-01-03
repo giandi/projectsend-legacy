@@ -23,7 +23,7 @@ $allowed_levels = array(9,8,7);
 if (CLIENTS_CAN_UPLOAD == 1) {
 	$allowed_levels[] = 0;
 }
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
 <div class="col-xs-12">
@@ -150,4 +150,4 @@ include('header.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

@@ -19,7 +19,7 @@ if (!check_for_admin()) { return; }
 $active_nav = 'users';
 
 $page_title = __('Users administration','cftp_admin');
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
 <div class="col-xs-12">
@@ -421,4 +421,4 @@ include('header.php');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

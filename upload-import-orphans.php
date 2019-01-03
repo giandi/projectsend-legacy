@@ -20,7 +20,7 @@ require_once('bootstrap.php');
 $active_nav = 'files';
 
 $page_title = __('Find orphan files', 'cftp_admin');
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 ?>
 	<script type="text/javascript">
@@ -292,4 +292,4 @@ include('header.php');
 </div>
 	
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

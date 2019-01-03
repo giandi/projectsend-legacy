@@ -83,7 +83,7 @@ switch ( $section ) {
 $page_title = $section_title;
 
 $active_nav = 'options';
-include('header.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 /* Logo */
 $logo_file_info = generate_logo_url();
@@ -892,4 +892,4 @@ $allowed_file_types = implode(',',$allowed_file_types);
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';

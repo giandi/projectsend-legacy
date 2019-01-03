@@ -21,7 +21,7 @@ $page_title = __('Log in','cftp_admin');
 
 $body_class = array('login');
 
-include('header-unlogged.php');
+include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 
 $login_button_text = __('Log in','cftp_admin');
 	
@@ -135,4 +135,4 @@ $login_button_text = __('Log in','cftp_admin');
 </div>
 
 <?php
-	include('footer.php');
+	include_once ADMIN_VIEWS_DIR . DS . 'footer.php';
