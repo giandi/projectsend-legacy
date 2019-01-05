@@ -9,10 +9,6 @@
  * @package ProjectSend
  * @subpackage Upload
  */
-$load_scripts	= array(
-						'plupload',
-					); 
-
 require_once('bootstrap.php');
 
 $active_nav = 'files';
@@ -23,6 +19,7 @@ $allowed_levels = array(9,8,7);
 if (CLIENTS_CAN_UPLOAD == 1) {
 	$allowed_levels[] = 0;
 }
+
 include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 ?>
 
@@ -38,10 +35,12 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 			message_no_clients();
 		}
 	?>
-        <?php
-            $msg = __('Click on Add files to select all the files that you want to upload, and then click continue. On the next step, you will be able to set a name and description for each uploaded file. Remember that the maximum allowed file size (in mb.) is ','cftp_admin') . ' <strong>'.UPLOAD_MAX_FILESIZE.'</strong>';
-            echo system_message('info', $msg);
-        ?>
+		<p>
+			<?php
+				$msg = __('Click on Add files to select all the files that you want to upload, and then click continue. On the next step, you will be able to set a name and description for each uploaded file. Remember that the maximum allowed file size (in mb.) is ','cftp_admin') . ' <strong>'.UPLOAD_MAX_FILESIZE.'</strong>';
+				echo system_message('info', $msg);
+			?>
+		</p>
 
 		<script type="text/javascript">
 			$(document).ready(function() {
@@ -63,34 +62,41 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 			$(function() {
 				$("#uploader").pluploadQueue({
 					runtimes : 'html5,flash,silverlight,html4',
-					url : 'process-upload.php',
-					max_file_size : '<?php echo UPLOAD_MAX_FILESIZE; ?>mb',
+					url : 'includes/upload.process.php',
 					chunk_size : '1mb',
+					rename : true,
+					dragdrop: true,
 					multipart : true,
-					<?php
-						if ( false === CAN_UPLOAD_ANY_FILE_TYPE ) {
-					?>
-							filters : [
-								{title : "Allowed files", extensions : "<?php echo ALLOWED_FILE_TYPES; ?>"}
-							],
-					<?php
-						}
-					?>
-					flash_swf_url : 'assets/lib/plupload/js/plupload.flash.swf',
-					silverlight_xap_url : 'assets/lib/plupload/js/plupload.silverlight.xap',
+					filters : {
+						max_file_size : '<?php echo UPLOAD_MAX_FILESIZE; ?>mb'
+						<?php
+							if ( false === CAN_UPLOAD_ANY_FILE_TYPE ) {
+						?>
+								,mime_types: [
+									{title : "Allowed files", extensions : "<?php echo ALLOWED_FILE_TYPES; ?>"}
+								]
+						<?php
+							}
+						?>
+					},
+					flash_swf_url : 'vendor/moxiecode/plupload/js/Moxie.swf',
+					silverlight_xap_url : 'vendor/moxiecode/plupload/js/Moxie.xap',
 					preinit: {
 						Init: function (up, info) {
-							$('#uploader_container').removeAttr("title");
+							//$('#uploader_container').removeAttr("title");
 						}
 					}
-					/*
 					,init : {
+						/*
+						FilesAdded: function(up, files) {
+					   uploader.start();
+					 }
 						QueueChanged: function(up) {
 							var uploader = $('#uploader').pluploadQueue();
 							uploader.start();
 						}
+						*/
 					}
-					*/
 				});
 
 				var uploader = $('#uploader').pluploadQueue();
@@ -145,8 +151,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 				};
 			});
 		</script>
-		
-        <?php include_once FORMS_DIR . DS . 'upload.php'; ?>
+
+		<?php include_once FORMS_DIR . DS . 'upload.php'; ?>
 </div>
 
 <?php

@@ -54,7 +54,7 @@ else {
 	if (!isset($dont_redirect_if_logged)) {
 		/** If logged as a system user, go directly to the back-end homepage */
 		if (current_role_in($allowed_levels)) {
-			header("Location:".BASE_URI."home.php");
+			header("Location:".BASE_URI."dashboard.php");
 		}
 	
 		/** If client is logged in, redirect to the files list. */
@@ -79,16 +79,17 @@ if ( !isset( $body_class ) ) { $body_class = ''; }
 
 	<title><?php echo html_output( $header_vars['title'] ); ?></title>
 	<?php meta_favicon(); ?>
-	<script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery/jquery.1.12.4.min.js"></script>
+	<script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery-migrate/jquery-migrate.min.js"></script>
 
 	<!--[if lt IE 9]>
-		<script src="<?php echo BASE_URI; ?>includes/js/html5shiv.min.js"></script>
-		<script src="<?php echo BASE_URI; ?>includes/js/respond.min.js"></script>
+		<script src="<?php echo ASSETS_LIB_URL; ?>/html5shiv.min.js"></script>
+		<script src="<?php echo ASSETS_LIB_URL; ?>/respond.min.js"></script>
 	<![endif]-->
 
 	<?php
 		$load_theme_css = true;
-		require_once( 'assets.php' );
+		require_once( 'includes/assets.php' );
 
 		load_css_files();
 	?>

@@ -114,9 +114,9 @@ class Options
             }
 
             /* Landing page for public groups and files */
-            define('PUBLIC_DOWNLOAD_URI',BASE_URI.'download.php');
+            define('PUBLIC_DOWNLOAD_URL',BASE_URI.'download.php');
             define('PUBLIC_LANDING_URI',BASE_URI.'public.php');
-            define('PUBLIC_GROUP_URI',BASE_URI.'public.php');
+            define('PUBLIC_GROUP_URL',BASE_URI.'public.php');
 
             /* URLs */
             define('THUMBNAILS_FILES_URL', BASE_URI.'upload/thumbnails');

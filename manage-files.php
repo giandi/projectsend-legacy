@@ -115,7 +115,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						/**
 						 * Changes the value on the "hidden" column value on the database.
 						 * This files are not shown on the client's file list. They are
-						 * also not counted on the home.php files count when the logged in
+						 * also not counted on the dashboard.php files count when the logged in
 						 * account is the client.
 						 */
 						foreach ($selected_files as $work_file) {
@@ -441,7 +441,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 		</div>
 
 
-		<form action="manage-files.php" name="files_list" method="get" class="form-inline">
+		<form action="manage-files.php" name="files_list" method="get" class="form-inline batch_actions">
 			<?php form_add_existing_parameters( array( 'modify_id', 'modify_type' ) ); ?>
 			<?php
 				/** Actions are not available for clients */

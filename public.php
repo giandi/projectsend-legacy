@@ -251,7 +251,7 @@ function list_file($data, $origin) {
 									}
 									else {
 										foreach ( $groups as $group ) {
-											$group_link = PUBLIC_GROUP_URI . '?group=' . $group['id'] . '&token=' . $group['token'];
+											$group_link = PUBLIC_GROUP_URL . '?group=' . $group['id'] . '&token=' . $group['token'];
 						?>
 											<li>
 												<a href="<?php echo $group_link; ?>">

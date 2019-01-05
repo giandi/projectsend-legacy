@@ -6,6 +6,9 @@ bower_components
 
 # Compiled files
 assets/dist
+assets/css
+assets/fonts
+assets/js
 
 # NPM / Yarn
 .npm

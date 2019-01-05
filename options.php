@@ -248,27 +248,11 @@ $allowed_file_types = implode(',',$allowed_file_types);
 
 			<script type="text/javascript">
 				$(document).ready(function() {
-					$('#notifications_max_tries').spinedit({
-						minimum: 1,
-						maximum: 100,
-						step: 1,
-						value: <?php echo NOTIFICATIONS_MAX_TRIES; ?>,
-						numberOfDecimals: 0
-					});
-
-					$('#notifications_max_days').spinedit({
-						minimum: 0,
-						maximum: 365,
-						step: 1,
-						value: <?php echo NOTIFICATIONS_MAX_DAYS; ?>,
-						numberOfDecimals: 0
-					});
-
-					$('#allowed_file_types').tagsInput({
-						'width'			: '95%',
-						'height'		: 'auto',
-						'defaultText'	: '',
-					});
+                    $('#allowed_file_types')
+                    .tagify()
+                    .on('add', function(e, tagName){
+                        console.log('added', tagName)
+                    });
 
 					$("form").submit(function() {
 						clean_form(this);
@@ -619,7 +603,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="notifications_max_tries" class="col-sm-4 control-label"><?php _e('Maximum sending attemps','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="notifications_max_tries" id="notifications_max_tries" class="form-control" value="<?php echo NOTIFICATIONS_MAX_TRIES; ?>" />
+										<input type="number" name="notifications_max_tries" id="notifications_max_tries" class="form-control" value="<?php echo NOTIFICATIONS_MAX_TRIES; ?>" min="1" max="10" step="1" />
 										<p class="field_note"><?php _e('Define how many times will the system attemp to send each notification.','cftp_admin'); ?></p>
 									</div>
 								</div>
@@ -627,7 +611,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="notifications_max_days" class="col-sm-4 control-label"><?php _e('Days before expiring','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="notifications_max_days" id="notifications_max_days" class="form-control" value="<?php echo NOTIFICATIONS_MAX_DAYS; ?>" />
+										<input type="number" name="notifications_max_days" id="notifications_max_days" class="form-control" value="<?php echo NOTIFICATIONS_MAX_DAYS; ?>" min="0" max="365" step="1" />
 										<p class="field_note"><?php _e('Notifications older than this will not be sent.','cftp_admin'); ?><br /><strong><?php _e('Set to 0 to disable.','cftp_admin'); ?></strong></p>
 									</div>
 								</div>
@@ -641,10 +625,10 @@ $allowed_file_types = implode(',',$allowed_file_types);
 									<label for="mail_system_use" class="col-sm-4 control-label"><?php _e('Mailer','cftp_admin'); ?></label>
 									<div class="col-sm-8">
 										<select class="form-control" name="mail_system_use" id="mail_system_use">
-											<option value="mail" <?php echo (MAIL_SYSTEM == 'mail') ? 'selected="selected"' : ''; ?>>PHP Mail (basic)</option>
-											<option value="smtp" <?php echo (MAIL_SYSTEM == 'smtp') ? 'selected="selected"' : ''; ?>>SMTP</option>
-											<option value="gmail" <?php echo (MAIL_SYSTEM == 'gmail') ? 'selected="selected"' : ''; ?>>Gmail</option>
-											<option value="sendmail" <?php echo (MAIL_SYSTEM == 'sendmail') ? 'selected="selected"' : ''; ?>>Sendmail</option>
+											<option value="mail" <?php echo (MAIL_SYSTEM_USE == 'mail') ? 'selected="selected"' : ''; ?>>PHP Mail (basic)</option>
+											<option value="smtp" <?php echo (MAIL_SYSTEM_USE == 'smtp') ? 'selected="selected"' : ''; ?>>SMTP</option>
+											<option value="gmail" <?php echo (MAIL_SYSTEM_USE == 'gmail') ? 'selected="selected"' : ''; ?>>Gmail</option>
+											<option value="sendmail" <?php echo (MAIL_SYSTEM_USE == 'sendmail') ? 'selected="selected"' : ''; ?>>Sendmail</option>
 										</select>
 									</div>
 								</div>
@@ -657,14 +641,14 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="mail_smtp_user" class="col-sm-4 control-label"><?php _e('Username','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="mail_smtp_user" id="mail_smtp_user" class="mail_data empty form-control" value="<?php echo html_output(SMTP_USER); ?>" />
+										<input type="text" name="mail_smtp_user" id="mail_smtp_user" class="mail_data empty form-control" value="<?php echo html_output(MAIL_SMTP_USER); ?>" />
 									</div>
 								</div>
 
 								<div class="form-group">
 									<label for="mail_smtp_pass" class="col-sm-4 control-label"><?php _e('Password','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="password" name="mail_smtp_pass" id="mail_smtp_pass" class="mail_data empty form-control" value="<?php echo html_output(SMTP_PASS); ?>" />
+										<input type="password" name="mail_smtp_pass" id="mail_smtp_pass" class="mail_data empty form-control" value="<?php echo html_output(MAIL_SMTP_PASS); ?>" />
 									</div>
 								</div>
 
@@ -676,14 +660,14 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<label for="mail_smtp_host" class="col-sm-4 control-label"><?php _e('Host','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="mail_smtp_host" id="mail_smtp_host" class="mail_data empty form-control" value="<?php echo html_output(SMTP_HOST); ?>" />
+										<input type="text" name="mail_smtp_host" id="mail_smtp_host" class="mail_data empty form-control" value="<?php echo html_output(MAIL_SMTP_HOST); ?>" />
 									</div>
 								</div>
 
 								<div class="form-group">
 									<label for="mail_smtp_port" class="col-sm-4 control-label"><?php _e('Port','cftp_admin'); ?></label>
 									<div class="col-sm-8">
-										<input type="text" name="mail_smtp_port" id="mail_smtp_port" class="mail_data empty form-control" value="<?php echo html_output(SMTP_PORT); ?>" />
+										<input type="text" name="mail_smtp_port" id="mail_smtp_port" class="mail_data empty form-control" value="<?php echo html_output(MAIL_SMTP_PORT); ?>" />
 									</div>
 								</div>
 

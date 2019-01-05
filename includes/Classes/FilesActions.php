@@ -8,6 +8,8 @@
  */
 namespace ProjectSend\Classes;
 
+use \PDO;
+
 class FilesActions
 {
 

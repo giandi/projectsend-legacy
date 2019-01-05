@@ -207,7 +207,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 		</div>
 	</div>
 
-	<form action="groups.php" name="groups_list" method="get" class="form-inline">
+	<form action="groups.php" name="groups_list" method="get" class="form-inline batch_actions">
 		<?php form_add_existing_parameters(); ?>
 		<div class="form_actions_right">
 			<div class="form_actions">

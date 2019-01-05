@@ -112,7 +112,10 @@ class TableGenerate
 					
 					if ( $sortable == true && !empty( $sort_url ) ) {
 						$content = self::buildSortableThContent( $sort_url, $is_current_sorted, $content );
-					}
+                    }
+                    else {
+                        $data_attr['sort-ignore'] = 'true';
+                    }
 	
 					/**  Generate the column */
 					$this->output .= '<th';
@@ -266,12 +269,7 @@ class TableGenerate
 									</li>';
 			}
 
-			/**
-			 * Pages
-			 *
-			 * TODO: Skip pages that are too far away
-			 * of the current one.
-			 */
+			/** Pages */
 			$already_spaced = false;
 			for ( $i = 1; $i <= $params['pages']; $i++ ) {
 				if (
@@ -312,13 +310,15 @@ class TableGenerate
 									</div>
 								</nav>';
 			
-			$this->output .= '<div class="form-group">
+            $this->output .= '<div class="go_to_page">
+                                <div class="form-group">
 									<label class="control-label hidden-xs hidden-sm">' . __('Go to:','cftp_admin') . '</label>
-									<input type="text" class="form-control" name="page" id="go_to_page" value="' . $params['current'] .'" />
+									<input type="text" class="form-control" name="page" id="page_number" data-link="' . self::constructPaginationLink( $params['link'], '_pgn_' ) .'" value="' . $params['current'] .'" />
 								</div>
 								<div class="form-group">
-									<button type="submit" class="form-control"><span aria-hidden="true" class="glyphicon glyphicon-ok"></span></button>
-								</div>';
+									<button type="button" class="form-control"><span aria-hidden="true" class="glyphicon glyphicon-ok"></span></button>
+                                </div>
+                            </div>';
 			
 			$this->output .= '		</div>
 							</div>

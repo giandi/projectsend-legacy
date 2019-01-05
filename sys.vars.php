@@ -264,6 +264,11 @@ define('EMAIL_TEMPLATE_NEW_FILE_BY_USER', 'new-file-by-user.html');
 define('EMAIL_TEMPLATE_NEW_FILE_BY_CLIENT', 'new-file-by-client.html');
 define('EMAIL_TEMPLATE_PASSWORD_RESET', 'password-reset.html');
 
+/* Set a page for each status code */
+define('STATUS_PAGES_DIR', ADMIN_VIEWS_DIR . DS . 'http_status_pages');
+define('PAGE_STATUS_CODE_403', STATUS_PAGES_DIR . DS . '403.php');
+define('PAGE_STATUS_CODE_404', STATUS_PAGES_DIR . DS . '404.php');
+
 /** Passwords */
 define('HASH_COST_LOG2', 8);
 define('HASH_PORTABLE', false);

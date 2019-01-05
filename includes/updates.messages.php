@@ -46,29 +46,16 @@
              if (VERSION_NEW_FOUND == '1') {
 				if ( CURRENT_USER_LEVEL != '0' ) {
 	?>
-					<div class="system_msg update_msg">
-						<div class="row">
-							<div class="col-sm-9">
-								<p><strong><?php _e('Update available!', 'cftp_admin');?></strong> <?php _e('version', 'cftp_admin'); ?> <?php echo VERSION_NEW_NUMBER; ?> <?php _e('has been released.', 'cftp_admin');?></p>
-								<div class="buttons">
-									<a href="<?php echo VERSION_NEW_URL; ?>" class="btn btn-default btn-xs" target="_blank">Download</a> <a href="<?php echo VERSION_NEW_CHLOG; ?>" target="_blank" class="btn btn-default btn-xs">Changelog</a>
-								</div>
-							</div>
-							<div class="col-sm-3">
-								<ul>
-									<li class="update_icon update_icon_status_<?php echo VERSION_NEW_FEATURES; ?>">
-										<span><i class="fa fa-plus fa-inverse fa-fw"></i></span>
-									</li>
-									<li class="update_icon update_icon_status_<?php echo VERSION_NEW_SECURITY; ?>">
-										<span><i class="fa fa-shield fa-inverse fa-fw"></i></span>
-									</li>
-									<li class="update_icon update_icon_status_<?php echo VERSION_NEW_IMPORTANT; ?>">
-										<span><i class="fa fa-exclamation fa-inverse fa-fw"></i></span>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
+                    <div class="alert alert-warning update_msg">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <strong><?php _e('Update available!', 'cftp_admin'); ?></strong> <?php echo sprintf( __('ProjectSend %s has been released', 'cftp_admin'), VERSION_NEW_NUMBER); ?>
+                            </div>
+                            <div class="col-sm-4 text-right">
+                                <a href="<?php echo VERSION_NEW_URL; ?>" class="btn btn-default btn-xs" target="_blank"><?php _e('Download', 'cftp_admin');?></a> <a href="<?php echo VERSION_NEW_CHLOG; ?>" target="_blank" class="btn btn-default btn-xs"><?php _e('Changelog', 'cftp_admin');?></a>
+                            </div>
+                        </div>
+                    </div>
 	<?php
 				}
 			}

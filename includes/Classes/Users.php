@@ -15,6 +15,7 @@
 class Users
 {
     private $dbh;
+    private $logger;
 
     private $validation_type;
     private $validation_passed;
@@ -52,6 +53,8 @@ class Users
         }
 
         $this->dbh = $dbh;
+        $this->logger = new \ProjectSend\Classes\ActionsLog;
+
         $this->role = 0; // by default, create "client" role
 
         $this->allowed_actions_roles = [9];
@@ -348,8 +351,7 @@ class Users
 
                 /** Record the action log */
                 $created_by = !empty(CURRENT_USER_ID) ? CURRENT_USER_ID : $this->id;
-                $logger = new \ProjectSend\Classes\ActionsLog;
-                $record = $logger->addEntry([
+                $record = $this->logger->addEntry([
                     'action' => 2,
                     'owner_id' => $created_by,
                     'affected_account' => $this->id,
@@ -465,8 +467,7 @@ class Users
                 }
 
                 /** Record the action log */
-                $logger = new \ProjectSend\Classes\ActionsLog;
-                $record = $logger->addEntry([
+                $record = $this->logger->addEntry([
                     'action' => $log_action_number,
                     'owner_id' => CURRENT_USER_ID,
                     'affected_account' => $this->id,
@@ -513,8 +514,7 @@ class Users
                 }
 
                 /** Record the action log */
-                $logger = new \ProjectSend\Classes\ActionsLog;
-                $record = $logger->addEntry([
+                $record = $this->logger->addEntry([
                     'action' => $log_action_number,
                     'owner_id' => CURRENT_USER_ID,
                     'affected_account_name' => $this->name,
@@ -562,8 +562,7 @@ class Users
                 $this->sql->execute();
 
                 /** Record the action log */
-                $logger = new \ProjectSend\Classes\ActionsLog;
-                $record = $logger->addEntry([
+                $record = $this->logger->addEntry([
                     'action' => $log_action_number,
                     'owner_id' => CURRENT_USER_ID,
                     'affected_account_name' => $this->name,
@@ -593,8 +592,7 @@ class Users
                 $this->status = $this->sql->execute();
 
                 /** Record the action log */
-                $logger = new \ProjectSend\Classes\ActionsLog;
-                $record = $logger->addEntry([
+                $record = $this->logger->addEntry([
                     'action' => 38,
                     'owner_id' => CURRENT_USER_ID,
                     'affected_account_name' => $this->name,
@@ -623,8 +621,7 @@ class Users
                 $this->status = $this->sql->execute();
 
                 /** Record the action log */
-                $logger = new \ProjectSend\Classes\ActionsLog;
-                $record = $logger->addEntry([
+                $record = $this->logger->addEntry([
                     'action' => 38,
                     'owner_id' => CURRENT_USER_ID,
                     'affected_account_name' => $this->name,

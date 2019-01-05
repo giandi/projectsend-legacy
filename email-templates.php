@@ -452,7 +452,7 @@ if ($_POST) {
 					async: false,
 					cache: false,
 					success: function (data){
-						$(textarea).text(data);
+						$(textarea).val(data);
 					},
 					error: function() {
 						alert("<?php _e('Error: the content could not be loaded','cftp_admin'); ?>");

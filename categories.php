@@ -197,7 +197,7 @@ if ( isset( $_POST['btn_process'] ) ) {
         });
     </script>
 
-	<form action="categories.php" class="form-inline" name="selected_categories" id="selected_categories" method="get">
+	<form action="categories.php" class="form-inline batch_actions" name="selected_categories" id="selected_categories" method="get">
 
 		<div class="form_actions_right form-inline">
 			<div class="form_actions">

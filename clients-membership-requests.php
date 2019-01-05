@@ -241,7 +241,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 			</div>
 		</div>
 
-		<form action="<?php echo $this_page; ?>" name="requests_list" method="post" class="form-inline">
+		<form action="<?php echo $this_page; ?>" name="requests_list" method="post" class="form-inline batch_actions">
             <input type="hidden" name="csrf_token" value="<?php echo getCsrfToken(); ?>" />
 
 			<?php form_add_existing_parameters(); ?>

@@ -11,6 +11,8 @@ use \PDO;
 
 class UploadFile
 {
+    private $dbh;
+    private $logger;
 
 	var $folder;
 	var $assign_to;
@@ -26,8 +28,10 @@ class UploadFile
 
 	function __construct() {
 		global $dbh;
-		$this->dbh = $dbh;
-	}
+
+        $this->dbh = $dbh;
+        $this->logger = new \ProjectSend\Classes\ActionsLog;
+    }
 
 	/**
 	 * Convert a string into a url safe address.
@@ -191,15 +195,13 @@ class UploadFile
 			elseif ($this->uploader_type == 'client') {
 				$this->action_type = 6;
 			}
-			$logger = new \ProjectSend\Classes\ActionsLog();
-			$log_action_args = array(
-									'action' => $this->action_type,
-									'owner_id' => $this->uploader_id,
-									'affected_file' => $this->file_id,
-									'affected_file_name' => $this->name,
-									'affected_account_name' => $this->uploader
-								);
-			$new_record_action = $logger->addEntry($log_action_args);
+			$new_record_action = $this->logger->addEntry([
+                'action' => $this->action_type,
+                'owner_id' => $this->uploader_id,
+                'affected_file' => $this->file_id,
+                'affected_file_name' => $this->name,
+                'affected_account_name' => $this->uploader
+            ]);
 		}
 		else {
 			$this->statement = $this->dbh->prepare("SELECT id, public_allow, public_token FROM " . TABLE_FILES . " WHERE url = :url");
@@ -286,16 +288,14 @@ class UploadFile
 				
 				if ($this->uploader_type == 'user') {
 					/** Record the action log */
-					$logger = new \ProjectSend\Classes\ActionsLog();
-					$log_action_args = array(
-											'action' => $this->action_number,
-											'owner_id' => $this->uploader_id,
-											'affected_file' => $this->file_id,
-											'affected_file_name' => $this->name,
-											'affected_account' => $this->assignment,
-											'affected_account_name' => $this->account_name
-										);
-					$new_record_action = $logger->addEntry($log_action_args);
+					$new_record_action = $this->logger->addEntry([
+                        'action' => $this->action_number,
+                        'owner_id' => $this->uploader_id,
+                        'affected_file' => $this->file_id,
+                        'affected_file_name' => $this->name,
+                        'affected_account' => $this->assignment,
+                        'affected_account_name' => $this->account_name
+                    ]);
 				}
 			}
 		}
@@ -488,16 +488,14 @@ class UploadFile
 
 			/** Record the action log */
 			foreach ($this->clients as $this->deleted_client) {
-				$logger = new \ProjectSend\Classes\ActionsLog();
-				$log_action_args = array(
-										'action' => 10,
-										'owner_id' => $this->owner_id,
-										'affected_file' => $this->file_id,
-										'affected_file_name' => $this->file_name,
-										'affected_account' => $this->deleted_client,
-										'affected_account_name' => $this->clients_names[$this->deleted_client]
-									);
-				$new_record_action = $logger->addEntry($log_action_args);
+				$new_record_action = $this->logger->addEntry([
+                    'action' => 10,
+                    'owner_id' => $this->owner_id,
+                    'affected_file' => $this->file_id,
+                    'affected_file_name' => $this->file_name,
+                    'affected_account' => $this->deleted_client,
+                    'affected_account_name' => $this->clients_names[$this->deleted_client]
+                ]);
 			}
 		}
 		/**
@@ -525,16 +523,14 @@ class UploadFile
 
 			/** Record the action log */
 			foreach ($this->groups as $this->deleted_group) {
-				$logger = new \ProjectSend\Classes\ActionsLog();
-				$log_action_args = array(
-										'action' => 11,
-										'owner_id' => $this->owner_id,
-										'affected_file' => $this->file_id,
-										'affected_file_name' => $this->file_name,
-										'affected_account' => $this->deleted_group,
-										'affected_account_name' => $this->groups_names[$this->deleted_group]
-									);
-				$new_record_action = $logger->addEntry($log_action_args);
+				$new_record_action = $this->logger->addEntry([
+                    'action' => 11,
+                    'owner_id' => $this->owner_id,
+                    'affected_file' => $this->file_id,
+                    'affected_file_name' => $this->file_name,
+                    'affected_account' => $this->deleted_group,
+                    'affected_account_name' => $this->groups_names[$this->deleted_group]
+                ]);
 			}
 		}
 	}

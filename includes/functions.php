@@ -551,6 +551,24 @@ function default_footer_info($logged = true)
 <?php
 }
 
+/**
+ * function render_json_variables
+ * 
+ * Adds a CDATA block with variables that are used on the main JS file
+ * URLs. text strings, etc.
+ */
+function render_json_variables()
+{
+	global $json_strings;
+    $output = json_encode( $json_strings );
+?>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+            var json_strings = <?php echo $output; ?>;
+        /*]]>*/
+    </script>
+<?php
+}
 
 /**
  * Standard "There are no clients" message mark up and information

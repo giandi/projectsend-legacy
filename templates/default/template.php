@@ -63,7 +63,7 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 				</div>
 			</div>
 		
-			<form action="" name="files_list" method="get" class="form-inline">
+			<form action="" name="files_list" method="get" class="form-inline batch_actions">
 				<?php form_add_existing_parameters(); ?>
 				<div class="form_actions_right">
 					<div class="form_actions">

@@ -13,6 +13,7 @@ use \PDO;
 class Categories
 {
     private $dbh;
+    private $logger;
 
     private $id;
     private $name;
@@ -30,6 +31,7 @@ class Categories
         }
 
         $this->dbh = $dbh;
+        $this->logger = new \ProjectSend\Classes\ActionsLog;
 
         $this->allowed_actions_roles = [9, 8, 7];
     }
@@ -167,14 +169,12 @@ class Categories
             $this->id = $this->dbh->lastInsertId();
 
             /** Record the action log */
-            $logger = new \ProjectSend\Classes\ActionsLog;
-            $log_action_args = array(
-                                    'action'				=> 34,
-                                    'owner_id'				=> CURRENT_USER_ID,
-                                    'affected_account'		=> $this->id,
-                                    'affected_account_name'	=> $this->name
-                                );
-            $new_record_action = $logger->addEntry($log_action_args);
+            $new_record_action = $this->logger->addEntry([
+                'action'				=> 34,
+                'owner_id'				=> CURRENT_USER_ID,
+                'affected_account'		=> $this->id,
+                'affected_account_name'	=> $this->name
+            ]);
         }
         else {
             /** Query couldn't be executed */
@@ -219,14 +219,12 @@ class Categories
             $this->state['query'] = 1;
 
             /** Record the action log */
-            $logger = new \ProjectSend\Classes\ActionsLog;
-            $log_action_args = array(
-                                    'action'				=> 35,
-                                    'owner_id'				=> CURRENT_USER_ID,
-                                    'affected_account'		=> $arguments['id'],
-                                    'affected_account_name'	=> $this->name
-                                );
-            $new_record_action = $logger->addEntry($log_action_args);
+            $new_record_action = $this->logger->addEntry([
+                'action'				=> 35,
+                'owner_id'				=> CURRENT_USER_ID,
+                'affected_account'		=> $arguments['id'],
+                'affected_account_name'	=> $this->name
+            ]);
         }
         else {
             $this->state['query'] = 0;
@@ -251,8 +249,7 @@ class Categories
         }
 
         /** Record the action log */
-        $logger = new \ProjectSend\Classes\ActionsLog;
-        $record = $logger->addEntry([
+        $record = $this->logger->addEntry([
             'action' => 36,
             'owner_id' => CURRENT_USER_ID,
             'affected_account_name' => $this->name,

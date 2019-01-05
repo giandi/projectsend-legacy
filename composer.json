@@ -1,5 +1,5 @@
 {
-	"name": "projectsend/projectsend-legacy",
+	"name": "projectsend-legacy",
 	"description": "ProjectSend is an open source, clients-oriented, private file sharing web application. Legacy is the repository for patches and maintenance of the pre-1.0 version, with version number rxxxx",
 	"type": "project",
 	"license": "GPL-3.0-or-later",
@@ -27,6 +27,7 @@
         "enshrined/svg-sanitize": "^0.8.2",
         "hybridauth/hybridauth": "^2.11",
         "league/oauth2-google": "^2.2",
+        "moxiecode/plupload": "3.1.*",
         "paragonie/random_compat": "^2.0",
         "phpmailer/phpmailer": "~6.0",
 		"tamtamchik/simple-flash": "^1.2"
