@@ -20,7 +20,10 @@ Feel free to participate!
 ## IMPORTANT
 
 It is recommended that you download the latest release from the official website.
+
 Downloading a development version directly from the repository might give you unexpected results, such as visible errors, functions that are still not finished, etc.
+
+**If you want to download directly from the repository, please be aware that you will need to follow the instructions on the "Developing" section.**
 
 ## Server requirements
 
@@ -70,10 +73,20 @@ Your personal configuration file (sys.config.php) is never included on the downl
 When a system user logs in to the system version, a check for database missing data will be made, and if anything is found, it will be updated automatically and a message will appear under the menu one time only.
 Whenever a new version is available, you will be notified in the admin panel via a message shown under the main menu.
 
+## Developing
+
+### Notice: ProjectSend is currently under refactoring
+
+If you want to help with development, you will need to do a few things via the command line:
+
+1. Download the composer and npm dependencies with the commands ````npm install```` and ````composer update````
+1. Run the default gulp task simply with ````gulp```` to compile the main CSS and JS assets files.
+
 ## How to join the project
 
 Questions, ideas?
-Send your message to contact@projectsend.org or join us on Facebook, on https://www.facebook.com/projectsend/
+
+Send your message to contact@projectsend.org or join us on our [Facebook page](https://www.facebook.com/projectsend/)
 
 ## Translations
 
