@@ -1118,30 +1118,26 @@ function meta_favicon()
  */
 function password_notes()
 {
-	$pass_notes_output = '';
-
-	global $validation_req_upper;
-	global $validation_req_lower;
-	global $validation_req_number;
-	global $validation_req_special;
+    $pass_notes_output = '';
+    global $json_strings;
 
 	$rules_active	= array();
 	$rules			= array(
 							'lower'		=> array(
 												'value'	=> PASS_REQUIRE_UPPER,
-												'text'	=> $validation_req_upper,
+												'text'	=> $json_strings['validation']['req_upper'],
 											),
 							'upper'		=> array(
 												'value'	=> PASS_REQUIRE_LOWER,
-												'text'	=> $validation_req_lower,
+												'text'	=> $json_strings['validation']['req_lower'],
 											),
 							'number'	=> array(
 												'value'	=> PASS_REQUIRE_NUMBER,
-												'text'	=> $validation_req_number,
+												'text'	=> $json_strings['validation']['req_number'],
 											),
 							'special'	=> array(
 												'value'	=> PASS_REQUIRE_SPECIAL,
-												'text'	=> $validation_req_special,
+												'text'	=> $json_strings['validation']['req_special'],
 											),
 						);
 

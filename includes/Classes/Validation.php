@@ -90,11 +90,6 @@ class Validation
 	/** Check if the password meets the characters requirements */
 	private function is_password_rules($field, $err)
 	{
-		global $validation_req_upper;
-		global $validation_req_lower;
-		global $validation_req_number;
-		global $validation_req_special;
-
 		$rules	= array(
 						'lower'		=> array(
 											'value'	=> PASS_REQUIRE_UPPER,

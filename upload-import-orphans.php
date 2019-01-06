@@ -10,10 +10,6 @@
  * @package ProjectSend
  * @subpackage Upload
  */
-$load_scripts	= array(
-						'footable',
-					); 
-
 $allowed_levels = array(9,8,7);
 require_once('bootstrap.php');
 

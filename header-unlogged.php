@@ -41,12 +41,6 @@ else {
 		exit;
 	}
 	
-	$load_scripts = array(
-						'social_login',
-						'recaptcha',
-						'chosen',
-					);
-	
 	/**
 	 * This is defined on the public download page.
 	 * So even logged in users can access it.

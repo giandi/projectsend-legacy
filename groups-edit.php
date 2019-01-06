@@ -6,11 +6,6 @@
  * @subpackage	Groups
  *
  */
-$load_scripts	= array(
-						'chosen',
-						'ckeditor',
-					);
-
 $allowed_levels = array(9,8);
 require_once('bootstrap.php');
 

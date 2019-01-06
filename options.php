@@ -5,11 +5,6 @@
  * @package ProjectSend
  * @subpackage Options
  */
-$load_scripts	= array(
-						'jquery_tags_input',
-						'spinedit',
-					);
-
 $allowed_levels = array(9);
 require_once('bootstrap.php');
 
@@ -719,7 +714,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_upper">
-											<input type="checkbox" value="1" name="pass_require_upper" id="pass_require_upper" class="checkbox_options" <?php echo (PASS_REQUIRE_UPPER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_upper; ?>
+											<input type="checkbox" value="1" name="pass_require_upper" id="pass_require_upper" class="checkbox_options" <?php echo (PASS_REQUIRE_UPPER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $json_strings['validation']['req_upper']; ?>
 										</label>
 									</div>
 								</div>
@@ -727,7 +722,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_lower">
-											<input type="checkbox" value="1" name="pass_require_lower" id="pass_require_lower" class="checkbox_options" <?php echo (PASS_REQUIRE_LOWER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_lower; ?>
+											<input type="checkbox" value="1" name="pass_require_lower" id="pass_require_lower" class="checkbox_options" <?php echo (PASS_REQUIRE_LOWER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $json_strings['validation']['req_lower']; ?>
 										</label>
 									</div>
 								</div>
@@ -735,7 +730,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_number">
-											<input type="checkbox" value="1" name="pass_require_number" id="pass_require_number" class="checkbox_options" <?php echo (PASS_REQUIRE_NUMBER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_number; ?>
+											<input type="checkbox" value="1" name="pass_require_number" id="pass_require_number" class="checkbox_options" <?php echo (PASS_REQUIRE_NUMBER == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $json_strings['validation']['req_number']; ?>
 										</label>
 									</div>
 								</div>
@@ -743,7 +738,7 @@ $allowed_file_types = implode(',',$allowed_file_types);
 								<div class="form-group">
 									<div class="col-sm-8 col-sm-offset-4">
 										<label for="pass_require_special">
-											<input type="checkbox" value="1" name="pass_require_special" id="pass_require_special" class="checkbox_options" <?php echo (PASS_REQUIRE_SPECIAL == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $validation_req_special; ?>
+											<input type="checkbox" value="1" name="pass_require_special" id="pass_require_special" class="checkbox_options" <?php echo (PASS_REQUIRE_SPECIAL == 1) ? 'checked="checked"' : ''; ?> /> <?php echo $json_strings['validation']['req_special']; ?>
 										</label>
 									</div>
 								</div>

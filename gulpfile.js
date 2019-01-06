@@ -33,7 +33,6 @@ let assetsJs = [
     'node_modules/@yaireo/tagify/dist/jQuery.tagify.min.js',
     'node_modules/js-cookie/src/js.cookie.js',
     'node_modules/sprintf-js/dist/sprintf.min.js',
-    'assets/lib/ckeditor/ckeditor.js',
     'assets/lib/flot/jquery.flot.min.js',
     'assets/lib/flot/jquery.flot.resize.min.js',
     'assets/lib/flot/jquery.flot.time.min.js',

@@ -6,11 +6,6 @@
  * @subpackage	Log
  *
  */
-$footable_min = true; // delete this line after finishing pagination on every table
-$load_scripts	= array(
-						'footable',
-					); 
-
 $allowed_levels = array(9);
 require_once('bootstrap.php');
 

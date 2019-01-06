@@ -7,12 +7,6 @@
  */
 define('IS_FILE_EDITOR', true);
 
-$load_scripts	= array(
-						'datepicker',
-						'chosen',
-						'ckeditor'
-					);
-
 $allowed_levels = array(9,8,7,0);
 require_once('bootstrap.php');
 
@@ -550,7 +544,7 @@ $get_categories = get_categories();
 			clean_form(this);
 
 			$(this).find('input[name$="[name]"]').each(function() {
-				is_complete($(this)[0],'<?php echo $validation_no_title; ?>');
+				is_complete($(this)[0],json_strings.validation.no_title);
 			});
 
 			// show the errors or continue if everything is ok

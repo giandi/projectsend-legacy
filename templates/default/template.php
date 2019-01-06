@@ -20,11 +20,6 @@ include_once(ROOT_DIR.'/templates/common.php'); // include the required function
 
 $window_title = __('File downloads','cftp_template');
 
-$footable_min = true; // delete this line after finishing pagination on every table
-$load_scripts	= array(
-						'footable',
-					); 
-
 $body_class = array('template', 'default-template', 'hide_title');
 
 include_once(ROOT_DIR.'/header.php');

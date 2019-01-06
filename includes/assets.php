@@ -1,8 +1,6 @@
 <?php
 /**
- * Generates the list of CSS and JS files to load
- * base on the $load_scripts array defined on each
- * page.
+ * Loads the required css and js files.
  *
  * @package ProjectSend
  */
@@ -19,6 +17,7 @@ $load_compat_js_files	= array();
 /** JS */
 $load_js_files[]	= 'https://www.google.com/recaptcha/api.js';
 $load_js_files[]	= ASSETS_JS_URL . '/assets.js';
+$load_js_files[]	= ASSETS_LIB_URL . '/ckeditor/ckeditor.js';
 $load_js_files[]	= ASSETS_JS_URL . '/app.js';
 
 /** CSS */

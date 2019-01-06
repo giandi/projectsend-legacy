@@ -5,9 +5,6 @@
  * @package ProjectSend
  * @subpackage Design
  */
-$load_scripts	= array(
-					); 
-
 $allowed_levels = array(9);
 require_once('bootstrap.php');
 

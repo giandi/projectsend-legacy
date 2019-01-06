@@ -5,10 +5,6 @@
  * @package		ProjectSend
  *
  */
-$load_scripts	= array(
-						'flot',
-					); 
-
 $allowed_levels = array(9,8,7);
 require_once('bootstrap.php');
 $page_title = __('Dashboard', 'cftp_admin');

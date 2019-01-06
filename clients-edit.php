@@ -6,10 +6,6 @@
  * @subpackage	Clients
  *
  */
-$load_scripts	= array(
-						'chosen',
-					); 
-
 $allowed_levels = array(9,8,0);
 require_once('bootstrap.php');
 
