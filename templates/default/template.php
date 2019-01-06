@@ -325,7 +325,9 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 	<?php default_footer_info(); ?>
 
 </div>
-	<?php
+<?php
+        render_json_variables();
+
 		load_js_files();
 	?>
 </body>
