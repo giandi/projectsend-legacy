@@ -109,6 +109,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 				else {
                     //$errorstate = 'email_not_found';
                     $state['email'] = 1; // Simulate that the request has been set, do not show that email exists or not on the database
+                    $show_form = 'none';
 				}
 			break;
 
@@ -244,7 +245,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header-unlogged.php';
 						break;
 					}
 				}
-				 
+
 				switch ($show_form) {
 					case 'enter_email':
                     default:
