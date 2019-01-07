@@ -117,3 +117,16 @@ function load_js_files() {
 		}
 	}
 }
+
+
+function load_js_header_files() {
+?>
+    <script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="<?php echo ASSETS_LIB_URL; ?>/jquery-migrate/jquery-migrate.min.js"></script>
+
+    <!--[if lt IE 9]>
+        <script src="<?php echo ASSETS_LIB_URL; ?>/html5shiv.min.js"></script>
+        <script src="<?php echo ASSETS_LIB_URL; ?>/respond.min.js"></script>
+    <![endif]-->
+<?php
+}

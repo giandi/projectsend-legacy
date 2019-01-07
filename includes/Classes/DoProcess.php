@@ -138,9 +138,8 @@ class DoProcess
                 $this->downloadFile($this->filename_find, $this->filename_save, $file_id, $this->log_action);
             }
             else {
-                http_response_code(403);
-                require_once PAGE_STATUS_CODE_403;
-                exit(1);
+                header('Location:' . PAGE_STATUS_CODE_403);
+                exit;
             }
         }
 	}
@@ -331,9 +330,8 @@ class DoProcess
             exit(0);
         }
         else {
-            http_response_code(404);
-            require_once PAGE_STATUS_CODE_404;
-            exit(1);
+            header('Location:' . PAGE_STATUS_CODE_404);
+            exit;
         }
     }
 
@@ -369,9 +367,8 @@ class DoProcess
             fclose( $this->file );
         }
         else {
-            http_response_code(404);
-            require_once PAGE_STATUS_CODE_404;
-            exit(1);
+            header('Location:' . PAGE_STATUS_CODE_404);
+            exit;
         }
     }
 }

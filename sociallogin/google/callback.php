@@ -76,7 +76,7 @@ if (isset($_SESSION['id_token_token']) && isset($_SESSION['id_token_token']->id_
         $new_record_action = $logger->addEntry($log_action_args);
 
         if ($user_level == '0') {
-          header("location:" . BASE_URI . "my_files/");
+          header("location:" . CLIENT_VIEW_FILE_LIST_URL);
         }
         else {
           header("location:" . BASE_URI . "dashboard.php");

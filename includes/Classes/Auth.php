@@ -105,7 +105,7 @@ class Auth
 									'message'	=> system_message('success','Login success. Redirecting...','login_response'),
 								);
 					if ($this->user_level == '0') {
-						$results['location']	= CLIENT_VIEW_FILE_LIST_URI;
+						$results['location']	= CLIENT_VIEW_FILE_LIST_URL;
 					}
 					else {
 						$results['location']	= BASE_URI."dashboard.php";
