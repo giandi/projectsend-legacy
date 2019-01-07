@@ -207,6 +207,9 @@ define('MAX_GENERATE_PASS_CHARS', 20);
  */
 define('COOKIE_EXP_TIME', 60*60*24*30);
 
+/* Password recovery */
+define('PASSWORD_RECOVERY_TOKEN_EXPIRATION_TIME', 60*60*24);
+
 /**
  * Time (in seconds) after which the session becomes invalid.
  * Default is disabled and time is set to a huge value (1 month)
