@@ -155,6 +155,21 @@ class Auth
         echo json_encode($results);
     }
 
+    /** Social Login via hybridauth */
+    public function socialLogin() {
+        // If !user_exists
+            // new \ProjectSend\Classes\Users
+            // $user->set($data_from_hybridauth)
+            // $user->create
+            // $uid = $user->getId();
+            // get_user_by_id($uid);
+
+        // login
+            // Set $_SESSION
+            // $logger->addEntry
+            // redirect according to account type (user or client)
+    }
+
     /**
      * Login error strings
      * 
