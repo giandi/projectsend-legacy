@@ -11,15 +11,20 @@ use \PDO;
 
 class MembersActions
 {
+    private $dbh;
+    private $logger;
 
 	var $client	= '';
 	var $groups	= '';
-    private $dbh;
 
-    public function __construct()
+    public function __construct(PDO $dbh = null)
     {
-        global $dbh;
+        if (empty($dbh)) {
+            global $dbh;
+        }
+
         $this->dbh = $dbh;
+        $this->logger = new \ProjectSend\Classes\ActionsLog;
     }
 
 	function group_add_members($arguments)
@@ -360,8 +365,8 @@ class MembersActions
 	 */
 	function group_process_memberships($arguments)
 	{
-		$this->client_id	= $arguments['client_id'];
-		$this->approve		= !empty( $arguments['approve'] ) ? $arguments['approve'] : '';
+		$this->client_id = $arguments['client_id'];
+		$this->approve = !empty( $arguments['approve'] ) ? $arguments['approve'] : '';
 		$this->deny_all	= !empty( $arguments['deny_all'] ) ? $arguments['deny_all'] : '';
 		
 		$this->get_requests_arguments = array(
@@ -420,7 +425,25 @@ class MembersActions
 			$this->statement->bindParam(':client_id', $this->client_id, PDO::PARAM_INT);
 			$this->statement->bindParam(':delete', $this->delete_ids);
 			$this->statement->execute();
-		}
+        }
+        
+        // Add to the log
+        $client = get_client_by_id($this->client_id);
+        $new_record_action = $this->logger->addEntry([
+            'action' => 39,
+            'owner_id' => CURRENT_USER_ID,
+            'affected_account_name' => $client['name']
+        ]);
+
+        /** Send email */
+        $notify_client = new \ProjectSend\Classes\Emails;
+        $notify_send = $notify_client->send([
+            'type'			=> 'client_memberships_process',
+            'username'		=> $client['username'],
+            'name'			=> $client['name'],
+            'addresses'		=> $client['email'],
+            'memberships'	=> $return_info['memberships'],
+        ]);
 		
 		return $this->return_info;
 	}
@@ -439,7 +462,15 @@ class MembersActions
 			$this->statement->bindParam(':client_id', $this->client_id, PDO::PARAM_INT);
 			$this->statement->bindParam(':denied', $this->type, PDO::PARAM_INT);
 			$this->statement->execute();
-		}
+
+            // Add to the log
+            $client = get_client_by_id($this->client_id);
+            $new_record_action = $this->logger->addEntry([
+                'action' => 39,
+                'owner_id' => CURRENT_USER_ID,
+                'affected_account_name' => $client['name']
+            ]);
+        }
 	}
 
 

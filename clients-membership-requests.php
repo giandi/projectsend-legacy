@@ -75,88 +75,38 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 			}
 			$clients_to_get = implode( ',', array_map( 'intval', array_unique( $selected_clients_ids ) ) );
 
-			/**
-			 * Make a list of users to avoid individual queries.
-			 */
-			$sql_user = $dbh->prepare( "SELECT id, name FROM " . TABLE_USERS . " WHERE FIND_IN_SET(id, :clients)" );
-			$sql_user->bindParam(':clients', $clients_to_get);
-			$sql_user->execute();
-			$sql_user->setFetchMode(PDO::FETCH_ASSOC);
-			while ( $data_user = $sql_user->fetch() ) {
-				$all_users[$data_user['id']] = $data_user['name'];
-			}
-
-
-			switch($_POST['action']) {
+			switch ($_POST['action']) {
 				case 'apply':
-					$selected_clients = $_POST['accounts'];
 					foreach ( $selected_clients as $client ) {
-						$email_type = 'client_memberships_process';
 						$process_memberships	= new \ProjectSend\Classes\MembersActions;
 
-						/**
-						 * 1 - Process memberships requests
-						 */
+						/** Process memberships requests */
 						if ( empty( $client['groups'] ) ) {
 							$client['groups'] = array();
 						}
 
 						$memberships_arguments = array(
-														'client_id'	=> $client['id'],
-														'approve'	=> $client['groups'],
-													);
+                            'client_id'	=> $client['id'],
+                            'approve' => $client['groups'],
+                        );
 
-						$process_requests	= $process_memberships->group_process_memberships( $memberships_arguments );
-
-						/**
-						 * 3- Send email to the client
-						 */
-						/** Send email */
-						$processed_requests = $process_requests['memberships'];
-						$client_information = get_client_by_id( $client['id'] );
-
-						$notify_client = new \ProjectSend\Classes\Emails;
-						$email_arguments = array(
-														'type'			=> $email_type,
-														'username'		=> $client_information['username'],
-														'name'			=> $client_information['name'],
-														'addresses'		=> $client_information['email'],
-														'memberships'	=> $processed_requests,
-													);
-						$notify_send = $notify_client->send($email_arguments);
+						$process_requests = $process_memberships->group_process_memberships( $memberships_arguments );
 					}
-					
-					$log_action_number = 39;
 					break;
 				case 'delete':
 					foreach ($selected_clients as $client) {
-						$process_memberships	= new \ProjectSend\Classes\MembersActions;
+						$process_memberships = new \ProjectSend\Classes\MembersActions;
 
 						$memberships_arguments = array(
-														'client_id'	=> $client['id'],
-														'type'		=> ( !empty( $_POST['denied'] ) && $_POST['denied'] == 1 ) ? 'denied' : 'new',
-													);
+                            'client_id'	=> $client['id'],
+                            'type' => ( !empty( $_POST['denied'] ) && $_POST['denied'] == 1 ) ? 'denied' : 'new',
+                        );
 
 						$delete_requests = $process_memberships->group_delete_requests( $memberships_arguments );
 					}
-					
-					$log_action_number = 39;
 					break;
 				default:
 					break;
-			}
-
-			/** Record the action log */
-			if ( !empty( $log_action_number ) ) {
-				foreach ($selected_clients_ids as $client) {
-					$logger = new \ProjectSend\Classes\ActionsLog;
-					$log_action_args = array(
-											'action' => $log_action_number,
-											'owner_id' => CURRENT_USER_ID,
-											'affected_account_name' => $all_users[$client]
-										);
-					$new_record_action = $logger->addEntry($log_action_args);
-				}
 			}
 
 			/** Redirect after processing */
