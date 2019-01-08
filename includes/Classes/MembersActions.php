@@ -233,11 +233,7 @@ class MembersActions
 							);
 		
 		if ( $this->requests_count > 0 ) {
-			$this->groups		= new \ProjectSend\Classes\GroupActions;
-			$this->arguments	= array();
-
-			$this->arguments = array();
-			$this->get_groups = $this->groups->getGroups($this->arguments);
+			$this->get_groups = get_groups([]);
 
 			while ( $this->row = $this->requests->fetch() ) {
 				$this->results[$this->row['client_id']]['requests'][] = array(
@@ -300,11 +296,9 @@ class MembersActions
 					 * Make a list of public groups in case clients can only request
 					 * membership to those
 					 */
-					$this->memberships	= new \ProjectSend\Classes\GroupActions;
-					$this->arguments = array(
-											'public'	=> true,
-										);
-					$this->public_groups = $this->memberships->getGroups($this->arguments);
+					$this->public_groups = get_groups([
+                        'public' => true
+                    ]);
 				}
 				
 				$this->results 		= array(

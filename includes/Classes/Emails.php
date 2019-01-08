@@ -285,11 +285,9 @@ class Emails
 									$this->email_body
 								);
 		if ( !empty( $memberships_requests ) ) {
-			$this->groups		= new GroupActions;
-			$this->groups_args	= array(
-										'group_ids' => $memberships_requests
-									);
-			$this->get_groups = $this->groups->getGroups( $this->groups_args );
+			$this->get_groups = get_groups([
+                'group_ids' => $memberships_requests
+            ]);
 
 			$this->groups_list = '<ul>';
 			foreach ( $this->get_groups as $group ) {
@@ -321,9 +319,7 @@ class Emails
 	{
 		$requests_title_replace = false;
 
-		$this->groups = new GroupActions();
-		$this->get_args = array();
-		$this->get_groups = $this->groups->getGroups( $this->get_args );
+		$this->get_groups = get_groups([]);
 
 		if ( !empty( $memberships_requests['approved'] ) ) {
 			$requests_title_replace = true;
@@ -529,11 +525,9 @@ class Emails
 									$this->email_body
 								);
 		if ( !empty( $memberships_requests ) ) {
-			$this->groups		= new GroupActions;
-			$this->groups_args	= array(
-										'group_ids' => $memberships_requests
-									);
-			$this->get_groups = $this->groups->getGroups( $this->groups_args );
+			$this->get_groups = get_groups([
+                'group_ids' => $memberships_requests
+            ]);
 
 			$this->groups_list = '<ul>';
 			foreach ( $this->get_groups as $group ) {

@@ -202,8 +202,7 @@ switch ($clients_form_type) {
 			 * Make a list of public groups in case clients can only request
 			 * membership to those
 			 */
-			$memberships	= new \ProjectSend\Classes\GroupActions;
-			$arguments		= array();
+			$arguments = array();
 
 			/** Groups to search on based on the current user level */
 			if ( CURRENT_USER_LEVEL == 9 || CURRENT_USER_LEVEL == 8 ) {
@@ -216,7 +215,7 @@ switch ($clients_form_type) {
 				}
 			}
 
-			$sql_groups = $memberships->getGroups($arguments);
+			$sql_groups = get_groups($arguments);
 			
 			$selected_groups	= ( !empty( $found_groups ) ) ? $found_groups : '';
 			$my_current_groups	= array();

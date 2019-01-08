@@ -24,8 +24,7 @@
             <option value="0"><?php _e('None (does not enable this feature)','cftp_admin'); ?></option>
             <?php
                 /** Fill the groups array that will be used on the form */
-                $get_groups = new \ProjectSend\Classes\GroupActions;
-                $groups = $get_groups->getGroups([]);
+                $groups = get_groups([]);
 
                 foreach ( $groups as $group ) {
             ?>

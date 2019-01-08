@@ -262,10 +262,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 				}
 
 				if ($count > 0) {
-					$get_groups	= new \ProjectSend\Classes\GroupActions;
-					$arguments	= array();
-					$all_groups	= $get_groups->getGroups($arguments);
-
+					$all_groups	= get_groups([]);
 
 					/**
 					 * Pre-populate a membership requests array
