@@ -21,6 +21,8 @@ class Categories
     private $description;
     private $created_date;
 
+    private $validation_errors;
+
     // Permissions
     private $allowed_actions_roles;
 
@@ -135,6 +137,17 @@ class Categories
         return false;
 	}
 
+    /**
+     * Return the validation errors the the front end
+     */
+    public function getValidationErrors()
+    {
+        if (!empty($this->validation_errors)) {
+            return $this->validation_errors;
+        }
+
+        return false;
+    }
 
 	/**
 	 * Save or create, according the the ACTION parameter
