@@ -86,6 +86,8 @@ gulp.task('copy', function () {
         .pipe(gulp.dest(dest + 'fonts/'));
     gulp.src('node_modules/font-awesome/fonts/*.*')
         .pipe(gulp.dest(dest + 'fonts/'));
+    gulp.src('node_modules/footable/css/fonts/*.*')
+        .pipe(gulp.dest(dest + 'fonts/'));
     gulp.src('node_modules/jquery/dist/jquery.min.js')
         .pipe(gulp.dest(dest + 'lib/jquery/'));
     gulp.src('node_modules/jquery-migrate/dist/jquery-migrate.min.js')
