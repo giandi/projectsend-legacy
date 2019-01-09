@@ -278,9 +278,11 @@ class Users
 		}
 
 		if ($validation->passed()) {
+            $this->validation_passed = true;
             return true;
 		}
 		else {
+            $this->validation_passed = false;
             $this->validation_errors = $validation->list_errors();
         }
 
@@ -407,7 +409,11 @@ class Users
 	 */
 	public function edit()
 	{
-		$this->state = array();
+        if (empty($this->id)) {
+            return false;
+        }
+
+        $this->state = array();
 
         $this->password_hashed = self::hashPassword($this->password);
 
