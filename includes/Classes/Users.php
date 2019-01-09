@@ -122,7 +122,7 @@ class Users
         $this->username = (!empty($arguments['username'])) ? encode_html($arguments['username']) : null;
 		$this->password = (!empty($arguments['password'])) ? $arguments['password'] : null;
         $this->role = (!empty($arguments['role'])) ? (int)$arguments['role'] : 0;
-        $this->active = (!empty($arguments['active'])) ? $arguments['active'] : 0;
+        $this->active = (!empty($arguments['active'])) ? (int)$arguments['active'] : 0;
 		$this->notify_account = (!empty($arguments['notify_account'])) ? $arguments['notify_account'] : 0;
         $this->max_file_size = (!empty($arguments['max_file_size'])) ? $arguments['max_file_size'] : 0;
 
@@ -130,8 +130,8 @@ class Users
 		$this->address = (!empty($arguments['address'])) ? encode_html($arguments['address']) : null;
 		$this->phone = (!empty($arguments['phone'])) ? encode_html($arguments['phone']) : null;
 		$this->contact = (!empty($arguments['contact'])) ? encode_html($arguments['contact']) : null;
-        $this->notify_upload = (!empty($arguments['notify_upload'])) ? $arguments['notify_upload'] : 0;
-        $this->account_request = (!empty($arguments['account_requested'])) ? $arguments['account_requested'] : 0;
+        $this->notify_upload = (!empty($arguments['notify_upload'])) ? (int)$arguments['notify_upload'] : 0;
+        $this->account_request = (!empty($arguments['account_requested'])) ? (int)$arguments['account_requested'] : 0;
         $this->recaptcha = (!empty($arguments['recaptcha'])) ? $arguments['recaptcha'] : null;
 
         self::setActionsPermissions();
