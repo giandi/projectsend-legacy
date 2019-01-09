@@ -104,24 +104,24 @@ function generate_password()
  */
 function get_available_languages()
 {
-	global $locales_names;
+    /** Load the language and locales names list */
+    require_once ROOT_DIR . '/includes/language.locales.names.php';
 
 	$langs = array();
 
-	$mo_files = scandir(ROOT_DIR.'/lang/');
+	$mo_files = glob(ROOT_DIR.'/lang/*.mo');
 	foreach ($mo_files as $file) {
 		$lang_file	= pathinfo($file, PATHINFO_FILENAME);
-		$extension	= pathinfo($file, PATHINFO_EXTENSION);
-		if ( $extension == 'mo' ) {
-			if ( array_key_exists( $lang_file, $locales_names ) ) {
-				$lang_name = $locales_names[$lang_file];
-			}
-			else {
-				$lang_name = $lang_file;
-			}
+        $extension	= pathinfo($file, PATHINFO_EXTENSION);
 
-			$langs[$lang_file] = $lang_name;
-		}
+        if ( array_key_exists( $lang_file, $locales_names ) ) {
+            $lang_name = $locales_names[$lang_file];
+        }
+        else {
+            $lang_name = $lang_file;
+        }
+
+        $langs[$lang_file] = $lang_name;
 	}
 
 	/** Sort alphabetically */
