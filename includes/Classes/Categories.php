@@ -21,6 +21,7 @@ class Categories
     private $description;
     private $created_date;
 
+    private $validation_passed;
     private $validation_errors;
 
     // Permissions
@@ -128,9 +129,11 @@ class Categories
 		$validation->validate('completed',$this->name,$json_strings['validation']['no_name']);
 
         if ($validation->passed()) {
+            $this->validation_passed = true;
             return true;
 		}
 		else {
+            $this->validation_passed = false;
             $this->validation_errors = $validation->list_errors();
         }
 
@@ -202,6 +205,10 @@ class Categories
 	 */
     public function edit()
     {
+        if (empty($this->id)) {
+            return false;
+        }
+
         $this->state = array();
  
         /** SQL query */
