@@ -17,8 +17,6 @@ define('USER_ROLE_LVL_0', __('Client','cftp_admin'));
 
 /**
  * Strings served as a json array to use in JS
- * 
- * @todo replace concatenated strings with formated ones
  */
 global $json_strings;
 $json_strings = [
@@ -66,20 +64,18 @@ $json_strings = [
 		'email_exists'				=> __('An account with this e-mail address already exists.','cftp_admin'),
 		'valid_pass'				=> __('Your password can only contain letters, numbers and the following characters:','cftp_admin'),
 		'valid_chars'				=> ('` ! " ? $ ? % ^ & * ( ) _ - + = { [ } ] : ; @ ~ # | < , > . ? \' / \ '),
-		/**
-		 * Validation strings for the length of usernames and passwords.
-		 * Uses the MIN and MAX values defined on sys.vars.php
-		 */
+        
+        /* Validation strings for the length of usernames and passwords. */
         'length_user'               => sprintf(__('Length should be between %d and %d characters long', 'cftp_admin'), MIN_USER_CHARS, MAX_USER_CHARS),
         'length_pass'               => sprintf(__('Length should be between %d and %d characters long', 'cftp_admin'), MIN_PASS_CHARS, MAX_PASS_CHARS),
 
-        /** Password requirements */
+        /* Password requirements */
 		'req_upper'					=> __('1 uppercase character','cftp_admin'),
 		'req_lower'					=> __('1 lowercase character','cftp_admin'),
 		'req_number'				=> __('1 number','cftp_admin'),
         'req_special'           	=> __('1 special character','cftp_admin'),
         
-        /** Installation strings */
+        /* Installation strings */
         'install_no_sitename'		=> __('Sitename was not completed.','cftp_admin'),
         'install_no_baseuri'		=> __('ProjectSend URI was not completed.','cftp_admin'),
     ],

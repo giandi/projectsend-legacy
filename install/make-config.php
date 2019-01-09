@@ -90,7 +90,7 @@ if ($pdo_driver_available) {
 	}
 }
 
-/** List of tables comes from sys.vars.php */
+/** List of tables comes from includes/app.php */
 
 // check if tables exists
 $table_exists = true;

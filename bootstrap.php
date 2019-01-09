@@ -15,7 +15,7 @@ require_once ROOT_DIR . '/vendor/autoload.php';
 require_once(ROOT_DIR . '/includes/security/xsrf.php');
 
 /** Basic system constants */
-require_once(ROOT_DIR.'/sys.vars.php');
+require_once(ROOT_DIR.'/includes/app.php');
 
 /** Flash messages */
 require_once(ROOT_DIR . '/includes/flash.php');

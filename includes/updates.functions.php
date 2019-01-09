@@ -62,7 +62,7 @@ function chmod_main_files() {
 
 	$chmods = 0;
 	$system_files = array(
-							'sys' => ROOT_DIR.'/sys.vars.php',
+							'sys' => ROOT_DIR.'/includes/app.php',
 							'cfg' => ROOT_DIR.'/includes/sys.config.php'
 						);
 	foreach ($system_files as $sys_file) {

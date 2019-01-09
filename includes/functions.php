@@ -18,7 +18,7 @@ function is_projectsend_installed()
 
 	$tables_missing = 0;
 	/**
-	 * This table list is defined on sys.vars.php
+	 * This table list is defined on app.php
 	 */
 	foreach ($tables_need as $table) {
 		if ( !tableExists( $table ) ) {
@@ -1254,7 +1254,7 @@ function option_file_upload( $file, $validate_ext = '', $option = '', $action = 
 
 		if ( $continue ) {
 			/**
-			 * Move the file to the destination defined on sys.vars.php. If ok, add the
+			 * Move the file to the destination defined on app.php. If ok, add the
 			 * new file name to the database.
 			 */
 			if ( move_uploaded_file( $file['tmp_name'], ADMIN_UPLOADS_DIR . DS . $safe_filename ) ) {
