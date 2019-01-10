@@ -282,7 +282,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 					 * 2- Button class for the manage files link
 					 */
 					if (!empty($group_data['files'])) {
-						$files_link	= 'manage-files.php?group_id=' . html_output( $row["id"] );
+						$files_link	= 'manage-files.php?group_id=' . $group_data["id"];
 						$files_btn	= 'btn-primary';
 					}
 					else {
@@ -293,8 +293,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 					/**
 					 * 3- Visibility
 					 */
-					 if ($row['public'] == '1') {
-						 $visibility_link	= '<a href="javascript:void(0);" class="btn btn-primary btn-sm public_link" data-type="group" data-id="' . $row['id'] .'" data-token="' . html_output($row['public_token']) .'">';
+					 if ($group_data['public'] == '1') {
+						 $visibility_link	= '<a href="javascript:void(0);" class="btn btn-primary btn-sm public_link" data-type="group" data-id="' . $group_data['id'] .'" data-token="' . html_output($group_data['public_token']) .'">';
 						 $visibility_label	= __('Public','cftp_admin');
 					 }
 					 else {
@@ -308,13 +308,13 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 					$tbody_cells = array(
 											array(
 													'checkbox'		=> true,
-													'value'			=> $row["id"],
+													'value'			=> $group_data["id"],
 												),
 											array(
-													'content'		=> html_output( $row["name"] ),
+													'content'		=> $group_data["name"],
 												),
 											array(
-													'content'		=> html_output( $row["description"] ),
+													'content'		=> $group_data["description"],
 												),
 											array(
 													'content'		=> (!empty($group_data['members'])) ? count($group_data['members']) : '0',
@@ -327,7 +327,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 													'content'		=> $visibility_link . $visibility_label . '</a>',
 												),
 											array(
-													'content'		=> html_output( $row["created_by"] ),
+													'content'		=> html_output( $group_data["created_by"] ),
 												),
 											array(
 													'content'		=> $date,
@@ -338,7 +338,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 												),
 											array(
 													'actions'		=> true,
-													'content'		=> '<a href="groups-edit.php?id=' . html_output( $row["id"] ) . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
+													'content'		=> '<a href="groups-edit.php?id=' . html_output( $group_data["id"] ) . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
 												),
 										);
 

@@ -143,6 +143,8 @@ class Groups
             'files' => $this->files,
             'public' => $this->public,
             'public_token' => $this->public_token,
+            'created_by' => $this->created_by,
+            'created_date' => $this->created_date,
         ];
 
         return $return;
