@@ -8,7 +8,6 @@ select.form-control + .chosen-container.chosen-container-single .chosen-single {
 	font-size: 14px;
 	line-height: 1.428571429;
 	color: #555;
-	vertical-align: middle;
 	background-color: #fff;
 	border: 1px solid #ccc;
 	border-radius: 4px;
@@ -43,7 +42,6 @@ select.form-control + .chosen-container .chosen-search input[type=text] {
 	font-size: 14px;
 	line-height: 1.428571429;
 	color: #555;
-	vertical-align: middle;
 	background-color: #FFF;
 	border: 1px solid #CCC;
 	border-radius: 4px;
@@ -92,7 +90,6 @@ select.form-control + .chosen-container-multi .chosen-choices {
 	font-size: 14px;
 	line-height: 1.428571429;
 	color: #555;
-	vertical-align: middle;
 	background-color: #fff;
 	border: 1px solid #ccc;
 	border-radius: 4px;
@@ -132,7 +129,8 @@ select.form-control + .chosen-container-multi .chosen-choices li.search-choice:h
 
 select.form-control + .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
 	top:8px;
-	right:6px;
+    right:6px;
+    background: url("../img/chosen-sprite.png") -42px 1px no-repeat;
 }
  
 select.form-control + .chosen-container-multi.chosen-container-active .chosen-choices,
