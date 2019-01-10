@@ -13,48 +13,38 @@ $active_nav = 'groups';
 
 $page_title = __('Add clients group','cftp_admin');
 
+$new_group = new \ProjectSend\Classes\Groups($dbh);
+
 include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 if ($_POST) {
-	$new_group = new \ProjectSend\Classes\GroupActions;
-
 	/**
 	 * Clean the posted form values to be used on the groups actions,
 	 * and again on the form if validation failed.
 	 */
     $group_arguments = [
-        'id'            => '',
-        'name'          => encode_html($_POST['name']),
-        'description'   => encode_html($_POST['description']),
+        'name'          => $_POST['name'],
+        'description'   => $_POST['description'],
         'members'       => ( !empty( $_POST['members'] ) ) ? $_POST['members'] : null,
         'public'        => (isset($_POST["public"])) ? 1 : 0,
     ];
 
 	/** Validate the information from the posted form. */
-	$validation = $new_group->validate($group_arguments);
-
-	/** Create the group if validation is correct. */
-	if ($validation['passed'] == true) {
-		$new_response = $new_group->create($group_arguments);
+    $new_group->set($group_arguments);
+	if ($new_group->validate()) {
+        $new_response = $new_group->create();
 	}
 }
 ?>
-
 <div class="col-xs-12 col-sm-12 col-lg-6">
 	<div class="white-box">
 		<div class="white-box-interior">
 
 			<?php
-				/**
-				 * If the form was submited with errors, show them here.
-				 */
-                if (isset($validation['errors'])) {
-                    echo $validation['errors'];
-                }
-			?>
+                // If the form was submited with errors, show them here.
+                echo $new_group->getValidationErrors();
 
-			<?php
-				if (isset($new_response)) {
+                if (isset($new_response)) {
 					/**
 					 * Get the process state and show the corresponding ok or error messages.
 					 */
@@ -62,16 +52,6 @@ if ($_POST) {
 						case 1:
 							$msg = __('Group added correctly.','cftp_admin');
 							echo system_message('success',$msg);
-
-							/** Record the action log */
-							$logger = new ProjectSend\Classes\ActionsLog;
-							$log_action_args = array(
-													'action' => 23,
-													'owner_id' => CURRENT_USER_ID,
-													'affected_account' => $new_response['new_id'],
-													'affected_account_name' => $group_arguments['name']
-												);
-							$new_record_action = $logger->addEntry($log_action_args);
 						break;
 						case 0:
 							$msg = __('There was an error. Please try again.','cftp_admin');

@@ -16,7 +16,7 @@ $page_title = __('Edit group','cftp_admin');
 include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 /** Create the object */
-$edit_group = new \ProjectSend\Classes\GroupActions;
+$edit_group = new \ProjectSend\Classes\Groups($dbh);
 
 /** Check if the id parameter is on the URI. */
 if (isset($_GET['id'])) {
@@ -39,11 +39,8 @@ else {
  * @todo replace when a Group class is made
  */
 if ($page_status === 1) {
-    // Group information
-    $group_arguments = get_group_by_id($group_id);
-
-    // Group members
-    $current_members = get_group_members($group_id);
+    $edit_group->get($group_id);
+    $group_arguments = $edit_group->getProperties();
 }
 
 if ($_POST) {
@@ -56,23 +53,21 @@ if ($_POST) {
 	 */
     $group_arguments = array(
         'id'            => $group_id,
-        'name'          => encode_html($_POST['name']),
-        'description'   => encode_html($_POST['description']),
-        'members'       => (!empty($_POST["members"])) ? $_POST['members'] : '',
+        'name'          => $_POST['name'],
+        'description'   => $_POST['description'],
+        'members'       => (!empty($_POST["members"])) ? $_POST['members'] : null,
         'public'        => (isset($_POST["public"])) ? 1 : 0,
     );
 
 	/** Validate the information from the posted form. */
-	$validation = $edit_group->validate($group_arguments);
+    $edit_group->set($group_arguments);
+    if ($edit_group->validate()) {
+		$edit_response = $edit_group->edit();
 
-	/** Create the group if validation is correct. */
-	if ($validation['passed'] == true) {
-		$edit_response = $edit_group->edit($group_arguments);
-	}
-
-	$location = BASE_URI . 'groups-edit.php?id=' . $group_id . '&status=' . $edit_response['query'];
-	header("Location: $location");
-	die();
+        $location = BASE_URI . 'groups-edit.php?id=' . $group_id . '&status=' . $edit_response['query'];
+        header("Location: $location");
+        die();
+    }
 }
 ?>
 
@@ -83,16 +78,6 @@ if ($_POST) {
 				case 1:
 					$msg = __('Group edited correctly.','cftp_admin');
 					echo system_message('success',$msg);
-
-					/** Record the action log */
-					$logger = new ProjectSend\Classes\ActionsLog;
-					$log_action_args = array(
-											'action' => 15,
-											'owner_id' => CURRENT_USER_ID,
-											'affected_account' => $group_id,
-											'affected_account_name' => $group_arguments['name']
-										);
-					$new_record_action = $logger->addEntry($log_action_args);
 				break;
 				case 0:
 					$msg = __('There was an error. Please try again.','cftp_admin');
@@ -104,17 +89,11 @@ if ($_POST) {
 
 	<div class="white-box">
 		<div class="white-box-interior">
-			<?php
-				/**
-				 * If the form was submited with errors, show them here.
-				 */
-                if (isset($validation['errors'])) {
-                    echo $validation['errors'];
-                }
-			?>
-
-			<?php
-				$direct_access_error = __('This page is not intended to be accessed directly.','cftp_admin');
+            <?php
+                // If the form was submited with errors, show them here.
+                echo $edit_group->getValidationErrors();
+    
+                $direct_access_error = __('This page is not intended to be accessed directly.','cftp_admin');
 				if ($page_status === 0) {
 					$msg = __('No group was selected.','cftp_admin');
 					echo system_message('danger',$msg);

@@ -1359,5 +1359,16 @@ if (current_role_in($allowed_update)) {
 
             $updates_made++;
         }
-	}
+
+
+		/**
+		 * r1105 updates
+		 * Description column for groups should not be required
+		 */
+		if ($last_update < 1105) {
+			$statement = $dbh->query("ALTER TABLE `" . TABLE_GROUPS . "` CHANGE `description` `description` TEXT NULL");
+
+			$updates_made++;
+		}
+    }
 }

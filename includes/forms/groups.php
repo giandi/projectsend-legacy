@@ -62,10 +62,12 @@ switch ($groups_form_type) {
 				?>
 						<option value="<?php echo $row["id"]; ?>"
 							<?php
-								if($groups_form_type == 'edit_group') {
-									if (in_array($row["id"],$current_members)) {
-										echo ' selected="selected"';
-									}
+								if ($groups_form_type == 'edit_group') {
+                                    if (!empty($group_arguments['members'])) {
+									    if (in_array($row["id"], $group_arguments['members'])) {
+										    echo ' selected="selected"';
+                                        }
+                                    }
 								}
 							?>
 						><?php echo html_output($row["name"]); ?></option>
