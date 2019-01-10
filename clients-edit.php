@@ -170,10 +170,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 			<?php
                 // If the form was submited with errors, show them here.
                 echo $edit_client->getValidationErrors();
-			?>
-			
-			<?php
-				$direct_access_error = __('This page is not intended to be accessed directly.','cftp_admin');
+
+                $direct_access_error = __('This page is not intended to be accessed directly.','cftp_admin');
 				if ($page_status === 0) {
 					$msg = __('No client was selected.','cftp_admin');
 					echo system_message('danger',$msg);
