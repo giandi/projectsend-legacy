@@ -308,58 +308,36 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 	
 					$sql->setFetchMode(PDO::FETCH_ASSOC);
 					while ( $row = $sql->fetch() ) {
-						$table->addRow();
+                        $table->addRow();
+                        
+                        $client_object = new \ProjectSend\Classes\Users($dbh);
+                        $client_object->get($row["id"]);
+                        $client_data = $client_object->getProperties();
 
-						$client_user	= $row["user"];
-						$client_id		= $row["id"];
-
-						/**
-						 * Prepare the information to be used later on the cells array
-						 * 1- Count GROUPS where the client is member
-						 */
-						$get_groups		= new ProjectSend\Classes\MembersActions;
-						$get_arguments	= array(
-												'client_id'	=> $client_id,
-											);
-						$found_groups	= $get_groups->client_get_groups($get_arguments); 
-						$count_groups	= count( $found_groups );
-
-						$found_groups = ($count_groups > 0) ? implode( ',', $found_groups ) : '';
+						$count_groups = count($client_data['groups']);
 						
-						/**
-						 * 2- Get account creation date
-						 */
-						$date = date(TIMEFORMAT,strtotime($row['timestamp']));
+						/* Get account creation date */
+						$created_at = date(TIMEFORMAT,strtotime($client_data['created_date']));
 
-						/**
-						 * Prepare the information to be used later on the cells array
-						 * 3- Count uploads
-						 */
-						$uploads_query = "SELECT DISTINCT id FROM " . TABLE_FILES . " WHERE uploader=:username";
-						$uploads_files = $dbh->prepare( $uploads_query );
-						$uploads_files->bindParam(':username', $client_user);
-						$uploads_files->execute();
-						$uploads_count = $uploads_files->rowCount();
+                        /* Count uploads */
+                        $count_files = count($client_data['files']);
 						
-						/**
-						 * 4- Count OWN and GROUP files
-						 */
+						/* Count OWN and GROUP files */
 						$own_files = 0;
 						$groups_files = 0;
 
-						$files_query = "SELECT DISTINCT id, file_id, client_id, group_id FROM " . TABLE_FILES_RELATIONS . " WHERE client_id=:id";
+						$found_groups = ($count_groups > 0) ? implode( ',', $client_data['groups'] ) : '';
+                        $files_query = "SELECT DISTINCT id, file_id, client_id, group_id FROM " . TABLE_FILES_RELATIONS . " WHERE client_id=:id";
 						if ( !empty( $found_groups ) ) {
 							$files_query .= " OR FIND_IN_SET(group_id, :group_id)";
 						}
 						$sql_files = $dbh->prepare( $files_query );
-						$sql_files->bindParam(':id', $client_id, PDO::PARAM_INT);
+						$sql_files->bindParam(':id', $client_data['id'], PDO::PARAM_INT);
 						if ( !empty( $found_groups ) ) {
 							$sql_files->bindParam(':group_id', $found_groups);
 						}
 
 						$sql_files->execute();
-						$count_files = $sql_files->rowCount();
-
 						$sql_files->setFetchMode(PDO::FETCH_ASSOC);
 						while ( $row_files = $sql_files->fetch() ) {
 							if (!is_null($row_files['client_id'])) {
@@ -370,20 +348,13 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 							}
 						}
 
-						/**
-						 * 5- Get active status
-						 */
-						$status_hidden	= __('Inactive','cftp_admin');
-						$status_visible	= __('Active','cftp_admin');
-						$label			= ($row['active'] == 0) ? $status_hidden : $status_visible;
-						$class			= ($row['active'] == 0) ? 'danger' : 'success';
-						
-						
-						/**
-						 * 6- Actions buttons
-						 */
+						/* Get active status */
+						$label = ($client_data['active'] == 0) ? __('Inactive','cftp_admin') : __('Active','cftp_admin');
+						$class = ($client_data['active'] == 0) ? 'danger' : 'success';
+												
+						/* Actions buttons */
 						if ($own_files + $groups_files > 0) {
-							$files_link		= 'manage-files.php?client_id='.$row["id"];
+							$files_link		= 'manage-files.php?client_id='.$client_data["id"];
 							$files_button	= 'btn-primary';
 						}
 						else {
@@ -392,7 +363,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						}
 
 						if ($count_groups > 0) {
-							$groups_link	= 'groups.php?member='.$row["id"];
+							$groups_link	= 'groups.php?member='.$client_data["id"];
 							$groups_button	= 'btn-primary';
 						}
 						else {
@@ -406,19 +377,19 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						$tbody_cells = array(
 												array(
 														'checkbox'		=> true,
-														'value'			=> $row["id"],
+														'value'			=> $client_data["id"],
 													),
 												array(
-														'content'		=> html_output( $row["name"] ),
+														'content'		=> $client_data["name"],
 													),
 												array(
-														'content'		=> html_output( $row["user"] ),
+														'content'		=> $client_data["username"],
 													),
 												array(
-														'content'		=> html_output( $row["email"] ),
+														'content'		=> $client_data["email"],
 													),
 												array(
-														'content'		=> $uploads_count,
+														'content'		=> $count_files,
 													),
 												array(
 														'content'		=> $own_files,
@@ -433,34 +404,23 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 														'content'		=> $count_groups,
 													),
 												array(
-														'content'		=> ( $row["notify"] == '1' ) ? __('Yes','cftp_admin') : __('No','cftp_admin'),
+														'content'		=> ( $client_data["notify_upload"] == '1' ) ? __('Yes','cftp_admin') : __('No','cftp_admin'),
 													),
 												array(
-														'content'		=> ( $row["max_file_size"] == '0' ) ? __('Default','cftp_admin') : $row["max_file_size"] . 'mb',
+														'content'		=> ( $client_data["max_file_size"] == '0' ) ? __('Default','cftp_admin') : $client_data["max_file_size"] . 'mb',
 													),
 												array(
-														'content'		=> $date,
+														'content'		=> $created_at,
 													),
-												/*
-												array(
-														'content'		=> html_output( $row["address"] ),
-													),
-												array(
-														'content'		=> html_output( $row["phone"] ),
-													),
-												array(
-														'content'		=> html_output( $row["contact"] ),
-													),
-												*/
 												array(
 														'actions'		=> true,
 														'content'		=>  '<a href="' . $files_link . '" class="btn btn-sm ' . $files_button . '">' . __("Files","cftp_admin") . '</a>' . "\n" .
 																			'<a href="' . $groups_link . '" class="btn btn-sm ' . $groups_button . '">' . __("Groups","cftp_admin") . '</a>' . "\n" .
-																			'<a href="' . CLIENT_VIEW_FILE_LIST_URL . '?client=' . html_output( $row["user"] ) . '" class="btn btn-primary btn-sm" target="_blank">' . __('As client','cftp_admin') . '</a>' . "\n"
+																			'<a href="' . CLIENT_VIEW_FILE_LIST_URL . '?client=' . html_output( $client_data["username"] ) . '" class="btn btn-primary btn-sm" target="_blank">' . __('As client','cftp_admin') . '</a>' . "\n"
 													),
 												array(
 														'actions'		=> true,
-														'content'		=>  '<a href="clients-edit.php?id=' . html_output( $row["id"] ) . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
+														'content'		=>  '<a href="clients-edit.php?id=' . $client_data["id"] . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
 													),
 											);
 
