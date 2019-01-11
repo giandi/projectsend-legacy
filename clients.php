@@ -78,7 +78,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 	/** Query the clients */
 	$params = array();
 
-	$cq = "SELECT * FROM " . TABLE_USERS . " WHERE level='0' AND account_requested='0'";
+	$cq = "SELECT id FROM " . TABLE_USERS . " WHERE level='0' AND account_requested='0'";
 
 	/** Add the search terms */	
 	if ( isset( $_GET['search'] ) && !empty( $_GET['search'] ) ) {
@@ -281,20 +281,6 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 													'content'		=> __('Added on','cftp_admin'),
 													'hide'			=> 'phone,tablet',
 												),
-												/*
-												array(
-													'content'		=> __('Address','cftp_admin'),
-													'hide'			=> 'phone,tablet',
-												),
-												array(
-													'content'		=> __('Telephone','cftp_admin'),
-													'hide'			=> 'phone,tablet',
-												),
-												array(
-													'content'		=> __('Internal contact','cftp_admin'),
-													'hide'			=> 'phone,tablet',
-												),
-												*/
 												array(
 													'content'		=> __('View','cftp_admin'),
 													'hide'			=> 'phone',
