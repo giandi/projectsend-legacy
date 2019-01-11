@@ -80,7 +80,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 	}
 	
 	$params = array();
-	$cq = "SELECT * FROM " . TABLE_GROUPS;
+	$cq = "SELECT id FROM " . TABLE_GROUPS;
 
 	/** Add the search terms */	
 	if ( isset( $_GET['search'] ) && !empty( $_GET['search'] ) ) {
@@ -272,15 +272,10 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
                     $group_object->get($row["id"]);
                     $group_data = $group_object->getProperties();
 
-					/**
-					 * Prepare the information to be used later on the cells array
-					 * 1- Get account creation date
-					 */
-					$date = date(TIMEFORMAT,strtotime($row['timestamp']));
+                    /* Get group creation date */
+                    $created_at = date(TIMEFORMAT,strtotime($group_data['created_date']));
 					
-					/**
-					 * 2- Button class for the manage files link
-					 */
+					/* Button class for the manage files link */
 					if (!empty($group_data['files'])) {
 						$files_link	= 'manage-files.php?group_id=' . $group_data["id"];
 						$files_btn	= 'btn-primary';
@@ -327,10 +322,10 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 													'content'		=> $visibility_link . $visibility_label . '</a>',
 												),
 											array(
-													'content'		=> html_output( $group_data["created_by"] ),
+													'content'		=> $group_data["created_by"],
 												),
 											array(
-													'content'		=> $date,
+													'content'		=> $created_at,
 												),
 											array(
 													'actions'		=> true,
@@ -338,7 +333,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 												),
 											array(
 													'actions'		=> true,
-													'content'		=> '<a href="groups-edit.php?id=' . html_output( $group_data["id"] ) . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
+													'content'		=> '<a href="groups-edit.php?id=' . $group_data["id"] . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
 												),
 										);
 
