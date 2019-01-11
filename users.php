@@ -106,7 +106,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 	$params	= array();
 
-	$cq = "SELECT * FROM " . TABLE_USERS . " WHERE level != '0'";
+	$cq = "SELECT id FROM " . TABLE_USERS . " WHERE level != '0'";
 
 	/** Add the search terms */	
 	if ( isset( $_GET['search'] ) && !empty( $_GET['search'] ) ) {
@@ -326,30 +326,24 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 				while ( $row = $sql->fetch() ) {
 					$table->addRow();
 
-					/**
-					 * Prepare the information to be used later on the cells array
-					 * 1- Get the role name
-					 */
-					switch( $row["level"] ) {
+                    $user_object = new \ProjectSend\Classes\Users($dbh);
+                    $user_object->get($row["id"]);
+                    $user_data = $user_object->getProperties();
+
+                    /* Get account creation date */
+                    $created_at = date(TIMEFORMAT,strtotime($user_data['created_date']));
+
+					/* Role name */
+					switch( $user_data["role"] ) {
 						case '9': $role_name = USER_ROLE_LVL_9; break;
 						case '8': $role_name = USER_ROLE_LVL_8; break;
 						case '7': $role_name = USER_ROLE_LVL_7; break;
 					}
 					 
-					/**
-					 * 2- Get active status
-					 */
-					$status_hidden	= __('Inactive','cftp_admin');
-					$status_visible	= __('Active','cftp_admin');
-					$label			= ($row['active'] == 0) ? $status_hidden : $status_visible;
-					$class			= ($row['active'] == 0) ? 'danger' : 'success';
+                    /* Get active status */
+                    $label = ($user_data['active'] == 0) ? __('Inactive','cftp_admin') : __('Active','cftp_admin');
+                    $class = ($user_data['active'] == 0) ? 'danger' : 'success';
 					
-					/**
-					 * 3- Get account creation date
-					 */
-					$date = date( TIMEFORMAT, strtotime( $row['timestamp'] ) );
-
-
 					/**
 					 * Add the cells to the row
 					 */
@@ -359,19 +353,19 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 					else {
 						$cell = array(
 									'checkbox'		=> true,
-									'value'			=> $row["id"],
+									'value'			=> $user_data["id"],
 									);
 					}
 					$tbody_cells = array(
 											$cell,
 											array(
-													'content'		=> html_output( $row["name"] ),
+													'content'		=> $user_data["name"],
 												),
 											array(
-													'content'		=> html_output( $row["user"] ),
+													'content'		=> $user_data["username"],
 												),
 											array(
-													'content'		=> html_output( $row["email"] ),
+													'content'		=> $user_data["email"],
 												),
 											array(
 													'content'		=> $role_name,
@@ -380,14 +374,14 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 													'content'		=> '<span class="label label-' . $class . '">' . $label . '</span>',
 												),
 											array(
-													'content'		=> ( $row["max_file_size"] == '0' ) ? __('Default','cftp_admin') : $row["max_file_size"] . 'mb',
+													'content'		=> ( $user_data["max_file_size"] == '0' ) ? __('Default','cftp_admin') : $user_data["max_file_size"] . 'mb',
 												),
 											array(
-													'content'		=> $date,
+													'content'		=> $created_at,
 												),
 											array(
 													'actions'		=> true,
-													'content'		=>  '<a href="users-edit.php?id=' . html_output( $row["id"] ) . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
+													'content'		=>  '<a href="users-edit.php?id=' . $user_data["id"] . '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i><span class="button_label">' . __('Edit','cftp_admin') . '</span></a>' . "\n"
 												),
 										);
 
