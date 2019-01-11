@@ -10,6 +10,7 @@
  namespace ProjectSend\Classes;
  
  use \ProjectSend\Classes\Validation;
+ use \ProjectSend\Classes\MembersActions;
  use \PDO;
  
 class Users
@@ -30,8 +31,15 @@ class Users
     private $active;
     private $notify_account;
     private $max_file_size;
+    private $created_by;
     private $created_date;
 
+    // Uploaded files
+    private $files;
+
+    // Groups where the client is member
+    private $groups;
+    
     // @todo implement meta data
     private $meta;
 
@@ -163,12 +171,31 @@ class Users
             $this->active = html_output($this->row['active']);
             $this->max_file_size = html_output($this->row['max_file_size']);
             $this->created_date = html_output($this->row['timestamp']);
+            $this->created_by = html_output($this->row['created_by']);
 
             // Specific for clients
             $this->address = html_output($this->row['address']);
             $this->phone = html_output($this->row['phone']);
             $this->contact = html_output($this->row['contact']);
             $this->notify_upload = html_output($this->row['notify']);
+
+            // Files
+            $this->statement = $this->dbh->prepare("SELECT DISTINCT id FROM " . TABLE_FILES . " WHERE uploader = :username");
+            $this->statement->bindParam(':username', $this->username);
+            $this->statement->execute();
+
+            if ( $this->statement->rowCount() > 0) {
+                $this->statement->setFetchMode(PDO::FETCH_ASSOC);
+                while ($this->file = $this->statement->fetch() ) {
+                    $this->files[] = $this->file['id'];
+                }
+            }
+    
+            // Groups
+            $groups_object = new \ProjectSend\Classes\MembersActions($this->dbh);
+            $this->groups = $groups_object->client_get_groups([
+                'client_id'	=> $this->id
+            ]); 
 
             $this->validation_type = "existing_user";
         }
@@ -197,6 +224,8 @@ class Users
             'phone' => $this->phone,
             'contact' => $this->contact,
             'notify_upload' => $this->notify_upload,
+            'files' => $this->files,
+            'groups' => $this->groups,
             'meta' => $this->meta,
         ];
 
