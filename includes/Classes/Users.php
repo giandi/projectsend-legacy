@@ -507,7 +507,7 @@ class Users
                     'owner_id' => CURRENT_USER_ID,
                     'affected_account' => $this->id,
                     'affected_account_name' => $this->username,
-                    'get_user_real_name' => true
+                    'username_column' => true
                 ]);
             }
 			else {

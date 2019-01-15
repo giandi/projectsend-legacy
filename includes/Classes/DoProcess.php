@@ -314,20 +314,18 @@ class DoProcess
         if (file_exists($this->file_location)) {
             /** Record the action log */
             $record = $this->logger->addEntry([
-                'action'				=> $log_action_number,
-                'owner_id'				=> CURRENT_USER_ID,
-                'affected_file'			=> (int)$file_id,
-                'affected_file_name'	=> $filename,
-                'affected_account'		=> CURRENT_USER_ID,
-                'affected_account_name'	=> CURRENT_USER_USERNAME,
-                'get_user_real_name'	=> true,
-                'get_file_real_name'	=> true
+                'action' => $log_action_number,
+                'owner_id' => CURRENT_USER_ID,
+                'affected_file' => (int)$file_id,
+                'affected_file_name' => $filename,
+                'affected_account' => CURRENT_USER_ID,
+                'file_title_column' => true
             ]);
             
             $this->save_file_as = UPLOADED_FILES_DIR . DS . $save_as;
 
             $this->serveFile($this->file_location, $this->save_file_as);
-            exit(0);
+            exit;
         }
         else {
             header('Location:' . PAGE_STATUS_CODE_404);
