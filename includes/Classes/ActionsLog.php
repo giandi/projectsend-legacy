@@ -16,12 +16,22 @@ use \PDO;
 class ActionsLog
 {
 
-    var $action = '';
+    private $action;
+    private $owner_id;
+    private $owner_user;
+    private $affected_file;
+    private $affected_account;
+    private $affected_file_name;
+    private $affected_account_name;
+
     private $dbh;
 
-    public function __construct()
+    public function __construct(PDO $dbh = null)
     {
-        global $dbh;
+        if (empty($dbh)) {
+            global $dbh;
+        }
+
         $this->dbh = $dbh;
     }
    
@@ -55,6 +65,7 @@ class ActionsLog
             28	=> __('A user account was deactivated','cftp_admin'),
             21	=> __('A file was marked as hidden','cftp_admin'),
             22	=> __('A file was marked as visible','cftp_admin'),
+            40	=> __('A file was marked as hidden for everyone','cftp_admin'),
             23	=> __('A user creates a new group','cftp_admin'),
             25	=> __('A file is assigned to a client','cftp_admin'),
             26	=> __('A file is assigned to a group','cftp_admin'),
@@ -87,35 +98,21 @@ class ActionsLog
 		$this->action = $arguments['action'];
 		$this->owner_id = $arguments['owner_id'];
 		$this->owner_user = (!empty($arguments['owner_user'])) ? $arguments['owner_user'] : CURRENT_USER_NAME;
-		$this->affected_file = (!empty($arguments['affected_file'])) ? $arguments['affected_file'] : '';
-		$this->affected_account = (!empty($arguments['affected_account'])) ? $arguments['affected_account'] : '';
-		$this->affected_file_name = (!empty($arguments['affected_file_name'])) ? $arguments['affected_file_name'] : '';
-		$this->affected_account_name = (!empty($arguments['affected_account_name'])) ? $arguments['affected_account_name'] : '';
+		$this->affected_file = (!empty($arguments['affected_file'])) ? $arguments['affected_file'] : null;
+		$this->affected_account = (!empty($arguments['affected_account'])) ? $arguments['affected_account'] : null;
+		$this->affected_file_name = (!empty($arguments['affected_file_name'])) ? $arguments['affected_file_name'] : null;
+		$this->affected_account_name = (!empty($arguments['affected_account_name'])) ? $arguments['affected_account_name'] : null;
 		
 		/** Get the real name of the client or user */
-		if (!empty($arguments['get_user_real_name'])) {
-			$this->short_query = $dbh->prepare( "SELECT name FROM " . TABLE_USERS . " WHERE user =:user" );
-			$params = array(
-							':user'		=> $this->affected_account_name,
-						);
-			$this->short_query->execute( $params );
-			$this->short_query->setFetchMode(PDO::FETCH_ASSOC);
-			while ( $srow = $this->short_query->fetch() ) {
-				$this->affected_account_name = $srow['name'];
-			}
+		if (!empty($arguments['username_column'])) {
+            $user = get_user_by_username($this->affected_account_name);
+            $this->affected_account_name = $user['name'];
 		}
 
 		/** Get the title of the file on downloads */
-		if (!empty($arguments['get_file_real_name'])) {
-			$this->short_query = $dbh->prepare( "SELECT filename FROM " . TABLE_FILES . " WHERE url =:file" );
-			$params = array(
-							':file'		=> $this->affected_file_name,
-						);
-			$this->short_query->execute( $params );
-			$this->short_query->setFetchMode(PDO::FETCH_ASSOC);
-			while ( $srow = $this->short_query->fetch() ) {
-				$this->affected_file_name = $srow['filename'];
-			}
+		if (!empty($arguments['file_title_column'])) {
+            $file = get_file_by_filename($this->affected_file_name);
+    		$this->affected_file_name = $file['title'];
 		}
 
 		/** Insert the client information into the database */
