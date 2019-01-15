@@ -405,7 +405,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						/**
 						 * Get account creation date
 						 */
-						$date = date(TIMEFORMAT,strtotime($row['timestamp']));
+                        $date = format_date($row['timestamp']);
 						
 						/**
 						 * Make an array of group membership requests

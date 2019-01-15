@@ -331,7 +331,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
                     $user_data = $user_object->getProperties();
 
                     /* Get account creation date */
-                    $created_at = date(TIMEFORMAT,strtotime($user_data['created_date']));
+                    $created_at = format_date($user_data['created_date']);
 
 					/* Role name */
 					switch( $user_data["role"] ) {

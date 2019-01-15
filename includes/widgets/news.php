@@ -17,9 +17,10 @@
                             $n = 0;
                             foreach ($feed->channel->item as $item) {
                                 if ($n < $max_news) {
+                                    $published_date = format_date($item->pubDate);
                             ?>
                                     <li>
-                                        <span class="date"><?php echo date(TIMEFORMAT,strtotime($item->pubDate)); ?></span>
+                                        <span class="date"><?php echo $published_date; ?></span>
                                         <a href="<?php echo html_output($item->link); ?>" target="_blank">
                                             <h5><?php echo html_output($item->title); ?></h5>
                                         </a>

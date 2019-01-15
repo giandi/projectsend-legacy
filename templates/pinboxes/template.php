@@ -156,8 +156,8 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '400');
 				<div class="photo_list">
 				<?php
 					foreach ($my_files as $file) {
-						$download_link = make_download_link($file);
-						$date = date(TIMEFORMAT,strtotime($file['timestamp']));
+                        $download_link = make_download_link($file);
+                        $date = format_date($file['timestamp']);
 				?>
 						<div class="photo <?php if ($file['expired'] == true) { echo 'expired'; } ?>">
 							<div class="photo_int">

@@ -259,7 +259,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 										'affected_account_name'	=> $log['affected_account_name']
 									)
 				);
-				$date = date(TIMEFORMAT,strtotime($log['timestamp']));
+
+                $date = format_date($log['timestamp']);
 
 				$table->addRow();
 				

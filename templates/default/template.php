@@ -205,8 +205,8 @@ define('TEMPLATE_THUMBNAILS_HEIGHT', '50');
 								$file_size_cell = format_file_size($this_file_size);
 							}
 							
-							/** Date */
-							$date = date(TIMEFORMAT,strtotime($file['timestamp']));
+                            /** Date */
+                            $date = format_date($file['timestamp']);
 							
 							/** Expiration */
 							if ( $file['expires'] == '1' ) {

@@ -273,7 +273,7 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
                     $group_data = $group_object->getProperties();
 
                     /* Get group creation date */
-                    $created_at = date(TIMEFORMAT,strtotime($group_data['created_date']));
+                    $created_at = format_date($group_data['created_date']);
 					
 					/* Button class for the manage files link */
 					if (!empty($group_data['files'])) {

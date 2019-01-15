@@ -302,8 +302,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 
 						$count_groups = count($client_data['groups']);
 						
-						/* Get account creation date */
-						$created_at = date(TIMEFORMAT,strtotime($client_data['created_date']));
+                        /* Get account creation date */
+                        $created_at = format_date($client_data['created_date']);
 
                         /* Count uploads */
                         $count_files = count($client_data['files']);

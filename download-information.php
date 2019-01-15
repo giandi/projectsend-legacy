@@ -188,8 +188,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 							 * Prepare the information to be used later on the cells array
 							 * 1- Get account download time and date
 							 */
-							$date = date(TIMEFORMAT,strtotime($row['timestamp']));
-							$time = date('h:i:s',strtotime($row['timestamp']));
+                            $date = format_date($row['timestamp']);
+                            $time = format_time($row['timestamp']);
 							
 							/**
 							 * 2- Check if it's from a know user or anonymous

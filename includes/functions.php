@@ -513,12 +513,20 @@ function get_file_by_id($id)
 
 	while ( $row = $statement->fetch() ) {
 		$information = array(
-							'id'				=> html_output($row['id']),
-							'title'			=> html_output($row['filename']),
-							'original_url'	=> html_output($row['original_url']),
-							'url'				=> html_output($row['url']),
-						);
-		if ( !empty( $information ) ) {
+            'id' => html_output($row['id']),
+            'title'=> html_output($row['filename']),
+            'original_url' => html_output($row['original_url']),
+            'url' => html_output($row['url']),
+            'description' => html_output($row['description']),
+            'uploaded_date' => html_output($row['timestamp']),
+            'uploaded_by' => html_output($row['uploader']),
+            'expires' => html_output($row['expires']),
+            'expiry_date' => html_output($row['expiry_date']),
+            'public' => html_output($row['public']),
+            'public_token' => html_output($row['public_token']),
+        );
+
+        if ( !empty( $information ) ) {
 			return $information;
 		}
 		else {
@@ -526,6 +534,39 @@ function get_file_by_id($id)
 		}
 	}
 }
+
+/**
+ * Get all the file information knowing only the id
+ * Used on the Download information page.
+ *
+ * @return array
+ */
+function get_file_by_filename($filename)
+{
+	global $dbh;
+	$statement = $dbh->prepare("SELECT * FROM " . TABLE_FILES . " WHERE url=:filename");
+    $statement->execute(
+        array(
+            ':filename'	=> $filename
+        )
+    );
+
+    if ( $statement->rowCount() > 0 ) {
+        while ( $row = $statement->fetch() ) {
+            $found_id = $row['id'];
+            if ( !empty( $found_id ) ) {
+                $information = get_file_by_id($found_id);
+                return $information;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+
 
 /**
  * Standard footer mark up and information generated on this function to
@@ -1222,6 +1263,21 @@ function print_array( $data = array() )
 }
 
 /**
+ * Convert to array only if it's not one already
+ */
+function to_array_if_not($data)
+{
+    if (!is_array($data)) {
+        $value = array($data);
+    }
+    else {
+        $value = $data;
+    }
+
+    return $value;
+}
+
+/**
  * Simple file upload. Used on normal file fields, eg: logo on branding page
  */
 function option_file_upload( $file, $validate_ext = '', $option = '', $action = '' )
@@ -1295,6 +1351,29 @@ function option_file_upload( $file, $validate_ext = '', $option = '', $action = 
 	return $return;
 }
 
+
+function format_date($date)
+{
+    if (!date) {
+        return false;
+    }
+
+    $formatted = date(TIMEFORMAT, strtotime($date));
+
+    return $formatted;
+}
+
+function format_time($date)
+{
+    if (!date) {
+        return false;
+    }
+
+    $formatted = date('h:i:s', strtotime($date));
+
+    return $formatted;
+}
+
 /**
  * Renders an action recorded on the log.
  */
@@ -1353,8 +1432,6 @@ function render_log_action($params)
 			$part1 = $owner_user;
 			$action_text = __('(user) downloaded the file','cftp_admin');
 			$part2 = $affected_file_name;
-			$part3 = __('assigned to:','cftp_admin');
-			$part4 = $affected_account_name;
 			break;
 		case 8:
 			$action_ico = 'file-download';
@@ -1444,6 +1521,12 @@ function render_log_action($params)
 			$part2 = $affected_file_name;
 			$part3 = __('to:','cftp_admin');
 			$part4 = $affected_account_name;
+			break;
+        case 40:
+			$action_ico = 'file-hidden';
+			$part1 = $owner_user;
+			$action_text = __('marked as hidden for everyone the file','cftp_admin');
+			$part2 = $affected_file_name;
 			break;
 		case 22:
 			$action_ico = 'file-visible';
@@ -1558,7 +1641,7 @@ function render_log_action($params)
 			break;
 	}
 
-	$date = date(TIMEFORMAT,strtotime($timestamp));
+    $date = format_date($timestamp);
 
 	if (!empty($part1)) { $log['1'] = $part1; }
 	if (!empty($part2)) { $log['2'] = $part2; }
