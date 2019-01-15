@@ -266,14 +266,14 @@ class Categories
             $this->sql = $this->dbh->prepare('DELETE FROM ' . TABLE_CATEGORIES . ' WHERE id=:id');
             $this->sql->bindParam(':id', $this->id, PDO::PARAM_INT);
             $this->sql->execute();
+            
+            /** Record the action log */
+            $record = $this->logger->addEntry([
+                'action' => 36,
+                'owner_id' => CURRENT_USER_ID,
+                'affected_account_name' => $this->name,
+                ]);
         }
-
-        /** Record the action log */
-        $record = $this->logger->addEntry([
-            'action' => 36,
-            'owner_id' => CURRENT_USER_ID,
-            'affected_account_name' => $this->name,
-        ]);
 
         return true;
 	}
