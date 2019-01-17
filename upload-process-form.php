@@ -425,8 +425,6 @@ while( $row = $statement->fetch() ) {
 						 * If not, it is added to the failed files array.
 						 */
 						if(file_exists($location)) {
-							/** Generate a safe filename */
-							//$file = $this_upload->safeRename($file);
 							/**
 							 * Remove the extension from the file name and replace every
 							 * underscore with a space to generate a valid upload name.
