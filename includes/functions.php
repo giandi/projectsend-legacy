@@ -1351,10 +1351,9 @@ function option_file_upload( $file, $validate_ext = '', $option = '', $action = 
 	return $return;
 }
 
-
 function format_date($date)
 {
-    if (!date) {
+    if (!$date) {
         return false;
     }
 
