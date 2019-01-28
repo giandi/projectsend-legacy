@@ -26,12 +26,12 @@ $results_type = 'global';
  */
 if (isset($_GET['client_id'])) {
 	$this_id = $_GET['client_id'];
-	$this_client = get_client_by_id($this_id);
+    $this_client = get_client_by_id($this_id);
+    
 	/** Add the name of the client to the page's title. */
 	if(!empty($this_client)) {
 		$page_title .= ' '.__('for client','cftp_admin').' '.html_entity_decode($this_client['name']);
 		$search_on = 'client_id';
-		$name_for_actions = $this_client['username'];
 		$results_type = 'client';
 	}
 }
@@ -41,14 +41,12 @@ if (isset($_GET['client_id'])) {
  */
 if (isset($_GET['group_id'])) {
     $this_id = $_GET['group_id'];
-    
     $group = get_group_by_id($this_id);
 
     /** Add the name of the client to the page's title. */
     if(!empty($group['name'])) {
         $page_title .= ' '.__('for group','cftp_admin').' '.html_entity_decode($group['name']);
         $search_on = 'group_id';
-        $name_for_actions = html_entity_decode($group_name);
         $results_type = 'group';
     }
 }
@@ -58,11 +56,11 @@ if (isset($_GET['group_id'])) {
  */
 if (isset($_GET['category'])) {
 	$this_id = $_GET['category'];
-	$this_category = get_category($this_id);
+    $this_category = get_category($this_id);
+    
 	/** Add the name of the client to the page's title. */
 	if(!empty($this_category)) {
 		$page_title .= ' '.__('on category','cftp_admin').' '.html_entity_decode($this_category['name']);
-		$name_for_actions = $this_category['name'];
 		$results_type = 'category';
 	}
 }
@@ -79,33 +77,8 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 			/** Continue only if 1 or more files were selected. */
 			if(!empty($_GET['batch'])) {
 				$selected_files = array_map('intval',array_unique($_GET['batch']));
-				$files_to_get = implode(',',$selected_files);
-				/**
-				 * Make a list of files to avoid individual queries.
-				 * First, get all the different files under this account.
-				 */
-				$sql_distinct_files = $dbh->prepare("SELECT file_id FROM " . TABLE_FILES_RELATIONS . " WHERE FIND_IN_SET(id, :files)");
-				$sql_distinct_files->bindParam(':files', $files_to_get);
-				$sql_distinct_files->execute();
-				$sql_distinct_files->setFetchMode(PDO::FETCH_ASSOC);
-				
-				while( $data_file_relations = $sql_distinct_files->fetch() ) {
-					$all_files_relations[] = $data_file_relations['file_id']; 
-					$files_to_get = implode(',',$all_files_relations);
-				}
-				
-				/**
-				 * Then get the files names to add to the log action.
-				 */
-				$sql_file = $dbh->prepare("SELECT id, filename FROM " . TABLE_FILES . " WHERE FIND_IN_SET(id, :files)");
-				$sql_file->bindParam(':files', $files_to_get);
-				$sql_file->execute();
-				$sql_file->setFetchMode(PDO::FETCH_ASSOC);
 
-				while( $data_file = $sql_file->fetch() ) {
-					$all_files[$data_file['id']] = $data_file['filename'];
-				}
-				switch($_GET['action']) {
+                switch($_GET['action']) {
 					case 'hide':
 						/**
 						 * Changes the value on the "hidden" column value on the database.
@@ -119,7 +92,6 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						}
 						$msg = __('The selected files were marked as hidden.','cftp_admin');
 						echo system_message('success',$msg);
-						$log_action_number = 21;
 						break;
 
 					case 'show':
@@ -133,7 +105,6 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						}
 						$msg = __('The selected files were marked as visible.','cftp_admin');
 						echo system_message('success',$msg);
-						$log_action_number = 22;
 						break;
 
 					case 'unassign':
@@ -146,12 +117,6 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						}
 						$msg = __('The selected files were unassigned from this client.','cftp_admin');
 						echo system_message('success',$msg);
-						if ($search_on == 'group_id') {
-							$log_action_number = 11;
-						}
-						elseif ($search_on == 'client_id') {
-							$log_action_number = 10;
-						}
 						break;
 
 					case 'delete':
@@ -168,36 +133,18 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 							}
 							else {
 								$delete_results['errors']++;
-								unset($all_files[$file_id]);
 							}
 						}
 
 						if ( $delete_results['ok'] > 0 ) {
 							$msg = __('The selected files were deleted.','cftp_admin');
 							echo system_message('success',$msg);
-							$log_action_number = 12;
 						}
 						if ( $delete_results['errors'] > 0 ) {
 							$msg = __('Some files could not be deleted.','cftp_admin');
 							echo system_message('danger',$msg);
 						}
 						break;
-				}
-
-				/** Record the action log */
-				foreach ($all_files as $work_file_id => $work_file) {
-					$logger = new \ProjectSend\Classes\ActionsLog();
-					$log_action_args = array(
-											'action' => $log_action_number,
-											'owner_id' => CURRENT_USER_ID,
-											'affected_file' => $work_file_id,
-											'affected_file_name' => $work_file
-										);
-					if (!empty($name_for_actions)) {
-						$log_action_args['affected_account_name'] = $name_for_actions;
-						$log_action_args['get_user_real_name'] = true;
-					}
-					$new_record_action = $logger->addEntry($log_action_args);
 				}
 			}
 			else {
@@ -415,11 +362,12 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 								<select name="hidden" id="hidden" class="txtfield form-control">
 									<?php
 										$status_options = array(
-																'2'		=> __('All statuses','cftp_admin'),
-																'0'		=> __('Visible','cftp_admin'),
-																'1'		=> __('Hidden','cftp_admin'),
-															);
-										foreach ( $status_options as $val => $text ) {
+                                            '2' => __('All statuses','cftp_admin'),
+                                            '0' => __('Visible','cftp_admin'),
+                                            '1' => __('Hidden','cftp_admin'),
+                                        );
+
+                                        foreach ( $status_options as $val => $text ) {
 									?>
 											<option value="<?php echo $val; ?>" <?php if ( isset( $_GET['hidden'] ) && $_GET['hidden'] == $val ) { echo 'selected="selected"'; } ?>><?php echo $text; ?></option>
 									<?php
@@ -458,18 +406,18 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 									<select name="action" id="action" class="txtfield form-control">
 										<?php
 											$actions_options = array(
-																	'none'			=> __('Select action','cftp_admin'),
-																	'zip'			=> __('Download zipped','cftp_admin'),
-																);
+                                                'none' => __('Select action','cftp_admin'),
+                                                'zip' => __('Download zipped','cftp_admin'),
+                                            );
 
-											/** Options only available when viewing a client/group files list */
+                                            /** Options only available when viewing a client/group files list */
 											if (isset($search_on)) {
-												$actions_options['hide']		= __('Hide','cftp_admin');
-												$actions_options['show']		= __('Show','cftp_admin');
-												$actions_options['unassign']	= __('Unassign','cftp_admin');
+												$actions_options['hide'] = __('Hide','cftp_admin');
+												$actions_options['show'] = __('Show','cftp_admin');
+												$actions_options['unassign'] = __('Unassign','cftp_admin');
 											}
 											else {
-												$actions_options['delete']		= __('Delete','cftp_admin');
+												$actions_options['delete'] = __('Delete','cftp_admin');
 											}
 
 											foreach ( $actions_options as $val => $text ) {
@@ -645,22 +593,21 @@ include_once ADMIN_VIEWS_DIR . DS . 'header.php';
 						/**
 						 * Visibility is only available when filtering by client or group.
 						 */
-						$params = array();
-						$query_this_file = "SELECT * FROM " . TABLE_FILES_RELATIONS . " WHERE file_id = :file_id";
-						$params[':file_id'] = $row['id'];
+                        $assignations = get_file_assignations($row['id']);
+
+                        $count_assignations = count($assignations['clients']) + count($assignations['groups']);
+
+                        switch ($results_type) {
+                            case 'client':
+                                $hidden = $assignations['clients'][$this_id]['hidden'];
+                                break;
+                            case 'group':
+                                $hidden = $assignations['groups'][$this_id]['hidden'];
+                                break;
+                        }
+
 	
-						$sql_this_file = $dbh->prepare($query_this_file);
-						$sql_this_file->execute( $params );
-						$sql_this_file->setFetchMode(PDO::FETCH_ASSOC);
-	
-						$count_assignations = $sql_this_file->rowCount();
-	
-						while( $data_file = $sql_this_file->fetch() ) {
-							$file_id = $data_file['id'];
-							$hidden = $data_file['hidden'];
-						}
-	
-						$date = date(TIMEFORMAT,strtotime($row['timestamp']));
+                        $date = format_date($row['timestamp']);
 
                         $file_absolute_path = UPLOADED_FILES_DIR . DS . $row['url'];
 

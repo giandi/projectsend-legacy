@@ -522,7 +522,7 @@ function get_file_by_id($id)
             'uploaded_by' => html_output($row['uploader']),
             'expires' => html_output($row['expires']),
             'expiry_date' => html_output($row['expiry_date']),
-            'public' => html_output($row['public']),
+            'public' => html_output($row['public_allow']),
             'public_token' => html_output($row['public_token']),
         );
 
@@ -567,6 +567,50 @@ function get_file_by_filename($filename)
     return false;
 }
 
+function get_file_assignations($file_id)
+{
+    if (empty($file_id)) {
+        return false;
+    }
+
+    if (!is_numeric($file_id)) {
+        return false;
+    }
+
+    global $dbh;
+
+    $statement = $dbh->prepare("SELECT * FROM " . TABLE_FILES_RELATIONS . " WHERE file_id = :file_id");
+    $statement->bindParam(':file_id', $file_id, PDO::PARAM_INT);
+    $statement->execute();
+    $statement->setFetchMode(PDO::FETCH_ASSOC);
+
+    $count = $statement->rowCount();
+
+    $return = [
+        'clients' => [],
+        'groups' => [],
+    ];
+
+    if ($count > 0) {
+        while ($row = $statement->fetch()) {
+            if (!empty($row['client_id'])) {
+                $return['clients'][$row['client_id']] = [
+                    'hidden' => $row['hidden'],
+                ];
+            }
+
+            if (!empty($row['group_id'])) {
+                $return['groups'][$row['group_id']] = [
+                    'hidden' => $row['hidden'],
+                ];
+            }
+        }
+
+        return $return;
+    }
+
+    return false;    
+}
 
 /**
  * Standard footer mark up and information generated on this function to

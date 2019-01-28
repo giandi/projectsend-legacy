@@ -12,112 +12,19 @@ use \PDO;
 
 class FilesActions
 {
+    private $dbh;
+    private $logger;
 
 	var $files = array();
 
-	function __construct() {
-		global $dbh;
-		$this->dbh = $dbh;
-	}
+    public function __construct(PDO $dbh = null)
+    {
+        if (empty($dbh)) {
+            global $dbh;
+        }
 
-	function getFiles($arguments)
-	{
-		$this->file_id		= !empty( $arguments['file_id'] ) ? $arguments['file_id'] : '';
-		$this->uploader	= !empty( $arguments['uploader'] ) ? $arguments['uploader'] : '';
-		$this->group_ids	= !empty( $arguments['group_ids'] ) ? $arguments['group_ids'] : array();
-		$this->group_ids	= is_array( $this->group_ids ) ? $this->group_ids : array( $this->group_ids );
-		$this->client_ids	= !empty( $arguments['client_ids'] ) ? $arguments['client_ids'] : array();
-		$this->client_ids	= is_array( $this->client_ids ) ? $this->client_ids : array( $this->client_ids );
-		$this->group_ids	= !empty( $arguments['group_ids'] ) ? $arguments['group_ids'] : array();
-		$this->uploader	= !empty( $arguments['uploader'] ) ? $arguments['uploader'] : '';
-		$this->is_public	= !empty( $arguments['public'] ) ? $arguments['public'] : '';
-		$this->expires		= !empty( $arguments['expires'] ) ? $arguments['expires'] : '';
-		$this->expired		= !empty( $arguments['expired'] ) ? $arguments['expired'] : '';
-		$this->search		= !empty( $arguments['search'] ) ? $arguments['search'] : '';
-		$this->categories	= !empty( $arguments['categories'] ) ? $arguments['categories'] : array();
-		$this->categories	= is_array( $this->categories ) ? $this->categories : array( $this->categories );
-		$this->limit		= !empty( $arguments['limit'] ) ? $arguments['limit'] : '';
-		$this->offset		= !empty( $arguments['offset'] ) ? $arguments['offset'] : '';
-
-		$this->files		= array();
-
-		/**
-		 * 1- If filtering by group or client, get a list of relations
-		 */
-		 if ( !empty( $this->group_ids ) || !empty( $this->client_ids ) ) {
-			 if ( !empty( $this->group_ids ) ) {
-				 $group_files = array();
-				 $files_groups_sql = "SELECT id, file_id, group_id FROM " . TABLE_FILES_RELATIONS . " WHERE group_id=:group_id AND hidden = '0'";
-			 }
-			 if ( !empty( $this->client_ids ) ) {
-				 $client_files = array();
-				 $files_groups_sql = "SELECT id, file_id, client_id FROM " . TABLE_FILES_RELATIONS . " WHERE client_id=:client_id AND hidden = '0'";
-			 }
- 		}
-
-		$this->state['files'] = array();
-		$this->query = "SELECT * FROM " . TABLE_FILES;
-
-		$this->parameters = array();
-		if ( !empty( $this->is_public ) ) {
-			$this->parameters[] = "public_allow=:public";
-		}
-		if ( !empty( $this->expires ) ) {
-			$this->parameters[] = "expires=:expires";
-		}
-		if ( !empty( $this->expired ) ) {
-			$this->parameters[] = "public=:expired";
-		}
-		if ( !empty( $this->uploader ) ) {
-			$this->parameters[] = "uploader=:uploader";
-		}
-		if ( !empty( $this->search ) ) {
-			$this->parameters[] = "(original_url LIKE :original_url OR filename LIKE :title OR description LIKE :description)";
-		}
-
-		/** Add the parameters */
-		if ( !empty( $this->parameters ) ) {
-			$this->p = 1;
-			foreach ( $this->parameters as $this->parameter ) {
-				if ( $this->p == 1 ) {
-					$this->connector = " WHERE ";
-				}
-				else {
-					$this->connector = " AND ";
-				}
-				$this->p++;
-
-				$this->query .= $this->connector . $this->parameter;
-			}
-		}
-
-		//echo $this->query;
-
-		$this->statement = $this->dbh->prepare($this->query);
-
-		if ( !empty( $this->is_public ) ) {
-			$this->statement->bindValue(':public', $this->is_public, PDO::PARAM_INT);
-		}
-		if ( !empty( $this->expires ) ) {
-			$this->statement->bindValue(':expires', $this->expires, PDO::PARAM_INT);
-		}
-
-
-		/** Execute the main files query */
-		$this->statement->execute();
-		$this->statement->setFetchMode(PDO::FETCH_ASSOC);
-		while( $this->data = $this->statement->fetch() ) {
-			$this->state['files'][$this->data['id']] = array(
-										'id'				=> $this->data['id'],
-										'title'			=> $this->data['filename'],
-										'description'	=> $this->data['description'],
-									);
-		}
-
-		$this->state['count'] = count( $this->state['files'] );
-
-		return $this->state;
-
+        $this->dbh = $dbh;
+        $this->logger = new \ProjectSend\Classes\ActionsLog;
 	}
 
 	function deleteFiles($rel_id)
@@ -150,6 +57,7 @@ class FilesActions
 					}
 
                     $this->file_url = $this->row['url'];
+                    $this->title = $this->row['filename'];
                     
                     /**
  					 * Thumbnails should be deleted too.
@@ -178,65 +86,158 @@ class FilesActions
                         delete_file_from_disk($this->thumbnail);
                     }
 
-					$this->result = true;
-				}
-				else {
-					$this->result = false;
+                    /** Record the action log */
+                    $record = $this->logger->addEntry([
+                        'action' => 12,
+                        'owner_id' => CURRENT_USER_ID,
+                        'affected_file' => $this->file_id,
+                        'affected_file_name' => $this->title
+                    ]);
+
+					return true;
 				}
 
-				return $this->result;
+				return false;
 			}
 		}
 	}
 
-	function changeHiddenStatus($change_to,$file_id,$modify_type,$modify_id)
+	function changeHiddenStatus($change_to, $file_id, $modify_type, $modify_id)
 	{
-		$this->check_level = array(9,8,7);
-		if (isset($file_id)) {
-			if ($modify_type !== 'client_id' && $modify_type !== 'group_id') {
-				throw new \Exception('Invalid modify type');
-			}
-			/** Do a permissions check */
-			if (isset($this->check_level) && current_role_in($this->check_level)) {
-				$this->sql = "UPDATE " . TABLE_FILES_RELATIONS . " SET hidden=:hidden WHERE file_id = :file_id AND " . $modify_type . " = :modify_id";
-				$this->statement = $this->dbh->prepare($this->sql);
-				$this->statement->bindParam(':hidden', $change_to, PDO::PARAM_INT);
-				$this->statement->bindParam(':file_id', $file_id, PDO::PARAM_INT);
+        $this->check_level = array(9,8,7);
+        
+        if (empty($file_id)) {
+            return false;
+        }
+
+        switch ($change_to) {
+            case 1:
+                $log_action_number = 21;
+                break;
+            case 0:
+                $log_action_number = 22;
+                break;
+            default:
+                throw new \Exception('Invalid status code');
+                return false;
+        }
+
+        switch ($modify_type) {
+            case 'client_id':
+                $client = get_client_by_id($modify_id);
+                $log_account_name = $client['name'];
+                break;
+            case 'group_id':
+                $group = get_group_by_id($modify_id);
+                $log_account_name = $group['name'];
+                break;
+            default:
+                throw new \Exception('Invalid modify type');
+                return false;
+        }
+
+        /** Do a permissions check */
+        if (isset($this->check_level) && current_role_in($this->check_level)) {
+            $this->sql = "UPDATE " . TABLE_FILES_RELATIONS . " SET hidden=:hidden WHERE file_id = :file_id AND " . $modify_type . " = :modify_id";
+            $this->statement = $this->dbh->prepare($this->sql);
+            $this->statement->bindParam(':hidden', $change_to, PDO::PARAM_INT);
+            $this->statement->bindParam(':file_id', $file_id, PDO::PARAM_INT);
             $this->statement->bindParam(':modify_id', $modify_id, PDO::PARAM_INT);
-				$this->statement->execute();
-			}
-		}
+            $this->statement->execute();
+
+            $file = get_file_by_id($file_id);
+
+            /** Record the action log */
+            $record = $this->logger->addEntry([
+                'action' => $log_action_number,
+                'owner_id' => CURRENT_USER_ID,
+                'affected_file' => $file_id,
+                'affected_file_name' => $file['title'],
+                'affected_account_name' => $log_account_name,
+            ]);
+
+            return true;
+        }
+        
+        return false;
 	}
 
 	function hideForEveryone($file_id)
 	{
-		$this->check_level = array(9,8,7);
-		if (isset($file_id)) {
-			/** Do a permissions check */
-			if (isset($this->check_level) && current_role_in($this->check_level)) {
-				$this->sql = $this->dbh->prepare("UPDATE " . TABLE_FILES_RELATIONS . " SET hidden='1' WHERE file_id = :file_id");
-				$this->sql->bindParam(':file_id', $file_id, PDO::PARAM_INT);
-				$this->sql->execute();
-			}
-		}
+        $this->check_level = array(9,8,7);
+        
+        if (empty($file_id)) {
+            return false;
+        }
+
+        /** Do a permissions check */
+        if (isset($this->check_level) && current_role_in($this->check_level)) {
+            $this->sql = $this->dbh->prepare("UPDATE " . TABLE_FILES_RELATIONS . " SET hidden='1' WHERE file_id = :file_id");
+            $this->sql->bindParam(':file_id', $file_id, PDO::PARAM_INT);
+            $this->sql->execute();
+
+            $file = get_file_by_id( $file_id );
+
+            /** Record the action log */
+            $record = $this->logger->addEntry([
+                'action' => 40,
+                'owner_id' => CURRENT_USER_ID,
+                'affected_file' => $file_id,
+                'affected_file_name' => $file['title']
+            ]);
+
+            return true;
+        }
+
+        return false;
 	}
 
 	function unassignFile($file_id,$modify_type,$modify_id)
 	{
-		$this->check_level = array(9,8,7);
-		if (isset($file_id)) {
-			if ($modify_type !== 'client_id' && $modify_type !== 'group_id') {
-				throw new \Exception('Invalid modify type');
-			}
-			/** Do a permissions check */
-			if (isset($this->check_level) && current_role_in($this->check_level)) {
-				$this->sql = "DELETE FROM " . TABLE_FILES_RELATIONS . " WHERE file_id = :file_id AND " . $modify_type . " = :modify_id";
-				$this->statement = $this->dbh->prepare($this->sql);
-				$this->statement->bindParam(':file_id', $file_id, PDO::PARAM_INT);
-            $this->statement->bindParam(':modify_id', $modify_id, PDO::PARAM_INT);
-				$this->statement->execute();
-			}
-		}
-	}
+        $this->check_level = array(9,8,7);
+        
+        if (empty($file_id)) {
+            return false;
+        }
 
+        switch ($modify_type) {
+            case 'client_id':
+                $log_action_number = 10;
+                $client = get_client_by_id($modify_id);
+                $log_account_name = $client['name'];
+                break;
+            case 'group_id':
+                $log_action_number = 11;
+                $group = get_group_by_id($modify_id);
+                $log_account_name = $group['name'];
+                break;
+            default:
+                throw new \Exception('Invalid modify type');
+                return false;
+        }
+
+        /** Do a permissions check */
+        if (isset($this->check_level) && current_role_in($this->check_level)) {
+            $this->sql = "DELETE FROM " . TABLE_FILES_RELATIONS . " WHERE file_id = :file_id AND " . $modify_type . " = :modify_id";
+            $this->statement = $this->dbh->prepare($this->sql);
+            $this->statement->bindParam(':file_id', $file_id, PDO::PARAM_INT);
+            $this->statement->bindParam(':modify_id', $modify_id, PDO::PARAM_INT);
+            $this->statement->execute();
+
+            $file = get_file_by_id( $file_id );
+
+            /** Record the action log */
+            $record = $this->logger->addEntry([
+                'action' => $log_action_number,
+                'owner_id' => CURRENT_USER_ID,
+                'affected_file' => $file_id,
+                'affected_file_name' => $file['title'],
+                'affected_account_name' => $log_account_name,
+            ]);
+
+            return true;
+        }
+
+        return false;
+	}
 }
