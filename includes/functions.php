@@ -52,6 +52,16 @@ function isUniqueUsername($string) {
     return true;
 }
 
+function return_account_type()
+{
+    if (!defined('CURRENT_USER_LEVEL')) {
+        return 'client';
+    }
+    
+    $type = (CURRENT_USER_LEVEL == 0) ? 'client' : 'user';
+    return $type;
+}
+
 /**
  * To successfully add the orderby and order parameters to a query,
  * check if the column exists on the table and validate that order
