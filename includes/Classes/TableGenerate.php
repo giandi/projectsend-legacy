@@ -249,6 +249,13 @@ class TableGenerate
 	}
 
 	public function pagination( $params ) {
+        if ( !is_numeric($params['current'])) {
+            $params['current'] = 1;
+        }
+        else {
+            $params['current'] = (int)$params['current'];
+        }
+        
 		$this->output = '';
 
 		if ( $params['pages'] > 1 ) {
