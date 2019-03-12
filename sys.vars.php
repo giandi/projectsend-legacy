@@ -224,7 +224,7 @@ define('CLIENT_UPLOADS_TEMP_FOLDER', ROOT_DIR.'/upload/temp');
  * on the footer blocks.
  *
  */
-define('SYSTEM_URI','https://www.prohectsend.org/');
+define('SYSTEM_URI','https://www.projectsend.org/');
 define('SYSTEM_URI_LABEL','ProjectSend on github');
 define('DONATIONS_URL','https://www.projectsend.org/donations/');
 /** Previously cFTP */
